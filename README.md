@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Constela ✦
 
-## Getting Started
+Tu constelación del evento: conecta escaneando un QR y mira tu red del evento convertirse en un grafo vivo.
 
-First, run the development server:
+- **Plan por fases**: [PLAN.md](./PLAN.md)
+- **Marca y design system** (portable a IAs de imágenes): [DESIGN.md](./DESIGN.md)
+
+## Stack
+
+Next.js 16 (App Router, TS, React Compiler) · Tailwind v4 + shadcn/ui · Supabase (Auth, Postgres, Realtime) · pnpm.
+
+## Desarrollo local (flujo local-first)
+
+Todo se desarrolla contra un stack Supabase local en Docker — réplica de producción. Nada toca la nube hasta el deploy final.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. Levantar el stack local (Docker debe estar corriendo)
+pnpm exec supabase start
+
+# 2. Dev server (el puerto 3000 suele estar ocupado por otros proyectos)
+pnpm dev -p 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Servicio | URL |
+|---|---|
+| App | http://localhost:3001 |
+| API Supabase local | http://127.0.0.1:44321 |
+| **Studio** (admin DB) | http://127.0.0.1:44323 |
+| **Mailpit** (captura los magic links de login) | http://127.0.0.1:44324 |
+| Postgres directo | `postgresql://postgres:postgres@127.0.0.1:44322/postgres` |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> **¿Por qué puertos 4432X y no los 5432X por defecto?** Windows/WSL2 reserva el rango 54299-54398 (Hyper-V), así que los defaults del CLI no se pueden bindear. Están remapeados en `supabase/config.toml`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Migraciones en `supabase/migrations/` — son la **fuente de verdad** del schema:
 
-## Learn More
+```bash
+pnpm exec supabase migration new <nombre>   # crear una nueva
+pnpm exec supabase db reset                 # recrear la DB local desde cero
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Producción (cuando la app esté completa en local)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Proyecto Supabase: `constela` (ref `usaytsxnbqxyrmdpewbw`, us-east-1).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm exec supabase link --project-ref usaytsxnbqxyrmdpewbw
+pnpm exec supabase db push        # aplicar migraciones a prod
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy del front: Vercel (pendiente, ver PLAN.md Fase 0).
