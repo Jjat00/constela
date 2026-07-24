@@ -201,6 +201,12 @@ export default async function HomePage({
                       : "conexiones tuyas"}
                   </span>
                 </p>
+                {connectionCount === 0 && (
+                  <p className="mt-1 font-mono text-xs leading-5 text-muted-foreground">
+                    tus líneas nacen al escanear ✦ muestra tu QR o abre el de
+                    alguien
+                  </p>
+                )}
               </section>
 
               {/* Mi QR: el gesto principal en el evento */}

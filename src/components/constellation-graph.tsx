@@ -85,8 +85,6 @@ export function ConstellationGraph({
             links: edges.map((e) => ({ ...e })),
           }}
           backgroundColor="rgba(0,0,0,0)"
-          enableZoomInteraction={false}
-          enablePanInteraction={false}
           cooldownTicks={80}
           onEngineStop={() => {
             if (didFit.current || nodes.length < 2) return;
