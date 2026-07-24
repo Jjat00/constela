@@ -41,7 +41,7 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 
 ## Principios UX/UI (transversales, no negociables)
 
-1. **Mobile-first y a una mano**: se usa de pie, con un trago en la otra mano. Acciones clave en el tercio inferior.
+1. **Mobile-first, desktop digno**: se diseña primero para usarse de pie y a una mano (acciones clave en el tercio inferior), pero cada pantalla escala a desktop con layout propio (p. ej. `/home` a 2 columnas con la constelación grande) — nunca un layout móvil estirado.
 2. **Estética "mapa estelar"**: fondo oscuro profundo, nodos con glow, aristas con gradiente sutil. El grafo ES el branding.
 3. **QR a un tap desde cualquier pantalla** (FAB persistente). Al mostrarlo: pantalla completa + brillo alto.
 4. **Onboarding < 60 segundos**: login → nombre → rol → 3 tags → listo. Nada más es obligatorio.
@@ -62,12 +62,18 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 
 > **Flujo local-first (decisión 2026-07-23)**: todo el desarrollo ocurre contra el stack local del Supabase CLI (`pnpm exec supabase start`). Las migraciones en `supabase/migrations/` son la fuente de verdad. Solo cuando la app esté completa en local se hace `supabase db push` al proyecto cloud y el deploy a Vercel. El login con magic link funciona en local sin configurar nada: los correos se capturan en el buzón local del stack (Mailpit).
 
-### Fase 1 — Identidad (días 4–7)
-- [ ] Auth: Google + magic link (Supabase Auth)
-- [ ] Onboarding de perfil (nombre, rol/headline, 2–3 tags, avatar opcional)
-- [ ] QR personal: `qr_slug` → página pública `/u/[slug]`
-- [ ] Unirse a evento vía `/e/[slug]` (alta en `event_attendees`)
-- **Entregable**: entro, creo perfil, tengo mi QR, estoy en el evento.
+### Fase 1 — Identidad (días 4–7) ✅ 2026-07-24 (rediseñada tras grilling)
+> Rediseño 2026-07-24 (sesión de grilling — ver `CONTEXT.md` y `docs/adr/`): login SOLO
+> Google (ADR 0002), sin onboarding (nombre y foto llegan de Google; `/perfil` opcional),
+> home centrado en el evento (`/home`), modelo abierto de eventos con auto-join y
+> membresía contagiosa (ADR 0001), constelación = grafo completo del evento (ADR 0003).
+- [x] Auth: solo Google (ADR 0002) — acceso dev por correo/Mailpit solo en local
+- [x] Sin onboarding: perfil editable opcional en `/perfil` (nombre, headline, tags)
+- [x] QR personal: `qr_slug` → página pública `/u/[slug]` + membresía contagiosa (RPC `join_event_via_profile`)
+- [x] Eventos: crear en `/eventos/nuevo` (cualquier usuario), auto-join al abrir `/e/[slug]`, QR del evento compartible
+- [x] `/home`: evento activo + constelación (grafo completo, `get_event_graph`) + Mi QR; sin evento → eventos activos + crear
+- [ ] ⏳ Credenciales Google OAuth del usuario (Google Cloud Console) — bloquea probar el login real
+- **Entregable**: entro con Google, tengo mi QR, estoy en el evento y veo la constelación (aunque sea mi sola estrella).
 
 ### Fase 2 — Conexión (semana 2)
 - [ ] Escáner QR in-app (cámara) + fallback: abrir el link del QR
@@ -77,11 +83,11 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 - **Entregable**: dos personas se conectan en <10 segundos.
 
 ### Fase 3 — La constelación (semana 3)
-- [ ] Grafo 1º + 2º grado (`react-force-graph-2d` + RPC)
+- [x] Grafo completo del evento sin límite de profundidad (`react-force-graph-2d` + RPC `get_event_graph`, ADR 0003) — v1 adelantada al home en fase 1
 - [ ] Tap en nodo → mini-perfil (sheet inferior)
 - [ ] Triángulos cerrados resaltados visualmente
 - [ ] Sugerencias de cierre: "Tú y Ana conocieron ambos a Carlos"
-- **Entregable**: el momento "wow" personal — mi constelación viva.
+- **Entregable**: el momento "wow" personal — la constelación viva del evento.
 
 ### Fase 4 — Evento en vivo (semana 4)
 - [ ] Supabase Realtime: aristas nuevas aparecen animadas sin recargar

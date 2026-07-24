@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const STARS = [
@@ -96,8 +97,8 @@ export default function Home() {
         <span className="font-display text-xl font-semibold tracking-tight">
           constela<span className="text-primary">✦</span>
         </span>
-        <Button size="sm" className="rounded-full px-4">
-          Crear mi constelación
+        <Button asChild size="sm" className="rounded-full px-4">
+          <Link href="/login">Crear mi constelación</Link>
         </Button>
       </header>
 
@@ -120,10 +121,11 @@ export default function Home() {
 
         <div className="flex flex-wrap items-center gap-5">
           <Button
+            asChild
             size="lg"
             className="node-glow h-12 rounded-full px-7 text-base"
           >
-            Crea tu constelación
+            <Link href="/login">Crea tu constelación</Link>
           </Button>
           <a
             href="#como-funciona"
@@ -293,10 +295,11 @@ export default function Home() {
           <em className="font-serif text-primary italic">más que tarjetas</em>
         </h2>
         <Button
+          asChild
           size="lg"
           className="node-glow h-13 rounded-full px-8 text-base"
         >
-          Crea tu constelación
+          <Link href="/login">Crea tu constelación</Link>
         </Button>
       </section>
 
