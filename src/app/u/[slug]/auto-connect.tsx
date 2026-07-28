@@ -33,7 +33,7 @@ export function AutoConnect({ slug }: { slug: string }) {
     return (
       <div className="flex flex-col items-center gap-3">
         <p className="font-mono text-sm text-primary">
-          [ conectados en {result.eventName} ✦ ]
+          [ conectados en {result.eventName} ]
         </p>
         <Button asChild size="lg" className="node-glow h-12 rounded-full px-7">
           <Link href={`/home?e=${result.eventSlug}`}>Ver la constelación</Link>

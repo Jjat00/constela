@@ -6,6 +6,7 @@ import { eventDate } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Galaxia } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
 import {
@@ -176,7 +177,13 @@ export default async function HomePage({
           <div className="flex flex-col gap-5 lg:gap-6">
             {identity}
 
-            <section className="flex flex-col gap-1 rounded-2xl border border-primary/25 bg-card p-5">
+            <section className="relative isolate flex flex-col gap-1 overflow-hidden rounded-2xl border border-primary/25 bg-card p-5">
+              {/* El evento es una galaxia (DESIGN.md v3) */}
+              <Galaxia
+                seed={activeEvent.slug.charCodeAt(0)}
+                size={96}
+                className="absolute -top-6 -right-6 -z-10 opacity-80"
+              />
               <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase sm:text-xs">
                 [ estás en ]
               </p>
@@ -206,7 +213,7 @@ export default async function HomePage({
               </p>
               {connectionCount === 0 && (
                 <p className="mt-1 font-mono text-xs leading-5 text-muted-foreground">
-                  tus líneas nacen al escanear ✦ muestra tu QR o abre el de
+                  tus líneas nacen al escanear — muestra tu QR o abre el de
                   alguien
                 </p>
               )}
@@ -231,7 +238,7 @@ export default async function HomePage({
                 dangerouslySetInnerHTML={{ __html: qr }}
               />
               <p className="text-center font-mono text-xs text-muted-foreground">
-                que te escaneen aquí ✦{" "}
+                que te escaneen aquí —{" "}
                 <Link
                   href="/qr"
                   className="text-primary underline-offset-4 hover:underline"

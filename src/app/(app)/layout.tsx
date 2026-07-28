@@ -1,4 +1,5 @@
 import { AppNav } from "@/components/app-nav";
+import { CosmicSky } from "@/components/cosmos";
 
 /**
  * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`).
@@ -12,6 +13,8 @@ export default function AppLayout({
 }) {
   return (
     <div className="grain relative flex flex-1 flex-col">
+      {/* Cielo discreto: en modo Operate el cosmos retrocede ante la tarea */}
+      <CosmicSky seed={11} stars={90} milkyWay={false} nebulas="none" />
       <AppNav />
       {/* Hueco para la barra inferior de móvil; en desktop no existe */}
       <div className="flex flex-1 flex-col pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">

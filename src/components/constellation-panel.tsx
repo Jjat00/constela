@@ -6,6 +6,7 @@ import {
   type GraphEdge,
   type GraphNode,
 } from "@/components/constellation-graph";
+import { CosmicSky } from "@/components/cosmos";
 import { TAG_CATEGORIES, type TagCategory, type TagFacet } from "@/lib/tags";
 import { cn } from "@/lib/utils";
 
@@ -83,7 +84,9 @@ export function ConstellationPanel({
   }
 
   return (
-    <section className="flex min-h-0 flex-col gap-2 rounded-2xl border border-border bg-card p-2 lg:flex-1">
+    <section className="relative flex min-h-0 flex-col gap-2 overflow-hidden rounded-2xl border border-border bg-background/40 p-2 lg:flex-1">
+      {/* La constelación vive EN el cielo, no sobre una card (DESIGN.md v3) */}
+      <CosmicSky seed={71} stars={70} milkyWay={false} nebulas="none" />
       {hasFacets && (
         <div className="flex flex-col gap-3 px-2 pt-2">
           <div className="flex items-center justify-between gap-2">
@@ -187,8 +190,8 @@ export function ConstellationPanel({
 
       <p className="px-2 pb-2 text-center font-mono text-[10px] leading-4 text-muted-foreground sm:text-xs">
         {activeCount > 0 && shown === 0
-          ? "ninguna estrella coincide ✦ prueba con menos filtros"
-          : `la constelación de ${eventName} ✦ toca una estrella para verla`}
+          ? "ninguna estrella coincide — prueba con menos filtros"
+          : `la constelación de ${eventName} — toca una estrella para verla`}
       </p>
     </section>
   );

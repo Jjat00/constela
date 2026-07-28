@@ -4,6 +4,7 @@ import { CalendarDays, Plus, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { Galaxia } from "@/components/cosmos";
 
 type Event = {
   id: string;
@@ -73,12 +74,8 @@ export default async function EventsPage() {
 
       {myEvents.length === 0 ? (
         <section className="flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl border border-dashed border-border/70 px-6 py-14 text-center">
-          <span
-            aria-hidden
-            className="font-display text-4xl text-primary/70 select-none"
-          >
-            ✦
-          </span>
+          {/* Una galaxia lejana: el evento que aún no existe */}
+          <Galaxia size={88} className="opacity-80" />
           <div className="flex max-w-xs flex-col gap-2">
             <p className="font-display text-xl font-semibold">
               Aún no estás en ningún evento
@@ -105,11 +102,19 @@ export default async function EventsPage() {
               return (
                 <li
                   key={event.id}
-                  className={`flex flex-col gap-4 rounded-2xl border bg-card p-5 ${
+                  className={`relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-card p-5 ${
                     isActive ? "border-primary/30" : "border-border"
                   }`}
                 >
-                  <div className="flex flex-col gap-1.5">
+                  {/* Cada evento es una galaxia (DESIGN.md v3) */}
+                  <Galaxia
+                    seed={index + 2}
+                    size={96}
+                    className={`absolute -top-6 -right-6 ${
+                      isActive ? "opacity-90" : "opacity-50"
+                    }`}
+                  />
+                  <div className="relative flex flex-col gap-1.5">
                     {isActive && (
                       <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase">
                         [ estás aquí ]

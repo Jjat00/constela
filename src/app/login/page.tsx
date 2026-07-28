@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { CosmicSky, Sol } from "@/components/cosmos";
 import { GoogleButton } from "./google-button";
 import { DevLoginForm } from "./dev-login-form";
 
@@ -21,17 +22,12 @@ export default async function LoginPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 h-[28rem] w-[44rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.8 0.14 70 / 55%), transparent 70%)",
-        }}
-      />
+      <CosmicSky seed={21} stars={140} />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-8 sm:max-w-md">
         <div className="flex flex-col gap-3">
+          {/* Tu sol, a punto de nacer */}
+          <Sol size={52} className="mb-3" />
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ entrar ]
           </p>

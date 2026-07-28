@@ -105,7 +105,7 @@ export function OnboardingFlow({
           value={interests}
           onChange={setInterests}
           placeholder="busca un tema o escríbelo"
-          emptyHint="sin intereses nadie podrá filtrarte ✦ elige al menos uno"
+          emptyHint="sin intereses nadie podrá filtrarte — elige al menos uno"
         />
       </div>
       <div className={step === 2 ? "block" : "hidden"}>
@@ -134,7 +134,7 @@ export function OnboardingFlow({
           {isLast ? (
             <SubmitButton
               label={
-                eventName ? `Entrar a ${eventName} ✦` : "Ver mi constelación ✦"
+                eventName ? `Entrar a ${eventName}` : "Ver mi constelación"
               }
             />
           ) : (

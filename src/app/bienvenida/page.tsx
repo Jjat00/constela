@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { CosmicSky } from "@/components/cosmos";
 import { safeNext } from "@/lib/nav";
 import { fetchTagCatalog, type TagChoice } from "@/lib/tags";
 import { OnboardingFlow } from "./onboarding-flow";
@@ -60,18 +61,11 @@ export default async function BienvenidaPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-6 py-12">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 h-[28rem] w-[44rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.8 0.14 70 / 55%), transparent 70%)",
-        }}
-      />
+      <CosmicSky seed={31} stars={100} milkyWay={false} nebulas="none" />
 
       <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
         <p className="font-mono text-xs tracking-[0.3em] text-primary uppercase">
-          [ {firstName ? `hola ${firstName.toLowerCase()}` : "bienvenida"} ✦ ]
+          [ {firstName ? `hola ${firstName.toLowerCase()}` : "bienvenida"} ]
         </p>
 
         {error && (

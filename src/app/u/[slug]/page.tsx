@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CosmicSky, HaloEstelar } from "@/components/cosmos";
 import { AutoConnect } from "./auto-connect";
 
 export default async function PublicProfilePage({
@@ -49,29 +50,26 @@ export default async function PublicProfilePage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 h-[24rem] w-[38rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.8 0.14 70 / 55%), transparent 70%)",
-        }}
-      />
+      <CosmicSky seed={41} stars={130} />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-6 text-center sm:max-w-md sm:gap-7">
-        {profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profile.avatar_url}
-            alt=""
-            className="node-glow size-20 rounded-full border border-border sm:size-24"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className="node-glow flex size-20 items-center justify-center rounded-full bg-primary font-display text-3xl font-bold text-primary-foreground sm:size-24 sm:text-4xl">
-            {profile.name?.charAt(0)?.toUpperCase() ?? "✦"}
-          </div>
-        )}
+        {/* La persona vive dentro de su estrella: el mismo tratamiento
+            espectral del grafo, en grande — es la primera impresión */}
+        <HaloEstelar id={profile.id} size={96} className="my-5">
+          {profile.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.avatar_url}
+              alt=""
+              className="h-full w-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-primary font-display text-3xl font-bold text-primary-foreground">
+              {profile.name?.charAt(0)?.toUpperCase() ?? "✦"}
+            </div>
+          )}
+        </HaloEstelar>
 
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
@@ -102,7 +100,7 @@ export default async function PublicProfilePage({
             variant="outline"
             className="h-12 w-full rounded-full sm:w-auto sm:px-7"
           >
-            <Link href="/qr">Este eres tú ✦ volver a mi QR</Link>
+            <Link href="/qr">Este eres tú — volver a mi QR</Link>
           </Button>
         ) : user ? (
           <AutoConnect slug={slug} />

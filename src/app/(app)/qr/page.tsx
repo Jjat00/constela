@@ -61,11 +61,11 @@ export default async function MyQrPage() {
           </p>
         ) : (
           <p className="max-w-xs font-mono text-xs leading-5 text-muted-foreground">
-            entra a un evento para que tu QR conecte ✦ hoy solo muestra tu
+            entra a un evento para que tu QR conecte — hoy solo muestra tu
             estrella
           </p>
         )}
-        <p className="mt-2 font-mono text-[10px] tracking-[0.2em] text-muted-foreground/70 uppercase">
+        <p className="mt-2 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
           [ sube el brillo de la pantalla ]
         </p>
       </div>

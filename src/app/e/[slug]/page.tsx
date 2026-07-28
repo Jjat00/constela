@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { eventDateLong } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
 import { Button } from "@/components/ui/button";
+import { CosmicSky, Galaxia, Planeta } from "@/components/cosmos";
 
 export default async function EventPage({
   params,
@@ -48,14 +49,13 @@ export default async function EventPage({
   const dateLabel = eventDateLong(event.starts_at);
 
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 h-[24rem] w-[38rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.62 0.13 295 / 60%), transparent 70%)",
-        }}
+    <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 pt-10 pb-36 sm:px-8 sm:pt-16 sm:pb-44">
+      {/* La puerta del evento también se proyecta: cielo con más presencia */}
+      <CosmicSky seed={51} stars={150} />
+      {/* Entrar al evento es aterrizar en un mundo nuevo */}
+      <Planeta
+        size={900}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[82%] opacity-90"
       />
 
       {/* Móvil: una columna centrada. Desktop: ficha a la izquierda, QR grande
@@ -68,6 +68,8 @@ export default async function EventPage({
         }`}
       >
         <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">
+          {/* El evento es una galaxia (DESIGN.md v3) */}
+          <Galaxia seed={event.name.length} size={80} />
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ evento ]
           </p>
@@ -83,7 +85,7 @@ export default async function EventPage({
           {isAttending ? (
             <>
               <p className="font-mono text-sm text-primary">
-                [ estás dentro ✦ ]
+                [ estás dentro ]
               </p>
               <Button
                 asChild

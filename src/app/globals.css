@@ -41,9 +41,13 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-lumen: var(--lumen);
-  --color-lila: var(--lila);
-  --color-pulsar: var(--pulsar);
+  --color-sol: var(--sol);
+  --color-estrella-b: var(--estrella-b);
+  --color-estrella-a: var(--estrella-a);
+  --color-estrella-k: var(--estrella-k);
+  --color-estrella-m: var(--estrella-m);
+  --color-halfa: var(--halfa);
+  --color-aurora: var(--aurora);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -54,85 +58,95 @@
 }
 
 /*
- * Constela v2 — "cielo nocturno real".
- * Negro-ciruela + estrellas ámbar (lumen) + lila eléctrico. Nada de cian SaaS.
- * App dark-only: :root y .dark comparten paleta. Fuente de verdad: DESIGN.md.
+ * Constela v3 — "universo real" (cine espacial cálido).
+ * La paleta sale de la física: clases espectrales O-B-A-F-G-K-M y emisión
+ * H-alfa. El sol dorado (estrella G) es el único protagonista; los azules
+ * son estrellas, no SaaS. App dark-only: :root y .dark comparten paleta.
+ * Fuente de verdad: DESIGN.md.
  */
 :root {
-  --background: oklch(0.14 0.02 300); /* noche ciruela */
-  --foreground: oklch(0.96 0.008 90); /* blanco cálido papel */
-  --card: oklch(0.18 0.025 300);
-  --card-foreground: oklch(0.96 0.008 90);
-  --popover: oklch(0.18 0.025 300);
-  --popover-foreground: oklch(0.96 0.008 90);
-  --primary: oklch(0.8 0.14 70); /* lumen — ámbar estelar */
-  --primary-foreground: oklch(0.17 0.03 300);
-  --secondary: oklch(0.24 0.03 300);
-  --secondary-foreground: oklch(0.96 0.008 90);
-  --muted: oklch(0.21 0.025 300);
-  --muted-foreground: oklch(0.68 0.02 300);
-  --accent: oklch(0.32 0.06 295); /* lila profundo para superficies */
-  --accent-foreground: oklch(0.96 0.008 90);
+  --background: oklch(0.1 0.012 290); /* negro espacio */
+  --foreground: oklch(0.96 0.005 90); /* luz estelar (blanco cálido F) */
+  --card: oklch(0.16 0.018 290); /* polvo cósmico */
+  --card-foreground: oklch(0.96 0.005 90);
+  --popover: oklch(0.16 0.018 290);
+  --popover-foreground: oklch(0.96 0.005 90);
+  --primary: oklch(0.81 0.12 75); /* sol — estrella G */
+  --primary-foreground: oklch(0.15 0.025 290);
+  --secondary: oklch(0.22 0.022 290);
+  --secondary-foreground: oklch(0.96 0.005 90);
+  --muted: oklch(0.19 0.02 290);
+  --muted-foreground: oklch(0.66 0.02 290); /* polvo iluminado */
+  --accent: oklch(0.26 0.045 265); /* azul estelar profundo para superficies */
+  --accent-foreground: oklch(0.96 0.005 90);
   --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.8 0.14 70);
-  --chart-1: oklch(0.8 0.14 70); /* lumen */
-  --chart-2: oklch(0.75 0.11 295); /* lila */
-  --chart-3: oklch(0.7 0.16 340); /* pulsar magenta */
-  --chart-4: oklch(0.78 0.1 170); /* teal */
-  --chart-5: oklch(0.96 0.008 90); /* luz */
+  --border: oklch(0.96 0.005 90 / 10%);
+  --input: oklch(0.96 0.005 90 / 15%);
+  --ring: oklch(0.81 0.12 75);
+  --chart-1: oklch(0.81 0.12 75); /* sol */
+  --chart-2: oklch(0.76 0.09 265); /* azul estelar B */
+  --chart-3: oklch(0.68 0.17 355); /* H-alfa */
+  --chart-4: oklch(0.79 0.09 170); /* aurora OIII */
+  --chart-5: oklch(0.87 0.05 270); /* blanco azulado A */
   --radius: 0.625rem;
-  --sidebar: oklch(0.18 0.025 300);
-  --sidebar-foreground: oklch(0.96 0.008 90);
-  --sidebar-primary: oklch(0.8 0.14 70);
-  --sidebar-primary-foreground: oklch(0.17 0.03 300);
-  --sidebar-accent: oklch(0.24 0.03 300);
-  --sidebar-accent-foreground: oklch(0.96 0.008 90);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.8 0.14 70);
-  --lumen: oklch(0.8 0.14 70);
-  --lila: oklch(0.75 0.11 295);
-  --pulsar: oklch(0.7 0.16 340);
-  --glow-lumen: 0 0 28px oklch(0.8 0.14 70 / 40%);
+  --sidebar: oklch(0.16 0.018 290);
+  --sidebar-foreground: oklch(0.96 0.005 90);
+  --sidebar-primary: oklch(0.81 0.12 75);
+  --sidebar-primary-foreground: oklch(0.15 0.025 290);
+  --sidebar-accent: oklch(0.22 0.022 290);
+  --sidebar-accent-foreground: oklch(0.96 0.005 90);
+  --sidebar-border: oklch(0.96 0.005 90 / 10%);
+  --sidebar-ring: oklch(0.81 0.12 75);
+  --sol: oklch(0.81 0.12 75);
+  --estrella-b: oklch(0.76 0.09 265);
+  --estrella-a: oklch(0.87 0.05 270);
+  --estrella-k: oklch(0.88 0.07 75);
+  --estrella-m: oklch(0.79 0.1 55);
+  --halfa: oklch(0.68 0.17 355);
+  --aurora: oklch(0.79 0.09 170);
+  --glow-sol: 0 0 32px oklch(0.81 0.12 75 / 45%);
 }
 
 .dark {
-  --background: oklch(0.14 0.02 300);
-  --foreground: oklch(0.96 0.008 90);
-  --card: oklch(0.18 0.025 300);
-  --card-foreground: oklch(0.96 0.008 90);
-  --popover: oklch(0.18 0.025 300);
-  --popover-foreground: oklch(0.96 0.008 90);
-  --primary: oklch(0.8 0.14 70);
-  --primary-foreground: oklch(0.17 0.03 300);
-  --secondary: oklch(0.24 0.03 300);
-  --secondary-foreground: oklch(0.96 0.008 90);
-  --muted: oklch(0.21 0.025 300);
-  --muted-foreground: oklch(0.68 0.02 300);
-  --accent: oklch(0.32 0.06 295);
-  --accent-foreground: oklch(0.96 0.008 90);
+  --background: oklch(0.1 0.012 290);
+  --foreground: oklch(0.96 0.005 90);
+  --card: oklch(0.16 0.018 290);
+  --card-foreground: oklch(0.96 0.005 90);
+  --popover: oklch(0.16 0.018 290);
+  --popover-foreground: oklch(0.96 0.005 90);
+  --primary: oklch(0.81 0.12 75);
+  --primary-foreground: oklch(0.15 0.025 290);
+  --secondary: oklch(0.22 0.022 290);
+  --secondary-foreground: oklch(0.96 0.005 90);
+  --muted: oklch(0.19 0.02 290);
+  --muted-foreground: oklch(0.66 0.02 290);
+  --accent: oklch(0.26 0.045 265);
+  --accent-foreground: oklch(0.96 0.005 90);
   --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.8 0.14 70);
-  --chart-1: oklch(0.8 0.14 70);
-  --chart-2: oklch(0.75 0.11 295);
-  --chart-3: oklch(0.7 0.16 340);
-  --chart-4: oklch(0.78 0.1 170);
-  --chart-5: oklch(0.96 0.008 90);
-  --sidebar: oklch(0.18 0.025 300);
-  --sidebar-foreground: oklch(0.96 0.008 90);
-  --sidebar-primary: oklch(0.8 0.14 70);
-  --sidebar-primary-foreground: oklch(0.17 0.03 300);
-  --sidebar-accent: oklch(0.24 0.03 300);
-  --sidebar-accent-foreground: oklch(0.96 0.008 90);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.8 0.14 70);
-  --lumen: oklch(0.8 0.14 70);
-  --lila: oklch(0.75 0.11 295);
-  --pulsar: oklch(0.7 0.16 340);
-  --glow-lumen: 0 0 28px oklch(0.8 0.14 70 / 40%);
+  --border: oklch(0.96 0.005 90 / 10%);
+  --input: oklch(0.96 0.005 90 / 15%);
+  --ring: oklch(0.81 0.12 75);
+  --chart-1: oklch(0.81 0.12 75);
+  --chart-2: oklch(0.76 0.09 265);
+  --chart-3: oklch(0.68 0.17 355);
+  --chart-4: oklch(0.79 0.09 170);
+  --chart-5: oklch(0.87 0.05 270);
+  --sidebar: oklch(0.16 0.018 290);
+  --sidebar-foreground: oklch(0.96 0.005 90);
+  --sidebar-primary: oklch(0.81 0.12 75);
+  --sidebar-primary-foreground: oklch(0.15 0.025 290);
+  --sidebar-accent: oklch(0.22 0.022 290);
+  --sidebar-accent-foreground: oklch(0.96 0.005 90);
+  --sidebar-border: oklch(0.96 0.005 90 / 10%);
+  --sidebar-ring: oklch(0.81 0.12 75);
+  --sol: oklch(0.81 0.12 75);
+  --estrella-b: oklch(0.76 0.09 265);
+  --estrella-a: oklch(0.87 0.05 270);
+  --estrella-k: oklch(0.88 0.07 75);
+  --estrella-m: oklch(0.79 0.1 55);
+  --halfa: oklch(0.68 0.17 355);
+  --aurora: oklch(0.79 0.09 170);
+  --glow-sol: 0 0 32px oklch(0.81 0.12 75 / 45%);
 }
 
 @layer base {
@@ -140,43 +154,51 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* Nunca un negro plano: el espacio tiene profundidad */
+    background:
+      radial-gradient(
+        120% 90% at 50% 0%,
+        oklch(0.13 0.02 285) 0%,
+        transparent 60%
+      ),
+      var(--background);
+    @apply text-foreground;
   }
   html {
     @apply font-sans;
   }
   ::selection {
-    background: oklch(0.8 0.14 70 / 30%);
+    background: oklch(0.81 0.12 75 / 30%);
   }
 }
 
 @layer utilities {
-  /* Grano de película sobre todo el fondo — da textura análoga, anti-genérico */
+  /* Grano de cine sobre todo el fondo — el registro es película, no render */
   .grain::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 50;
     pointer-events: none;
-    opacity: 0.05;
+    opacity: 0.04;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   .text-glow {
-    text-shadow: 0 0 40px oklch(0.8 0.14 70 / 45%);
+    text-shadow: 0 0 40px oklch(0.81 0.12 75 / 45%);
   }
   .node-glow {
-    box-shadow: var(--glow-lumen);
+    box-shadow: var(--glow-sol);
   }
   /* Halo del icono activo en la barra de navegación móvil */
   .drop-shadow-glow {
-    filter: drop-shadow(0 0 8px oklch(0.8 0.14 70 / 55%));
+    filter: drop-shadow(0 0 8px oklch(0.81 0.12 75 / 55%));
   }
 }
 
 @keyframes twinkle {
   0%,
   100% {
-    opacity: 0.3;
+    opacity: 0.45;
   }
   50% {
     opacity: 1;
@@ -205,8 +227,21 @@
   }
 }
 
+/* Respiración de la corona solar: lenta, apenas perceptible */
+@keyframes corona {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
 .animate-twinkle {
-  animation: twinkle 3.4s ease-in-out infinite;
+  animation: twinkle 4s ease-in-out infinite;
 }
 
 .animate-draw {
@@ -220,13 +255,18 @@
 }
 
 .animate-float {
-  animation: float 7s ease-in-out infinite;
+  animation: float 12s ease-in-out infinite;
+}
+
+.animate-corona {
+  animation: corona 7s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-twinkle,
   .animate-marquee,
-  .animate-float {
+  .animate-float,
+  .animate-corona {
     animation: none !important;
   }
   .animate-draw {

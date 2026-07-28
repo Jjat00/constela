@@ -52,7 +52,7 @@ Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 ## Brand Commitments
 
 - Nombre **Constela** (de "constelación", usado como verbo); wordmark siempre en minúscula: `constela✦`; el nombre nunca se traduce.
-- **DESIGN.md (v2 «cielo nocturno»)** es la autoridad visual vigente: nocturna, editorial, cálida; el grafo ES la marca; dark-only.
+- **DESIGN.md (v3 «universo real»)** es la autoridad visual vigente: cine espacial cálido, física estelar real como sistema de color, semántica cósmica (evento = galaxia, tú = sol, magnitud = conexiones); el grafo ES la marca; dark-only. (Reemplazó a la v2 «cielo nocturno» el 2026-07-28 por decisión del usuario.)
 - Tagline: **"El networking que por fin se ve"**. Voz cálida y editorial, siempre en español.
 
 ## Evidence on Hand

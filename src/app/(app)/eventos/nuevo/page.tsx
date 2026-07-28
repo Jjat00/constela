@@ -12,15 +12,6 @@ export default async function NewEventPage({
 
   return (
     <main className="relative z-10 flex flex-1 flex-col items-center px-5 py-8 sm:justify-center sm:px-8 sm:py-12">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 hidden h-[28rem] w-[44rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl sm:block"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.62 0.13 295 / 60%), transparent 70%)",
-        }}
-      />
-
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-7 sm:max-w-md sm:gap-8">
         <div className="flex flex-col gap-3">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
