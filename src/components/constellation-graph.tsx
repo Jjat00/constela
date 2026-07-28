@@ -8,7 +8,9 @@ export type GraphNode = {
   id: string;
   name: string;
   headline: string | null;
+  role: string | null;
   tags: string[];
+  intents: string[];
   avatarUrl: string | null;
   qrSlug: string;
 };
@@ -24,15 +26,28 @@ export type GraphEdge = {
 const LUMEN = "#F0A94B";
 const STAR = "#F5F3EE";
 const LILA = "rgba(178, 156, 224, 0.45)";
+const LILA_DIM = "rgba(178, 156, 224, 0.08)";
+
+/** Tu estrella nunca se apaga: es el ancla de tu propio mapa. */
+function isLit(id: string, myId: string, matched: Set<string>) {
+  return id === myId || matched.has(id);
+}
 
 export function ConstellationGraph({
   nodes,
   edges,
   myId,
+  matchedIds = null,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
   myId: string;
+  /**
+   * Filtro activo: las estrellas fuera del conjunto no desaparecen — se
+   * apagan hasta ser polvo. El mapa sigue siendo el mismo (los nodos no
+   * saltan de sitio) y las que te interesan son lo único que brilla.
+   */
+  matchedIds?: Set<string> | null;
 }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,12 +122,32 @@ export function ConstellationGraph({
             // Con pocos nodos zoomToFit acerca demasiado: tope de zoom
             if ((fgRef.current?.zoom() ?? 1) > 3) fgRef.current?.zoom(3, 0);
           }}
-          linkColor={() => LILA}
+          linkColor={(link) => {
+            if (!matchedIds) return LILA;
+            // Una línea solo brilla si sus dos extremos siguen encendidos
+            const end = (e: unknown) =>
+              typeof e === "object" && e !== null
+                ? String((e as { id?: string }).id ?? "")
+                : String(e);
+            const lit =
+              isLit(end(link.source), myId, matchedIds) &&
+              isLit(end(link.target), myId, matchedIds);
+            return lit ? LILA : LILA_DIM;
+          }}
           linkWidth={1}
           nodeCanvasObject={(node, ctx, globalScale) => {
             const isMe = node.id === myId;
             const x = node.x ?? 0;
             const y = node.y ?? 0;
+
+            // Fuera del filtro: punto tenue, sin foto ni nombre
+            if (matchedIds && !isLit(String(node.id), myId, matchedIds)) {
+              ctx.beginPath();
+              ctx.arc(x, y, 2, 0, 2 * Math.PI);
+              ctx.fillStyle = "rgba(245, 243, 238, 0.16)";
+              ctx.fill();
+              return;
+            }
 
             // Foto de perfil (si existe y ya cargó); si no, estrella-punto
             const url = (node as GraphNode).avatarUrl;

@@ -4,11 +4,15 @@ import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
+import { ConstellationPanel } from "@/components/constellation-panel";
 import {
-  ConstellationGraph,
-  type GraphEdge,
-  type GraphNode,
-} from "@/components/constellation-graph";
+  buildFacets,
+  fetchTagCatalog,
+  labelFor,
+  type TagCategory,
+  type TagFacet,
+} from "@/lib/tags";
 
 export default async function HomePage({
   searchParams,
@@ -24,10 +28,16 @@ export default async function HomePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, headline, tags, qr_slug, avatar_url")
+    .select("name, headline, role, tags, intents, qr_slug, avatar_url, onboarded_at")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
+
+  // Primera vez: describe tu estrella antes de ver la constelación (ADR 0004)
+  if (!profile.onboarded_at) {
+    const back = requestedSlug ? `/home?e=${requestedSlug}` : "/home";
+    redirect(`/bienvenida?next=${encodeURIComponent(back)}`);
+  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
   const qrSvg = await QRCode.toString(`${siteUrl}/u/${profile.qr_slug}`, {
@@ -68,6 +78,27 @@ export default async function HomePage({
     starts_at: string | null;
   }> = [];
 
+  let facets: Record<TagCategory, TagFacet[]> = {
+    rol: [],
+    interes: [],
+    intencion: [],
+  };
+
+  // El catálogo traduce slugs a nombres: en la DB vive `ai-engineer`, en la
+  // pantalla "ai engineer"
+  const catalog = await fetchTagCatalog(supabase);
+  const myRoleLabel = profile.role
+    ? labelFor(catalog, "rol", profile.role)
+    : null;
+  const myTagLabels = [
+    ...((profile.tags ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "interes", slug),
+    ),
+    ...((profile.intents ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "intencion", slug),
+    ),
+  ];
+
   if (activeEvent) {
     const { data: graphData } = await supabase.rpc("get_event_graph", {
       p_event_id: activeEvent.id,
@@ -76,6 +107,8 @@ export default async function HomePage({
     connectionCount = graph.edges.filter(
       (e) => e.source === user.id || e.target === user.id,
     ).length;
+    // Los filtros salen de quién está en ESTE evento, no del catálogo entero
+    facets = buildFacets(graph.nodes, catalog);
   } else {
     const { data: events } = await supabase
       .from("events")
@@ -113,8 +146,10 @@ export default async function HomePage({
         <h1 className="font-display text-2xl font-bold tracking-tight">
           {profile.name}
         </h1>
-        {profile.headline ? (
-          <p className="text-sm text-muted-foreground">{profile.headline}</p>
+        {profile.headline ?? myRoleLabel ? (
+          <p className="text-sm text-muted-foreground">
+            {profile.headline ?? myRoleLabel}
+          </p>
         ) : (
           <Link
             href="/perfil"
@@ -123,15 +158,22 @@ export default async function HomePage({
             completa tu perfil →
           </Link>
         )}
-        {profile.tags.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {profile.tags.map((tag: string) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          {myRoleLabel && profile.headline && (
+            <Badge className="text-xs">{myRoleLabel}</Badge>
+          )}
+          {myTagLabels.map((label) => (
+            <Badge key={label} variant="outline" className="text-xs">
+              {label}
+            </Badge>
+          ))}
+          <Link
+            href="/perfil"
+            className="font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {myTagLabels.length > 0 ? "editar" : "+ añade tus intereses"}
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -248,19 +290,13 @@ export default async function HomePage({
             </div>
 
             {/* Columna derecha: la constelación, a la altura de la columna izquierda */}
-            <section className="flex flex-col gap-2 rounded-xl border border-border bg-card p-2">
-              <div className="h-80 lg:h-auto lg:min-h-0 lg:flex-1">
-                <ConstellationGraph
-                  nodes={graph.nodes}
-                  edges={graph.edges}
-                  myId={user.id}
-                />
-              </div>
-              <p className="pb-2 text-center font-mono text-xs text-muted-foreground">
-                la constelación de {activeEvent.name} ✦ toca una estrella para
-                abrirla
-              </p>
-            </section>
+            <ConstellationPanel
+              nodes={graph.nodes}
+              edges={graph.edges}
+              myId={user.id}
+              facets={facets}
+              eventName={activeEvent.name}
+            />
           </div>
         ) : (
           <div className="mx-auto flex w-full max-w-sm flex-col gap-8 sm:max-w-md">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { fetchTagCatalog, labelFor, type TagChoice } from "@/lib/tags";
 import { ProfileForm } from "./profile-form";
 
 export default async function ProfilePage({
@@ -18,10 +19,20 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, headline, tags")
+    .select("name, headline, role, tags, intents")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
+
+  const catalog = await fetchTagCatalog(supabase);
+  const toChoices = (
+    slugs: string[] | null,
+    category: Parameters<typeof labelFor>[1],
+  ): TagChoice[] =>
+    (slugs ?? []).map((slug) => ({
+      slug,
+      label: labelFor(catalog, category, slug),
+    }));
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-6 py-12">
@@ -60,7 +71,12 @@ export default async function ProfilePage({
         <ProfileForm
           defaultName={profile.name}
           defaultHeadline={profile.headline ?? ""}
-          defaultTags={profile.tags ?? []}
+          roleOptions={catalog.rol}
+          interestOptions={catalog.interes}
+          intentOptions={catalog.intencion}
+          defaultRole={toChoices(profile.role ? [profile.role] : [], "rol")}
+          defaultInterests={toChoices(profile.tags, "interes")}
+          defaultIntents={toChoices(profile.intents, "intencion")}
         />
 
         <Link
