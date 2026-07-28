@@ -377,7 +377,7 @@ export function Planeta({
   return (
     <div
       aria-hidden
-      className={cn("relative overflow-hidden", className)}
+      className={cn("relative", className)}
       style={{
         width: size,
         height: size,
@@ -385,7 +385,7 @@ export function Planeta({
         minHeight: size,
         maxWidth: size,
         maxHeight: size,
-        borderRadius: "50%",
+        clipPath: `ellipse(${size / 2}px ${size / 2}px at 50% 50%)`,
       }}
     >
       {/* Cuerpo: iluminado desde arriba-izquierda por el sol */}
