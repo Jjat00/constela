@@ -76,7 +76,7 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 - **Entregable**: entro con Google, tengo mi QR, estoy en el evento y veo la constelación (aunque sea mi sola estrella).
 
 ### Fase 2 — Conexión (semana 2)
-- [x] Flujo de conexión v1 (2026-07-24): abrir `/u/[slug]` conecta automáticamente (sin botón, ADR 0001; par canónico, 23505 = ya conectados); la nota del encuentro se añadirá desde la lista de conexiones
+- [x] Flujo de conexión v1 (2026-07-24, endurecido 2026-07-27): abrir `/u/[slug]` conecta automáticamente (sin botón, ADR 0001; par canónico, 23505 = ya conectados). La arista se crea en la server action `connectOnScan`, invocada desde el cliente al montar — **nunca en el render**, para que ningún prefetch ni recarga cree conexiones. La nota del encuentro se añadirá desde la lista de conexiones
 - [ ] Escáner QR in-app (cámara) — hoy funciona el fallback universal: la cámara del teléfono abre la URL del QR
 - [ ] Lista "Mis conexiones" con búsqueda y notas editables
 - [ ] Confirmación con avatar + micro-interacción al conectar
@@ -84,7 +84,7 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 
 ### Fase 3 — La constelación (semana 3)
 - [x] Grafo completo del evento sin límite de profundidad (`react-force-graph-2d` + RPC `get_event_graph`, ADR 0003) — v1 adelantada al home en fase 1
-- [ ] Tap en nodo → mini-perfil (sheet inferior)
+- [x] Tap en nodo → mini-perfil (sheet inferior, 2026-07-27): foto, titular, tags y el estado de la relación (conectados + nota del encuentro, o "aún no se han cruzado"). **No conecta**: la arista solo nace de escanear un QR en persona
 - [ ] Triángulos cerrados resaltados visualmente
 - [ ] Sugerencias de cierre: "Tú y Ana conocieron ambos a Carlos"
 - **Entregable**: el momento "wow" personal — la constelación viva del evento.

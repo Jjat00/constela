@@ -85,3 +85,70 @@ from public.events e,
   ) as d(a, b, note)
 where e.slug = 'demo-bogota'
 on conflict do nothing;
+
+-- ============================================================
+-- Regla de pruebas: mi estrella nunca aparece sola.
+--
+-- Los usuarios reales se crean al hacer login, después de este seed, así que
+-- sus conexiones no se pueden dejar escritas aquí. En su lugar queda este
+-- disparador: al entrar alguien al evento demo que no sea una de las ocho
+-- personas de arriba, se le tienden tres líneas. Así la constelación tiene
+-- aristas propias y triángulos desde el primer segundo, sin escanear nada.
+--
+-- Vive solo en el seed (`supabase db reset` local); nunca llega a producción,
+-- que se despliega con las migraciones de supabase/migrations/.
+-- ============================================================
+
+create or replace function public.seed_connect_newcomer()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  demo_event uuid;
+  demo_people uuid[] := array[
+    'a0000000-0000-4000-8000-000000000001',
+    'a0000000-0000-4000-8000-000000000002',
+    'a0000000-0000-4000-8000-000000000003',
+    'a0000000-0000-4000-8000-000000000004',
+    'a0000000-0000-4000-8000-000000000005',
+    'a0000000-0000-4000-8000-000000000006',
+    'a0000000-0000-4000-8000-000000000007',
+    'a0000000-0000-4000-8000-000000000008'
+  ]::uuid[];
+  -- Beto, Diego y Fabián: entre ellos ya hay aristas, así que estas tres
+  -- conexiones cierran además un triángulo con la estrella recién llegada.
+  mates uuid[] := array[
+    'a0000000-0000-4000-8000-000000000001',
+    'a0000000-0000-4000-8000-000000000003',
+    'a0000000-0000-4000-8000-000000000005'
+  ]::uuid[];
+  mate uuid;
+begin
+  select id into demo_event from public.events where slug = 'demo-bogota';
+
+  if new.event_id is distinct from demo_event or new.user_id = any (demo_people)
+  then
+    return new;
+  end if;
+
+  foreach mate in array mates loop
+    insert into public.connections (event_id, user_a, user_b, note, created_by)
+    values (
+      new.event_id,
+      least(new.user_id, mate),
+      greatest(new.user_id, mate),
+      'conexión de prueba del seed ✦',
+      new.user_id
+    )
+    on conflict do nothing;
+  end loop;
+
+  return new;
+end;
+$$;
+
+create or replace trigger seed_connect_newcomer_on_join
+after insert on public.event_attendees
+for each row execute function public.seed_connect_newcomer();
