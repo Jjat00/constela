@@ -1,17 +1,25 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+// Posiciones en % del documento completo; tamaño en px fijos para que las
+// estrellas no escalen con la altura de la página.
 const STARS = [
-  { cx: 8, cy: 22, r: 0.5, d: "0s" },
-  { cx: 16, cy: 70, r: 0.35, d: "1.1s" },
-  { cx: 27, cy: 14, r: 0.45, d: "2.2s" },
-  { cx: 41, cy: 82, r: 0.3, d: "0.6s" },
-  { cx: 55, cy: 8, r: 0.4, d: "1.7s" },
-  { cx: 68, cy: 76, r: 0.35, d: "2.8s" },
-  { cx: 81, cy: 18, r: 0.5, d: "0.9s" },
-  { cx: 93, cy: 60, r: 0.35, d: "2s" },
-  { cx: 35, cy: 45, r: 0.25, d: "1.4s" },
-  { cx: 74, cy: 40, r: 0.3, d: "0.2s" },
+  { x: "8%", y: "2%", s: 3, d: "0s" },
+  { x: "22%", y: "5%", s: 2, d: "1.4s" },
+  { x: "55%", y: "3%", s: 2.5, d: "0.6s" },
+  { x: "81%", y: "6%", s: 3, d: "2.2s" },
+  { x: "93%", y: "12%", s: 2, d: "1.1s" },
+  { x: "12%", y: "17%", s: 2.5, d: "2.8s" },
+  { x: "68%", y: "20%", s: 3, d: "0.9s" },
+  { x: "35%", y: "26%", s: 2, d: "1.7s" },
+  { x: "88%", y: "30%", s: 2.5, d: "0.2s" },
+  { x: "6%", y: "41%", s: 2, d: "2.4s" },
+  { x: "74%", y: "46%", s: 3, d: "1.2s" },
+  { x: "28%", y: "55%", s: 2, d: "0.4s" },
+  { x: "91%", y: "62%", s: 2.5, d: "2s" },
+  { x: "15%", y: "70%", s: 3, d: "1.5s" },
+  { x: "62%", y: "78%", s: 2, d: "2.6s" },
+  { x: "40%", y: "88%", s: 2.5, d: "0.8s" },
 ];
 
 // Constelación del hero: nodos y aristas; el triángulo central se cierra al final
@@ -73,24 +81,21 @@ export default function Home() {
       />
 
       {/* Estrellas de fondo */}
-      <svg
-        aria-hidden
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid slice"
-      >
+      <div aria-hidden className="pointer-events-none absolute inset-0">
         {STARS.map((s, i) => (
-          <circle
+          <span
             key={i}
-            cx={s.cx}
-            cy={s.cy}
-            r={s.r}
-            fill="var(--lumen)"
-            className="animate-twinkle"
-            style={{ animationDelay: s.d }}
+            className="animate-twinkle bg-lumen absolute rounded-full"
+            style={{
+              left: s.x,
+              top: s.y,
+              width: s.s,
+              height: s.s,
+              animationDelay: s.d,
+            }}
           />
         ))}
-      </svg>
+      </div>
 
       {/* Nav */}
       <header className="relative z-10 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5 lg:px-10">
@@ -100,29 +105,214 @@ export default function Home() {
         <Button asChild size="sm" className="h-10 rounded-full px-4">
           <Link href="/login">
             <span className="sm:hidden">Entrar</span>
-            <span className="hidden sm:inline">Crear mi constelación</span>
+            <span className="hidden sm:inline">Crea tu constelación</span>
           </Link>
         </Button>
       </header>
 
-      {/* Hero */}
-      <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-7 px-5 pt-12 pb-16 sm:gap-8 sm:px-8 sm:pt-24 sm:pb-24 lg:px-10">
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-          [ red viva para eventos presenciales ]
-        </p>
+      <main className="flex flex-1 flex-col">
+        {/* Hero */}
+        <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-7 px-5 pt-12 pb-16 sm:gap-8 sm:px-8 sm:pt-24 sm:pb-24 lg:px-10">
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+            [ red viva para eventos presenciales ]
+          </p>
 
-        <h1 className="font-display max-w-4xl text-[clamp(2.8rem,9vw,6.5rem)] leading-[0.98] font-bold tracking-tight text-balance">
-          El networking que por fin{" "}
-          <em className="font-serif font-normal text-primary italic">se ve</em>.
-        </h1>
+          <h1 className="font-display max-w-4xl text-[clamp(2.8rem,9vw,6.5rem)] leading-[0.98] font-bold tracking-tight text-balance">
+            El networking que por fin{" "}
+            <em className="font-serif font-normal text-primary italic">
+              se ve
+            </em>
+            .
+          </h1>
 
-        <p className="max-w-xl text-lg leading-8 text-muted-foreground sm:text-xl">
-          Conecta con un escaneo. Cada persona que conoces se vuelve una
-          estrella, y tu red del evento se dibuja sola — con las conexiones de
-          tus conexiones, en vivo.
-        </p>
+          <p className="max-w-xl text-lg leading-8 text-muted-foreground sm:text-xl">
+            Conecta con un escaneo. Cada persona que conoces se vuelve una
+            estrella, y tu red del evento se dibuja sola — con las conexiones de
+            tus conexiones, en vivo.
+          </p>
 
-        <div className="flex w-full flex-wrap items-center gap-5 sm:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-5 sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
+            >
+              <Link href="/login">Crea tu constelación</Link>
+            </Button>
+            <a
+              href="#como-funciona"
+              className="rounded-sm font-mono text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            >
+              ver cómo funciona ↓
+            </a>
+          </div>
+
+          {/* Constelación que se dibuja */}
+          <svg
+            aria-hidden
+            className="animate-float mt-6 w-full max-w-3xl self-center"
+            viewBox="16 20 73 60"
+            fill="none"
+          >
+            {EDGES.map(([a, b, delay, closes], i) => (
+              <line
+                key={i}
+                x1={NODES[a].x}
+                y1={NODES[a].y}
+                x2={NODES[b].x}
+                y2={NODES[b].y}
+                pathLength={1}
+                stroke={closes ? "var(--pulsar)" : "var(--lila)"}
+                strokeOpacity={closes ? 0.9 : 0.45}
+                strokeWidth={closes ? 0.35 : 0.25}
+                className="animate-draw"
+                style={{ animationDelay: delay }}
+              />
+            ))}
+            {NODES.map((n, i) => (
+              <g key={i}>
+                <circle
+                  cx={n.x}
+                  cy={n.y}
+                  r={n.r * 2.6}
+                  fill="var(--lumen)"
+                  opacity={0.12}
+                />
+                <circle
+                  cx={n.x}
+                  cy={n.y}
+                  r={n.r}
+                  fill={i === 1 ? "var(--lumen)" : "var(--foreground)"}
+                  className="animate-twinkle"
+                  style={{ animationDelay: `${i * 0.5}s` }}
+                />
+              </g>
+            ))}
+            <text
+              x={NODES[1].x}
+              y={NODES[1].y - 4}
+              fontSize="2.6"
+              fill="var(--lumen)"
+              fontFamily="var(--font-geist-mono)"
+              textAnchor="middle"
+            >
+              tú
+            </text>
+          </svg>
+        </section>
+
+        {/* Marquee */}
+        <div
+          aria-hidden
+          className="relative z-10 overflow-hidden border-y border-border py-3"
+        >
+          <div className="animate-marquee flex w-max gap-8 font-mono text-xs tracking-[0.25em] whitespace-nowrap text-muted-foreground uppercase">
+            {/* 4 copias: el loop desplaza -50%, y dos sets deben cubrir el viewport más ancho */}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span key={i} className="flex gap-8">
+                <span>cada persona es una estrella ✦</span>
+                <span>tu red, dibujada en vivo ✦</span>
+                <span>escanea. conecta. constela. ✦</span>
+                <span>los triángulos se cierran ✦</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Cómo funciona */}
+        <section
+          id="como-funciona"
+          className="relative z-10 mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10"
+        >
+          <h2 className="font-display mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
+            Tres gestos,{" "}
+            <em className="font-serif font-normal text-primary italic">
+              una constelación
+            </em>
+          </h2>
+          <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+            {STEPS.map((s) => (
+              <article
+                key={s.n}
+                className="bg-background p-6 transition-colors hover:bg-card sm:p-8"
+              >
+                <span className="font-mono text-sm text-primary">{s.n}</span>
+                <h3 className="font-display mt-3 mb-3 text-2xl font-semibold">
+                  {s.title}
+                </h3>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  {s.body}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Cierre triádico */}
+        <section className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-16 sm:grid-cols-2 sm:gap-12 sm:px-8 sm:py-24 lg:px-10">
+          <div className="flex flex-col gap-6">
+            <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+              [ cierre triádico ]
+            </p>
+            <h2 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-5xl">
+              Cuando el círculo{" "}
+              <em className="font-serif font-normal text-pulsar italic">
+                se cierra
+              </em>
+            </h2>
+            <p className="max-w-md leading-8 text-muted-foreground">
+              Conociste a alguien, que conoció a alguien… que tú también
+              conociste. Ese triángulo tiene nombre en teoría de redes — y aquí
+              tiene luz propia. Constela lo detecta y te sugiere el siguiente:
+              «tú y Ana conocieron ambos a Carlos, y ustedes aún no».
+            </p>
+          </div>
+          <svg
+            aria-hidden
+            className="mx-auto w-full max-w-xs"
+            viewBox="0 0 100 100"
+            fill="none"
+          >
+            <polygon
+              points="50,16 18,78 82,78"
+              fill="var(--pulsar)"
+              fillOpacity="0.07"
+              stroke="var(--pulsar)"
+              strokeOpacity="0.75"
+              strokeWidth="0.5"
+            />
+            {[
+              [50, 16],
+              [18, 78],
+              [82, 78],
+            ].map(([x, y], i) => (
+              <g key={i}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={6}
+                  fill="var(--lumen)"
+                  opacity={0.14}
+                />
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={2.2}
+                  fill="var(--lumen)"
+                  className="animate-twinkle"
+                  style={{ animationDelay: `${i * 0.7}s` }}
+                />
+              </g>
+            ))}
+          </svg>
+        </section>
+
+        {/* CTA final */}
+        <section className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-5 py-20 text-center sm:px-8 sm:py-28 lg:px-10">
+          <h2 className="font-display text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
+            Tu próximo evento merece{" "}
+            <em className="font-serif text-primary italic">más que tarjetas</em>
+          </h2>
           <Button
             asChild
             size="lg"
@@ -130,181 +320,8 @@ export default function Home() {
           >
             <Link href="/login">Crea tu constelación</Link>
           </Button>
-          <a
-            href="#como-funciona"
-            className="font-mono text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            ver cómo funciona ↓
-          </a>
-        </div>
-
-        {/* Constelación que se dibuja */}
-        <svg
-          aria-hidden
-          className="animate-float mt-6 w-full max-w-3xl self-center"
-          viewBox="0 0 100 90"
-          fill="none"
-        >
-          {EDGES.map(([a, b, delay, closes], i) => (
-            <line
-              key={i}
-              x1={NODES[a].x}
-              y1={NODES[a].y}
-              x2={NODES[b].x}
-              y2={NODES[b].y}
-              pathLength={1}
-              stroke={closes ? "var(--pulsar)" : "var(--lila)"}
-              strokeOpacity={closes ? 0.9 : 0.45}
-              strokeWidth={closes ? 0.35 : 0.25}
-              className="animate-draw"
-              style={{ animationDelay: delay }}
-            />
-          ))}
-          {NODES.map((n, i) => (
-            <g key={i}>
-              <circle
-                cx={n.x}
-                cy={n.y}
-                r={n.r * 2.6}
-                fill="var(--lumen)"
-                opacity={0.12}
-              />
-              <circle
-                cx={n.x}
-                cy={n.y}
-                r={n.r}
-                fill={i === 1 ? "var(--lumen)" : "var(--foreground)"}
-                className="animate-twinkle"
-                style={{ animationDelay: `${i * 0.5}s` }}
-              />
-            </g>
-          ))}
-          <text
-            x={NODES[1].x}
-            y={NODES[1].y - 4}
-            fontSize="2.6"
-            fill="var(--lumen)"
-            fontFamily="var(--font-geist-mono)"
-            textAnchor="middle"
-          >
-            tú
-          </text>
-        </svg>
-      </section>
-
-      {/* Marquee */}
-      <div
-        aria-hidden
-        className="relative z-10 overflow-hidden border-y border-border py-3"
-      >
-        <div className="animate-marquee flex w-max gap-8 font-mono text-xs tracking-[0.25em] whitespace-nowrap text-muted-foreground uppercase">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <span key={i} className="flex gap-8">
-              <span>cada persona es una estrella ✦</span>
-              <span>tu red, dibujada en vivo ✦</span>
-              <span>escanea. conecta. constela. ✦</span>
-              <span>los triángulos se cierran ✦</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Cómo funciona */}
-      <section
-        id="como-funciona"
-        className="relative z-10 mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10"
-      >
-        <h2 className="font-display mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
-          Tres gestos,{" "}
-          <em className="font-serif font-normal text-primary italic">
-            una constelación
-          </em>
-        </h2>
-        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
-          {STEPS.map((s) => (
-            <article
-              key={s.n}
-              className="group bg-background p-6 transition-colors hover:bg-card sm:p-8"
-            >
-              <span className="font-mono text-sm text-primary">{s.n}</span>
-              <h3 className="font-display mt-3 mb-3 text-2xl font-semibold">
-                {s.title}
-              </h3>
-              <p className="text-sm leading-7 text-muted-foreground">
-                {s.body}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Cierre triádico */}
-      <section className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-16 sm:grid-cols-2 sm:gap-12 sm:px-8 sm:py-24 lg:px-10">
-        <div className="flex flex-col gap-6">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            [ cierre triádico ]
-          </p>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-5xl">
-            Cuando el círculo{" "}
-            <em className="font-serif font-normal text-[var(--pulsar)] italic">
-              se cierra
-            </em>
-          </h2>
-          <p className="max-w-md leading-8 text-muted-foreground">
-            Conociste a alguien, que conoció a alguien… que tú también
-            conociste. Ese triángulo tiene nombre en teoría de redes — y aquí
-            tiene luz propia. Constela lo detecta y te sugiere el siguiente:
-            «tú y Ana conocieron ambos a Carlos, y ustedes aún no».
-          </p>
-        </div>
-        <svg
-          aria-hidden
-          className="mx-auto w-full max-w-xs"
-          viewBox="0 0 100 100"
-          fill="none"
-        >
-          <polygon
-            points="50,16 18,78 82,78"
-            fill="var(--pulsar)"
-            fillOpacity="0.07"
-            stroke="var(--pulsar)"
-            strokeOpacity="0.75"
-            strokeWidth="0.5"
-          />
-          {[
-            [50, 16],
-            [18, 78],
-            [82, 78],
-          ].map(([x, y], i) => (
-            <g key={i}>
-              <circle cx={x} cy={y} r={6} fill="var(--lumen)" opacity={0.14} />
-              <circle
-                cx={x}
-                cy={y}
-                r={2.2}
-                fill="var(--lumen)"
-                className="animate-twinkle"
-                style={{ animationDelay: `${i * 0.7}s` }}
-              />
-            </g>
-          ))}
-        </svg>
-      </section>
-
-      {/* CTA final */}
-      <section className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-5 py-20 text-center sm:px-8 sm:py-28 lg:px-10">
-        <h2 className="font-display text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
-          Tu próximo evento merece{" "}
-          <em className="font-serif text-primary italic">más que tarjetas</em>
-        </h2>
-        <Button
-          asChild
-          size="lg"
-          className="node-glow h-13 w-full rounded-full px-8 text-base sm:w-auto"
-        >
-          <Link href="/login">Crea tu constelación</Link>
-        </Button>
-      </section>
+        </section>
+      </main>
 
       <footer className="relative z-10 flex items-center justify-between gap-4 border-t border-border px-5 py-6 font-mono text-xs text-muted-foreground sm:px-8 lg:px-10">
         <span>
