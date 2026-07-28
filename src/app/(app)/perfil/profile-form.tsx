@@ -46,7 +46,7 @@ export function ProfileForm({
       />
       <input type="hidden" name="intents" value={serializeChoices(intents)} />
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 md:grid md:grid-cols-2 md:gap-6">
         <div className="flex flex-col gap-2">
           <label
             htmlFor="name"
@@ -112,7 +112,7 @@ export function ProfileForm({
       <Button
         type="submit"
         size="lg"
-        className="node-glow h-12 rounded-full text-base"
+        className="node-glow h-12 rounded-full text-base md:w-fit md:px-10"
       >
         Guardar
       </Button>

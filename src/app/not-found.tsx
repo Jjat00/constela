@@ -9,9 +9,8 @@ export default function NotFound() {
       <p className="relative z-10 font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
         [ 404 ]
       </p>
-      <h1 className="font-display max-w-md text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-        Esta estrella no está en el{" "}
-        <em className="font-serif font-normal text-primary italic">mapa</em>
+      <h1 className="max-w-md text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+        Esta estrella no está en el <span className="text-lavanda">mapa</span>
       </h1>
       <p className="max-w-xs text-sm leading-6 text-muted-foreground">
         El enlace o el QR que abriste no lleva a ningún lado. Puede que el
@@ -22,7 +21,7 @@ export default function NotFound() {
         size="lg"
         className="node-glow h-12 w-full max-w-xs rounded-full px-7 sm:w-auto"
       >
-        <Link href="/home">Ir a mi constelación</Link>
+        <Link href="/home">Ir a mi universo</Link>
       </Button>
     </main>
   );

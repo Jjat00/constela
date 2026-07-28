@@ -47,14 +47,14 @@ set headline = d.headline,
     intents = d.intents,
     onboarded_at = now()
 from (values
-  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · Go y Postgres',    'backend',        array['go','postgres','apis'],                array['conocer-gente'],                 'https://i.pravatar.cc/100?img=12'),
-  ('a0000000-0000-4000-8000-000000000002'::uuid, 'Product manager en fintech', 'product-manager',array['fintech','saas','carrera'],            array['contratando'],                   'https://i.pravatar.cc/100?img=32'),
-  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend · React y diseño',  'frontend',       array['react','design-systems','performance'],array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=53'),
-  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data science · LLMs',        'data-scientist', array['llms','rag','ia'],                     array['ofrezco-mentoria'],              'https://i.pravatar.cc/100?img=47'),
-  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Móvil · Flutter',            'movil',          array['swift','kotlin','ia'],                 array['busco-clientes'],                'https://i.pravatar.cc/100?img=15'),
-  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto',     'product-design', array['design-systems','accesibilidad'],      array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=45'),
-  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · Kubernetes',           'devops',         array['kubernetes','cloud','open-source'],    array['conocer-gente'],                 'https://i.pravatar.cc/100?img=68'),
-  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech con IA',  'founder',        array['edtech','llms','startups'],            array['busco-inversion','contratando'], 'https://i.pravatar.cc/100?img=25')
+  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · APIs y datos',      'backend',        array['backend','datos','ia'],                array['conocer-gente'],                 'https://i.pravatar.cc/100?img=12'),
+  ('a0000000-0000-4000-8000-000000000002'::uuid, 'Product manager en fintech',  'product-manager',array['producto','fintech','carrera'],        array['contratando'],                   'https://i.pravatar.cc/100?img=32'),
+  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend con ojo de diseño',  'frontend',       array['frontend','diseno','carrera'],         array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=53'),
+  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data science · IA aplicada',  'data-scientist', array['ia','datos','educacion'],              array['ofrezco-mentoria'],              'https://i.pravatar.cc/100?img=47'),
+  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Growth y comunidad',          'marketing',      array['marketing','comunidad','startups'],    array['busco-clientes'],                'https://i.pravatar.cc/100?img=15'),
+  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto',      'product-design', array['diseno','producto'],                   array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=45'),
+  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · plataforma',            'devops',         array['infraestructura','open-source'],       array['conocer-gente'],                 'https://i.pravatar.cc/100?img=68'),
+  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech con IA',   'founder',        array['startups','educacion','ia'],           array['busco-inversion','contratando'], 'https://i.pravatar.cc/100?img=25')
 ) as d(id, headline, role, tags, intents, avatar)
 where p.id = d.id;
 

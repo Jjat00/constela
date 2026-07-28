@@ -42,13 +42,11 @@ type SimNode = GraphNode & {
   fy?: number;
 };
 
-// Universo real (DESIGN.md v3): el tú es un sol; el resto, estrellas con
-// clase espectral estable y magnitud según conexiones. Las líneas son
-// trazo de atlas (blanco azulado) y los triángulos cerrados, gas H-alfa.
-const SOL = "#F5B45C";
+// Cinematic Universe (DESIGN.md v4): el tú es un sol dorado; el resto,
+// estrellas con clase espectral estable y magnitud según conexiones. Las
+// líneas son filamentos de atlas (blanco azulado) y los triángulos, H-alfa.
+const SOL = "#FFD97A";
 const SOL_CORE = "#FFF6E3";
-const LINE = "rgba(205, 216, 255, 0.4)";
-const LINE_DIM = "rgba(205, 216, 255, 0.07)";
 const HALFA = "240, 105, 159"; // rgb de --halfa, para armar alphas
 
 function hexA(hex: string, alpha: number) {
@@ -159,6 +157,17 @@ export function ConstellationGraph({
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     [],
   );
+
+  // La constelación se dibuja al entrar (~1.8s): los filamentos aparecen en
+  // fundido. Con calma pedida, estado final directo.
+  const mountAt = useRef(0);
+  useEffect(() => {
+    mountAt.current = performance.now();
+  }, []);
+  const drawInFade = () =>
+    reducedMotion || mountAt.current === 0
+      ? 1
+      : Math.min(1, (performance.now() - mountAt.current) / 1800);
 
   useEffect(() => {
     let mounted = true;
@@ -361,14 +370,17 @@ export function ConstellationGraph({
                 : String(e);
             const a = end(link.source);
             const b = end(link.target);
+            const fade = drawInFade();
             // Una línea solo brilla si sus dos extremos siguen encendidos
             const lit =
               !matchedIds ||
               (isLit(a, myId, matchedIds) && isLit(b, myId, matchedIds));
-            if (!lit) return LINE_DIM;
+            if (!lit) return `rgba(205, 216, 255, ${0.07 * fade})`;
             // La arista que cierra un triángulo se ioniza en H-alfa
             const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-            return triangleEdges.has(key) ? `rgba(${HALFA}, 0.55)` : LINE;
+            return triangleEdges.has(key)
+              ? `rgba(${HALFA}, ${0.55 * fade})`
+              : `rgba(205, 216, 255, ${0.4 * fade})`;
           }}
           linkWidth={0.8}
           // El gas ionizado de los cierres triádicos, debajo de líneas y estrellas
@@ -393,7 +405,7 @@ export function ConstellationGraph({
               ctx.lineTo(nb.x ?? 0, nb.y ?? 0);
               ctx.lineTo(nc.x ?? 0, nc.y ?? 0);
               ctx.closePath();
-              ctx.fillStyle = `rgba(${HALFA}, 0.07)`;
+              ctx.fillStyle = `rgba(${HALFA}, ${0.07 * drawInFade()})`;
               ctx.fill();
             }
           }}
@@ -523,12 +535,18 @@ export function ConstellationGraph({
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary font-display text-xl font-bold text-primary-foreground">
-                    {selected.name?.charAt(0)?.toUpperCase() ?? "✦"}
+                  <div
+                    className="flex size-14 shrink-0 items-center justify-center rounded-full border bg-card text-xl font-bold"
+                    style={{
+                      color: isMeSelected ? SOL : spectrumOf(selected.id).halo,
+                      borderColor: `${isMeSelected ? SOL : spectrumOf(selected.id).halo}66`,
+                    }}
+                  >
+                    {selected.name?.charAt(0)?.toUpperCase() ?? "?"}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <SheetTitle className="font-display text-xl">
+                  <SheetTitle className="text-xl">
                     {isMeSelected ? "Tu estrella" : selected.name}
                   </SheetTitle>
                   <SheetDescription>

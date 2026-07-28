@@ -35,16 +35,13 @@ export default async function MyQrPage() {
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
           [ tu QR personal ]
         </p>
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          Que te{" "}
-          <em className="font-serif font-normal text-primary italic">
-            escaneen
-          </em>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Que te <span className="text-sol">escaneen</span>
         </h1>
       </div>
 
-      {/* Papel iluminado: el QR manda, ocupa todo el ancho útil del teléfono */}
-      <div className="node-glow w-full max-w-[min(20rem,78vw)] rounded-3xl bg-[#F5F3EE] p-5 sm:max-w-sm sm:p-6">
+      {/* Papel iluminado: el QR manda — y es tuyo, así que brilla dorado */}
+      <div className="sol-glow w-full max-w-[min(20rem,78vw)] rounded-3xl bg-[#F5F3EE] p-5 sm:max-w-sm sm:p-6">
         <div
           className="[&_svg]:h-auto [&_svg]:w-full"
           dangerouslySetInnerHTML={{ __html: svg }}
@@ -52,11 +49,11 @@ export default async function MyQrPage() {
       </div>
 
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <p className="font-display text-lg font-semibold">{profile.name}</p>
+        <p className="text-lg font-semibold">{profile.name}</p>
         {eventName ? (
           <p className="max-w-xs font-mono text-xs leading-5 text-muted-foreground">
             quien lo escanee entra a{" "}
-            <span className="text-primary">{eventName}</span> y quedan
+            <span className="text-lavanda">{eventName}</span> y quedan
             conectados
           </p>
         ) : (

@@ -52,7 +52,7 @@ Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 ## Brand Commitments
 
 - Nombre **Constela** (de "constelación", usado como verbo); wordmark siempre en minúscula: `constela✦`; el nombre nunca se traduce.
-- **DESIGN.md (v3 «universo real»)** es la autoridad visual vigente: cine espacial cálido, física estelar real como sistema de color, semántica cósmica (evento = galaxia, tú = sol, magnitud = conexiones); el grafo ES la marca; dark-only. (Reemplazó a la v2 «cielo nocturno» el 2026-07-28 por decisión del usuario.)
+- **DESIGN.md (v4 «Cinematic Universe»)** es la autoridad visual vigente: command center sobre un cosmos vivo a pantalla completa, glassmorphism, chrome violeta nebulosa con el oro reservado para «tú», tipografía Geist-led, física estelar y semántica cósmica intactas (evento = galaxia, tú = sol, magnitud = conexiones); el grafo ES la marca; dark-only. (Reemplazó a la v3 «universo real» el 2026-07-28, fijado por el usuario con imagen de referencia y master prompt propios.)
 - Tagline: **"El networking que por fin se ve"**. Voz cálida y editorial, siempre en español.
 
 ## Evidence on Hand

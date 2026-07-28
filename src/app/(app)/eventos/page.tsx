@@ -55,29 +55,26 @@ export default async function EventsPage() {
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
           [ tus eventos ]
         </p>
-        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          Donde{" "}
-          <em className="font-serif font-normal text-primary italic">
-            constelas
-          </em>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Donde <span className="text-lavanda">constelas</span>
         </h1>
         {myEvents.length > 0 && (
           <p className="text-sm leading-6 text-muted-foreground">
             {myEvents.length === 1
-              ? "Estás en una constelación."
-              : `Estás en ${myEvents.length} constelaciones.`}{" "}
-            Cada evento tiene su propia red — tus conexiones no se mezclan entre
-            uno y otro.
+              ? "Estás en una galaxia."
+              : `Estás en ${myEvents.length} galaxias.`}{" "}
+            Cada evento es una galaxia con su propia constelación — tus
+            conexiones no se mezclan entre una y otra.
           </p>
         )}
       </header>
 
       {myEvents.length === 0 ? (
-        <section className="flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl border border-dashed border-border/70 px-6 py-14 text-center">
+        <section className="glass flex flex-1 flex-col items-center justify-center gap-6 rounded-3xl px-6 py-14 text-center">
           {/* Una galaxia lejana: el evento que aún no existe */}
           <Galaxia size={88} className="opacity-80" />
           <div className="flex max-w-xs flex-col gap-2">
-            <p className="font-display text-xl font-semibold">
+            <p className="text-xl font-semibold">
               Aún no estás en ningún evento
             </p>
             <p className="text-sm leading-6 text-muted-foreground">
@@ -102,13 +99,13 @@ export default async function EventsPage() {
               return (
                 <li
                   key={event.id}
-                  className={`relative flex flex-col gap-4 overflow-hidden rounded-2xl border bg-card p-5 ${
-                    isActive ? "border-primary/30" : "border-border"
+                  className={`glass relative flex flex-col gap-4 overflow-hidden rounded-3xl p-5 ${
+                    isActive ? "border-primary/40" : ""
                   }`}
                 >
-                  {/* Cada evento es una galaxia (DESIGN.md v3) */}
+                  {/* Cada evento es una galaxia (DESIGN.md v4) */}
                   <Galaxia
-                    seed={index + 2}
+                    seed={event.slug.charCodeAt(0)}
                     size={96}
                     className={`absolute -top-6 -right-6 ${
                       isActive ? "opacity-90" : "opacity-50"
@@ -116,11 +113,11 @@ export default async function EventsPage() {
                   />
                   <div className="relative flex flex-col gap-1.5">
                     {isActive && (
-                      <p className="font-mono text-[10px] tracking-[0.3em] text-primary uppercase">
+                      <p className="font-mono text-[10px] tracking-[0.3em] text-lavanda uppercase">
                         [ estás aquí ]
                       </p>
                     )}
-                    <h2 className="font-display text-xl leading-tight font-bold tracking-tight text-balance">
+                    <h2 className="text-xl leading-tight font-bold tracking-tight text-balance">
                       {event.name}
                     </h2>
                     <p className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
@@ -130,7 +127,7 @@ export default async function EventsPage() {
                   </div>
 
                   <p className="font-mono text-sm">
-                    <span className="text-primary">{stars}</span>{" "}
+                    <span className="text-lavanda">{stars}</span>{" "}
                     <span className="text-muted-foreground">
                       {stars === 1 ? "estrella" : "estrellas"} · {links}{" "}
                       {links === 1 ? "conexión tuya" : "conexiones tuyas"}
@@ -171,7 +168,7 @@ export default async function EventsPage() {
             className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary sm:mt-2"
           >
             <Plus className="size-4" aria-hidden />
-            empezar otra constelación
+            encender otra galaxia
           </Link>
         </>
       )}

@@ -3,28 +3,28 @@ import { Button } from "@/components/ui/button";
 import { CosmicSky, Planeta } from "@/components/cosmos";
 
 /*
- * CONTRATO DE DIRECCIÓN — v3 «universo real» (DESIGN.md v3)
+ * CONTRATO DE DIRECCIÓN — v4 «Cinematic Universe» (DESIGN.md v4)
  *
- * THESIS: el networking que "por fin se ve" se demuestra con un cielo
- * físicamente creíble, no se afirma; rechazo del hero SaaS (mockup + badges).
- * OWN-WORLD: negro espacio con velo violeta; estrellas de núcleo blanco,
- * halo espectral y picos de difracción; el "tú" es un sol dorado con corona;
- * líneas de constelación azul pálido; triángulo H-alfa; grain de cine;
- * Bricolage + Instrument itálica dorada + mono de observatorio.
- * STORY: entender que conectar dibuja un cielo → creer que se ve →
- * crear tu constelación.
- * FIRST VIEWPORT: titular arriba-izquierda, CTA sol, constelación REAL
- * centrada bajo el copy con el sol "tú"; cielo profundo detrás.
- * FORM: mundo pinneado por el usuario (universo super realista): sin
- * tómbola. Cierre de página: el CTA final amanece sobre el limbo de un
- * planeta — el próximo evento como mundo nuevo.
+ * THESIS: tu red del evento ES un universo y se demuestra dibujándolo en
+ * vivo, no afirmándolo; rechazo del hero SaaS (mockup + badges).
+ * OWN-WORLD: deep space #050816 con nebulosas en deriva; estrellas de núcleo
+ * blanco, halo espectral y difracción; el "tú" es un sol dorado #FFD97A;
+ * chrome y CTAs nebula purple #6E63FF; cristal con blur; Geist display
+ * gigante + mono de observatorio; grain de cine.
+ * STORY: ver el universo dibujarse → entender que cada encuentro es una
+ * estrella → entrar a explorar el propio.
+ * FIRST VIEWPORT: titular "Tu red es tu universo." arriba-izquierda, CTA
+ * violeta "Explorar universo", constelación REAL con el sol "tú" bajo el
+ * copy; cielo profundo con nebulosas detrás.
+ * FORM: dirección pineada por el usuario (imagen + master prompt); cierre:
+ * el CTA final amanece sobre el limbo de un planeta.
  */
 
 // Constelación del hero. Cada nodo lleva su clase espectral (halo); el
 // índice 1 eres tú: un sol dorado. El núcleo de toda estrella es blanco.
 const NODES = [
   { x: 22, y: 60, r: 1.0, halo: "#CDD8FF", core: "#F8FAFF" },
-  { x: 38, y: 34, r: 1.5, halo: "#F5B45C", core: "#FFF6E3" }, // tú — sol
+  { x: 38, y: 34, r: 1.5, halo: "#FFD97A", core: "#FFF6E3" }, // tú — sol
   { x: 58, y: 48, r: 1.1, halo: "#F4F2EE", core: "#FFFFFF" },
   { x: 72, y: 26, r: 0.85, halo: "#9DB4FF", core: "#EEF2FF" },
   { x: 84, y: 58, r: 0.75, halo: "#FFB380", core: "#FFF3E6" },
@@ -49,7 +49,7 @@ const STEPS = [
   {
     n: "02",
     title: "Anota",
-    body: "«Hablamos de RAG en producción». Una línea opcional en el momento, que vale oro una semana después del evento.",
+    body: "«Hablamos de diseño de producto — le presento a Ana». Una línea opcional en el momento, que vale oro una semana después del evento.",
   },
   {
     n: "03",
@@ -135,18 +135,18 @@ function HeroStar({
 export default function Home() {
   return (
     <div className="grain relative flex flex-1 flex-col overflow-x-clip">
-      {/* El cielo: estrellas espectrales, Vía Láctea y nebulosas tenues */}
-      <CosmicSky seed={7} stars={170} />
+      {/* El cielo: un universo vivo — estrellas, Vía Láctea, nebulosas en deriva */}
+      <CosmicSky seed={7} stars={170} nebulas="rich" shootingStar />
 
       {/* Nav */}
       <header className="relative z-10 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5 lg:px-10">
-        <span className="font-display text-xl font-semibold tracking-tight">
-          constela<span className="text-primary">✦</span>
+        <span className="text-xl font-semibold tracking-tight">
+          constela<span className="text-sol">✦</span>
         </span>
         <Button asChild size="sm" className="h-10 rounded-full px-4">
           <Link href="/login">
             <span className="sm:hidden">Entrar</span>
-            <span className="hidden sm:inline">Crea tu constelación</span>
+            <span className="hidden sm:inline">Explorar universo</span>
           </Link>
         </Button>
       </header>
@@ -155,21 +155,18 @@ export default function Home() {
         {/* Hero */}
         <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-7 px-5 pt-12 pb-16 sm:gap-6 sm:px-8 sm:pt-14 sm:pb-20 lg:px-10">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            [ red viva para eventos presenciales ]
+            [ el networking que por fin se ve ]
           </p>
 
-          <h1 className="font-display max-w-4xl text-[clamp(2.8rem,8vw,5.5rem)] leading-[0.98] font-bold tracking-tight text-balance">
-            El networking que por fin{" "}
-            <em className="font-serif font-normal text-primary italic">
-              se ve
-            </em>
-            .
+          <h1 className="max-w-4xl text-[clamp(2.8rem,8vw,5.5rem)] leading-[0.98] font-bold tracking-tight text-balance">
+            Tu red es{" "}
+            <span className="text-glow text-lavanda">tu universo.</span>
           </h1>
 
           <p className="max-w-xl text-lg leading-8 text-muted-foreground sm:text-xl">
-            Conecta con un escaneo. Cada persona que conoces se vuelve una
-            estrella, y tu red del evento se dibuja sola — con las conexiones de
-            tus conexiones, en vivo.
+            Cada persona que conoces se vuelve una estrella; cada encuentro
+            dibuja una línea. Conecta con un escaneo y mira la red del evento
+            crecer en vivo.
           </p>
 
           <div className="flex w-full flex-wrap items-center gap-5 sm:w-auto">
@@ -178,7 +175,7 @@ export default function Home() {
               size="lg"
               className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
             >
-              <Link href="/login">Crea tu constelación</Link>
+              <Link href="/login">Explorar universo</Link>
             </Button>
             <a
               href="#como-funciona"
@@ -206,9 +203,9 @@ export default function Home() {
                 <feGaussianBlur stdDeviation="1.3" />
               </filter>
               <radialGradient id="sun-corona">
-                <stop offset="0%" stopColor="#F5B45C" stopOpacity="0.5" />
-                <stop offset="45%" stopColor="#F5B45C" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#F5B45C" stopOpacity="0" />
+                <stop offset="0%" stopColor="#FFD97A" stopOpacity="0.5" />
+                <stop offset="45%" stopColor="#FFD97A" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#FFD97A" stopOpacity="0" />
               </radialGradient>
             </defs>
 
@@ -284,22 +281,17 @@ export default function Home() {
           id="como-funciona"
           className="relative z-10 mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10"
         >
-          <h2 className="font-display mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
-            Tres gestos,{" "}
-            <em className="font-serif font-normal text-primary italic">
-              una constelación
-            </em>
+          <h2 className="mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
+            Tres gestos, <span className="text-lavanda">una constelación</span>
           </h2>
-          <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {STEPS.map((s) => (
               <article
                 key={s.n}
-                className="bg-background/80 p-6 backdrop-blur-[2px] transition-colors hover:bg-card sm:p-8"
+                className="glass rounded-3xl p-6 transition-colors hover:border-primary/30 sm:p-8"
               >
-                <span className="font-mono text-sm text-primary">{s.n}</span>
-                <h3 className="font-display mt-3 mb-3 text-2xl font-semibold">
-                  {s.title}
-                </h3>
+                <span className="font-mono text-sm text-lavanda">{s.n}</span>
+                <h3 className="mt-3 mb-3 text-2xl font-semibold">{s.title}</h3>
                 <p className="text-sm leading-7 text-muted-foreground">
                   {s.body}
                 </p>
@@ -314,17 +306,14 @@ export default function Home() {
             <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
               [ cierre triádico ]
             </p>
-            <h2 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-5xl">
-              Cuando el círculo{" "}
-              <em className="font-serif font-normal text-halfa italic">
-                se cierra
-              </em>
+            <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-5xl">
+              Cuando el círculo <span className="text-halfa">se cierra</span>
             </h2>
             <p className="max-w-md leading-8 text-muted-foreground">
               Conociste a alguien, que conoció a alguien… que tú también
               conociste. Ese triángulo tiene nombre en teoría de redes — y aquí
-              tiene luz propia. Constela lo detecta y te sugiere el siguiente:
-              «tú y Ana conocieron ambos a Carlos, y ustedes aún no».
+              tiene luz propia: Constela lo detecta y lo enciende en rosa
+              H-alfa, la señal de un grupo que de verdad se encontró.
             </p>
           </div>
           {/* El triángulo ionizado: tres estrellas reales y gas H-alfa dentro */}
@@ -357,7 +346,7 @@ export default function Home() {
               strokeWidth="0.5"
             />
             {[
-              [50, 16, 2.4, "#F5B45C", "#FFF6E3"],
+              [50, 16, 2.4, "#FFD97A", "#FFF6E3"],
               [18, 78, 2, "#CDD8FF", "#F8FAFF"],
               [82, 78, 2, "#9DB4FF", "#EEF2FF"],
             ].map(([x, y, r, halo, core], i) => (
@@ -406,18 +395,16 @@ export default function Home() {
         {/* CTA final: amanecer sobre un mundo nuevo */}
         <section className="relative z-10 overflow-hidden">
           <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-5 pt-20 pb-44 text-center sm:px-8 sm:pt-28 sm:pb-56">
-            <h2 className="font-display text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
+            <h2 className="text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
               Tu próximo evento merece{" "}
-              <em className="font-serif text-primary italic">
-                más que tarjetas
-              </em>
+              <span className="text-lavanda">más que tarjetas</span>
             </h2>
             <Button
               asChild
               size="lg"
               className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
             >
-              <Link href="/login">Crea tu constelación</Link>
+              <Link href="/login">Explorar universo</Link>
             </Button>
           </div>
           {/* El limbo del planeta: el próximo evento como mundo por conocer */}
@@ -430,7 +417,7 @@ export default function Home() {
 
       <footer className="relative z-10 flex items-center justify-between gap-4 border-t border-border px-5 py-6 font-mono text-xs text-muted-foreground sm:px-8 lg:px-10">
         <span>
-          constela<span className="text-primary">✦</span> 2026
+          constela<span className="text-sol">✦</span> 2026
         </span>
         <span>hecho para encontrarse</span>
       </footer>

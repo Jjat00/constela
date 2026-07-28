@@ -17,11 +17,8 @@ export default async function NewEventPage({
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ nuevo evento ]
           </p>
-          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Enciende una{" "}
-            <em className="font-serif font-normal text-primary italic">
-              constelación
-            </em>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Enciende una <span className="text-lavanda">galaxia</span>
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Nombre y fecha, nada más. El evento nace con su propio QR para
@@ -37,7 +34,10 @@ export default async function NewEventPage({
           </p>
         )}
 
-        <form action={createEvent} className="flex flex-col gap-4">
+        <form
+          action={createEvent}
+          className="glass flex flex-col gap-4 rounded-3xl p-5 sm:p-6"
+        >
           <div className="flex flex-col gap-2">
             <label
               htmlFor="name"

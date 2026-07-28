@@ -102,12 +102,17 @@ export function CosmicSky({
   stars = 150,
   milkyWay = true,
   nebulas = "faint",
+  shootingStar = false,
   className,
 }: {
   seed?: number;
   stars?: number;
   milkyWay?: boolean;
-  nebulas?: "none" | "faint";
+  /** `rich` (v4): nebulosas violeta + H-alfa + azul en deriva lenta — el
+   *  fondo del command center es un universo vivo, no una imagen. */
+  nebulas?: "none" | "faint" | "rich";
+  /** Una estrella fugaz ocasional (ciclo largo, casi siempre oculta). */
+  shootingStar?: boolean;
   className?: string;
 }) {
   const field = makeStars(seed, stars);
@@ -150,6 +155,51 @@ export function CosmicSky({
             }}
           />
         </>
+      )}
+      {nebulas === "rich" && (
+        <>
+          {/* Reflexión violeta: la luz ambiental del command center */}
+          <div
+            className="animate-drift absolute -top-40 right-[-12%] h-[34rem] w-[48rem] rounded-full opacity-[0.14] blur-3xl"
+            style={{
+              background:
+                "radial-gradient(closest-side, oklch(0.58 0.21 281 / 75%), transparent 70%)",
+            }}
+          />
+          {/* Emisión H-alfa lejana */}
+          <div
+            className="animate-drift absolute top-[38%] left-[-14%] h-[28rem] w-[40rem] rounded-full opacity-[0.1] blur-3xl"
+            style={{
+              background:
+                "radial-gradient(closest-side, oklch(0.68 0.17 355 / 70%), transparent 70%)",
+              animationDelay: "-16s",
+              animationDirection: "reverse",
+            }}
+          />
+          {/* Reflexión azul fría */}
+          <div
+            className="animate-drift absolute bottom-[-18%] right-[22%] h-[26rem] w-[38rem] rounded-full opacity-[0.09] blur-3xl"
+            style={{
+              background:
+                "radial-gradient(closest-side, oklch(0.7 0.15 250 / 70%), transparent 70%)",
+              animationDelay: "-32s",
+            }}
+          />
+        </>
+      )}
+
+      {/* Estrella fugaz: cruza una vez por ciclo y muere */}
+      {shootingStar && (
+        <div className="animate-shoot absolute top-[16%] right-[6%] h-px w-24 opacity-0">
+          <div
+            className="h-full w-full"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(248,250,255,0.9))",
+              boxShadow: "0 0 6px rgba(248,250,255,0.6)",
+            }}
+          />
+        </div>
       )}
 
       {/* Estrellas: muchas débiles, pocas brillantes (ley de potencias) */}
@@ -306,7 +356,7 @@ export function Sol({
         className="animate-corona absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(closest-side, oklch(0.81 0.12 75 / 32%), transparent 72%)",
+            "radial-gradient(closest-side, oklch(0.89 0.11 90 / 30%), transparent 72%)",
           transform: "scale(3)",
         }}
       />
@@ -315,18 +365,18 @@ export function Sol({
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(closest-side, oklch(0.84 0.13 78 / 55%), transparent 70%)",
+            "radial-gradient(closest-side, oklch(0.91 0.11 92 / 52%), transparent 70%)",
           transform: "scale(1.7)",
         }}
       />
-      {/* Fotosfera: luz real con oscurecimiento de limbo */}
+      {/* Fotosfera: luz real con oscurecimiento de limbo (golden star v4) */}
       <div
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(circle at 42% 38%, #FFF9EE 0%, #FFDFA3 28%, #F5B45C 58%, #D98A2B 82%, #A96317 100%)",
+            "radial-gradient(circle at 42% 38%, #FFF9E8 0%, #FFE9A8 28%, #FFD97A 58%, #E3A93E 82%, #B27818 100%)",
           boxShadow:
-            "0 0 18px oklch(0.81 0.12 75 / 65%), inset -6px -8px 18px rgba(120,60,10,0.35)",
+            "0 0 18px oklch(0.89 0.11 90 / 60%), inset -6px -8px 18px rgba(120,60,10,0.35)",
         }}
       />
       {/* Destello horizontal fino, de lente de cine */}
@@ -335,7 +385,7 @@ export function Sol({
         style={{
           width: size * 2.8,
           background:
-            "linear-gradient(90deg, transparent, oklch(0.9 0.09 80 / 45%), transparent)",
+            "linear-gradient(90deg, transparent, oklch(0.93 0.08 92 / 45%), transparent)",
         }}
       />
     </div>
@@ -409,10 +459,11 @@ export function Galaxia({
       className={className}
     >
       <defs>
+        {/* Núcleo cálido en espectral K: el oro identidad (#FFD97A) es solo «tú» */}
         <radialGradient id={ids.core}>
           <stop offset="0%" stopColor="#FFF6E3" stopOpacity="0.95" />
-          <stop offset="35%" stopColor="#F5B45C" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#F5B45C" stopOpacity="0" />
+          <stop offset="35%" stopColor="#FFD9A8" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#FFD9A8" stopOpacity="0" />
         </radialGradient>
         <radialGradient id={ids.arm}>
           <stop offset="0%" stopColor="#CDD8FF" stopOpacity="0.5" />

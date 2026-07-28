@@ -22,7 +22,7 @@ export default async function LoginPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8">
-      <CosmicSky seed={21} stars={140} />
+      <CosmicSky seed={21} stars={140} nebulas="rich" />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-8 sm:max-w-md">
         <div className="flex flex-col gap-3">
@@ -31,11 +31,8 @@ export default async function LoginPage({
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ entrar ]
           </p>
-          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Tu constelación{" "}
-            <em className="font-serif font-normal text-primary italic">
-              te espera
-            </em>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Tu universo <span className="text-lavanda">te espera</span>
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Un toque y adentro: tu nombre y tu foto llegan solos.

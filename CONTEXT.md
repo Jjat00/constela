@@ -33,8 +33,16 @@ El código del evento (`/e/{slug}`); abrirlo te hace asistente automáticamente 
 _Avoid_: Código de invitación, link de registro
 
 **Constelación**:
-El grafo completo de un evento: todas las estrellas asistentes (con o sin conexiones) y todas las conexiones entre ellas, sin límite de profundidad, visible para cualquier asistente. Estando tú solo, ya es una constelación de una estrella.
+El grafo completo de un evento: todas las estrellas asistentes (con o sin conexiones) y todas las conexiones entre ellas, sin límite de profundidad, visible para cualquier asistente. Estando tú solo, ya es una constelación de una estrella. Es el **dibujo** que vive dentro de una galaxia.
 _Avoid_: Red, grafo (en UI), dashboard, "mi red hasta 2º grado"
+
+**Galaxia**:
+El evento visto en el cosmos: el **lugar**. En UI, «galaxia» nombra al evento como sitio al que entras o exploras («estás en», «explora galaxias») y «constelación» nombra al dibujo de estrellas y conexiones que ocurre dentro de ella. Nunca se usan como sinónimos.
+_Avoid_: Usar galaxia para el grafo, o constelación para el evento
+
+**Universo**:
+Todo lo tuyo en Constela: tus galaxias (eventos) y las constelaciones dentro de ellas. La pantalla principal se llama «Universo» y muestra tu galaxia activa.
+_Avoid_: Dashboard, inicio, feed
 
 **Rol**:
 Lo que haces, una sola etiqueta del catálogo ("backend", "founder", "ui design"). Es la etiqueta con la que otros deciden acercarse.
