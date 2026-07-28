@@ -21,6 +21,7 @@ export async function createEvent(formData: FormData) {
   if (!user) redirect("/login?next=/eventos/nuevo");
 
   const name = String(formData.get("name") ?? "").trim();
+  const city = String(formData.get("city") ?? "").trim();
   const date = String(formData.get("date") ?? "").trim();
   if (!name) redirect("/eventos/nuevo?error=falta-nombre");
 
@@ -31,6 +32,7 @@ export async function createEvent(formData: FormData) {
   const { error } = await supabase.from("events").insert({
     slug,
     name,
+    city: city || null,
     starts_at: date ? new Date(`${date}T09:00:00-05:00`).toISOString() : null,
     created_by: user.id,
   });

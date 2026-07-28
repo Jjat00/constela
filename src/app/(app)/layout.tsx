@@ -1,21 +1,22 @@
 /*
  * Contrato de dirección (Impeccable · new-work §5)
  *
- * THESIS: la app es un command center dentro del universo del evento; rechaza
- * el patrón "páginas con header" del SaaS.
- * OWN-WORLD: cosmos vivo a pantalla completa (estrellas espectrales, nebulosas
- * en deriva, planeta-horizonte) + cristal (blur, borde blanco 8%) + chrome
- * nebula purple #6E63FF; el oro #FFD97A existe solo para "tú". Geist-led.
+ * THESIS: la app es una sala de observación dentro del universo del evento;
+ * rechaza el patrón "páginas con header" del SaaS.
+ * OWN-WORLD: cosmos casi monocromo a pantalla completa (#0A0C12, nebulosas
+ * grises, estrellas blancas) + cristal (blur 26, borde blanco 8%) + chrome
+ * cosmic blue #4EA8FF / celeste #9DC8FF; el oro #FFD97A existe solo para
+ * "tú"; H-alfa #F0699F solo para cierres triádicos. Geist-led.
  * STORY: quien entra ve su constelación real respirando y entiende que su red
  * ES este universo; la única forma de crecerlo es encontrarse en persona.
  * FIRST VIEWPORT: sidebar de cristal izquierda, grafo protagonista al centro
- * con "Tu red es tu universo.", rail derecho de datos reales; móvil = grafo
- * casi completo + barra de pulgar.
- * FORM: dirección pineada por el usuario (imagen de referencia + master
- * prompt, 2026-07-28); sin tirada de concept-seed.
+ * bajo la barra de búsqueda, rail derecho de datos reales; móvil = grafo
+ * casi completo + controles del pulgar.
+ * FORM: dirección pineada por el usuario (proyecto claude.ai/design «Constela
+ * UI design options», Constela.dc.html, 2026-07-28).
  */
 import { AppNav } from "@/components/app-nav";
-import { CosmicSky, Planeta } from "@/components/cosmos";
+import { CosmicSky } from "@/components/cosmos";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
@@ -64,24 +65,14 @@ export default async function AppLayout({
         stars={190}
         milkyWay
         nebulas="rich"
-        shootingStar
         className="fixed inset-0"
-      />
-      {/* Horizonte planetario: escala de cabina orbital, nunca tras el texto */}
-      <Planeta
-        size={640}
-        className="fixed -bottom-[27rem] -left-[16rem] z-0 hidden opacity-80 lg:block"
-      />
-      <Planeta
-        size={430}
-        className="fixed -right-[14rem] -bottom-[19rem] z-0 opacity-70 lg:hidden"
       />
 
       <AppNav identity={identity} />
 
       {/* Móvil: aire para las pills de arriba y la barra del pulgar.
-          Desktop: el sidebar flota a la izquierda. */}
-      <div className="relative z-10 flex flex-1 flex-col pt-[calc(4.25rem+env(safe-area-inset-top))] pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0 lg:pl-[17rem]">
+          Desktop: el sidebar (w-56 + márgenes) flota a la izquierda. */}
+      <div className="relative z-10 flex flex-1 flex-col pt-[calc(4.25rem+env(safe-area-inset-top))] pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0 lg:pl-[16.5rem]">
         {children}
       </div>
     </div>

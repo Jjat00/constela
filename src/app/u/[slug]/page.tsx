@@ -2,11 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CosmicSky, HaloEstelar } from "@/components/cosmos";
 import { AutoConnect } from "./auto-connect";
 
+/**
+ * La estrella detrás de un QR. Sin sesión o si eres tú: la ficha pública.
+ * Con sesión y siendo otra persona: el encuentro completo (diseño 2c) —
+ * <AutoConnect /> traza la arista y celebra con números reales.
+ */
 export default async function PublicProfilePage({
   params,
 }: {
@@ -26,6 +29,9 @@ export default async function PublicProfilePage({
   const catalog = await fetchTagCatalog(supabase);
   const roleLabel = profile.role
     ? labelFor(catalog, "rol", profile.role)
+    : null;
+  const intentLabel = profile.intents?.[0]
+    ? labelFor(catalog, "intencion", profile.intents[0])
     : null;
   const tagLabels = [
     ...((profile.tags ?? []) as string[]).map((slug) =>
@@ -48,9 +54,39 @@ export default async function PublicProfilePage({
   // crear la conexión: redirigir aquí se llevaría al recién llegado antes de
   // que la arista exista, que es justo lo que ese ADR quiere evitar.
 
+  if (user && !isMe) {
+    const { data: myProfile } = await supabase
+      .from("profiles")
+      .select("name, avatar_url")
+      .eq("id", user.id)
+      .single();
+
+    return (
+      <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
+        <CosmicSky seed={41} stars={130} nebulas="faint" />
+        <div className="relative z-10 flex w-full max-w-sm flex-col items-center sm:max-w-md">
+          <AutoConnect
+            slug={slug}
+            peer={{
+              id: profile.id,
+              name: profile.name,
+              avatarUrl: profile.avatar_url,
+              meta:
+                [roleLabel, intentLabel].filter(Boolean).join(" · ") || null,
+            }}
+            me={{
+              name: myProfile?.name ?? "Tú",
+              avatarUrl: myProfile?.avatar_url ?? null,
+            }}
+          />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-      <CosmicSky seed={41} stars={130} />
+      <CosmicSky seed={41} stars={130} nebulas="faint" />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-6 text-center sm:max-w-md sm:gap-7">
         {/* La persona vive dentro de su estrella: el mismo tratamiento
@@ -65,17 +101,17 @@ export default async function PublicProfilePage({
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-primary font-display text-3xl font-bold text-primary-foreground">
+            <div className="flex h-full w-full items-center justify-center bg-card text-3xl font-bold text-estrella-a">
               {profile.name?.charAt(0)?.toUpperCase() ?? "✦"}
             </div>
           )}
         </HaloEstelar>
 
-        <div className="flex flex-col gap-1">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+        <div className="flex flex-col gap-1.5">
+          <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
             [ una estrella de la constelación ]
           </p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-4xl">
             {profile.name}
           </h1>
           {profile.headline && (
@@ -85,33 +121,36 @@ export default async function PublicProfilePage({
 
         {(roleLabel || tagLabels.length > 0) && (
           <div className="flex flex-wrap justify-center gap-2">
-            {roleLabel && <Badge className="text-xs">{roleLabel}</Badge>}
+            {roleLabel && (
+              <span
+                className="chip-star px-3 py-1.5 text-xs font-medium"
+                data-active="true"
+              >
+                {roleLabel}
+              </span>
+            )}
             {tagLabels.map((label) => (
-              <Badge key={label} variant="outline" className="text-xs">
+              <span key={label} className="chip-star px-3 py-1.5 text-xs">
                 {label}
-              </Badge>
+              </span>
             ))}
           </div>
         )}
 
         {isMe ? (
-          <Button
-            asChild
-            variant="outline"
-            className="h-12 w-full rounded-full sm:w-auto sm:px-7"
+          <Link
+            href="/qr"
+            className="chip-star flex h-12 w-full items-center justify-center px-7 text-sm font-medium sm:w-auto"
           >
-            <Link href="/qr">Este eres tú — volver a mi QR</Link>
-          </Button>
-        ) : user ? (
-          <AutoConnect slug={slug} />
+            Este eres tú — volver a mi QR
+          </Link>
         ) : (
-          <Button
-            asChild
-            size="lg"
-            className="node-glow h-12 w-full rounded-full px-7 sm:w-auto"
+          <a
+            href={`/login?next=/u/${slug}`}
+            className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
           >
-            <a href={`/login?next=/u/${slug}`}>Entrar para conectar</a>
-          </Button>
+            Entrar para conectar
+          </a>
         )}
       </div>
     </main>

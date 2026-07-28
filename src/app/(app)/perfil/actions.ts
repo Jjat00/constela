@@ -49,5 +49,6 @@ export async function updateProfile(formData: FormData) {
 
   if (error) redirect("/perfil?error=no-guardado");
 
-  redirect("/home");
+  // Ajustes es un lugar donde te quedas (diseño 3a): confirma sin sacarte
+  redirect("/perfil?ok=1");
 }

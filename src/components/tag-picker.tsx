@@ -92,7 +92,8 @@ export function TagPicker({
               type="button"
               onClick={() => remove(index)}
               aria-label={`Quitar ${choice.label}`}
-              className="node-glow inline-flex min-h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm text-primary-foreground transition-opacity hover:opacity-85"
+              data-active="true"
+              className="chip-star inline-flex min-h-9 items-center gap-1.5 px-3.5 py-1.5 text-sm"
             >
               {choice.label}
               <span aria-hidden className="opacity-70">
@@ -120,7 +121,7 @@ export function TagPicker({
           }
         }}
         placeholder={placeholder}
-        className="h-12 w-full rounded-lg border border-border bg-input/40 px-4 text-base outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary/50"
+        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base outline-none transition-colors placeholder:text-faint focus:border-cosmic/60"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -140,7 +141,7 @@ export function TagPicker({
             type="button"
             onClick={() => pick({ slug: option.slug, label: option.label })}
             className={cn(
-              "inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary",
+              "chip-star inline-flex min-h-11 items-center gap-2 px-3.5 py-2 text-sm",
               !option.isCurated && "border-dashed",
             )}
           >

@@ -1,18 +1,22 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays, Plus, QrCode } from "lucide-react";
+import { Plus, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate } from "@/lib/format";
-import { Button } from "@/components/ui/button";
 import { Galaxia } from "@/components/cosmos";
 
 type Event = {
   id: string;
   name: string;
   slug: string;
+  city: string | null;
   starts_at: string | null;
 };
 
+/**
+ * Constelaciones (diseño 2d): los eventos a los que perteneces, cada uno
+ * una galaxia espiral con su lugar, sus estrellas y su fecha.
+ */
 export default async function EventsPage() {
   const supabase = await createClient();
   const {
@@ -22,7 +26,7 @@ export default async function EventsPage() {
 
   const { data: attendance } = await supabase
     .from("event_attendees")
-    .select("joined_at, events(id, name, slug, starts_at)")
+    .select("joined_at, events(id, name, slug, city, starts_at)")
     .eq("user_id", user.id)
     .order("joined_at", { ascending: false });
 
@@ -50,27 +54,32 @@ export default async function EventsPage() {
     : [new Map<string, number>(), new Map<string, number>()];
 
   return (
-    <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
-      <header className="flex flex-col gap-2">
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-          [ tus eventos ]
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Donde <span className="text-lavanda">constelas</span>
-        </h1>
+    <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-16">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-2.5">
+          <h1 className="text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
+            Constelaciones
+          </h1>
+          {myEvents.length > 0 && (
+            <p className="max-w-xl text-sm leading-6 text-muted-foreground">
+              Cada evento es una galaxia con su propia constelación — tus
+              conexiones no se mezclan entre una y otra.
+            </p>
+          )}
+        </div>
         {myEvents.length > 0 && (
-          <p className="text-sm leading-6 text-muted-foreground">
-            {myEvents.length === 1
-              ? "Estás en una galaxia."
-              : `Estás en ${myEvents.length} galaxias.`}{" "}
-            Cada evento es una galaxia con su propia constelación — tus
-            conexiones no se mezclan entre una y otra.
-          </p>
+          <Link
+            href="/eventos/nuevo"
+            className="btn-cosmic hidden h-12 items-center gap-2.5 px-5.5 text-sm font-medium lg:flex"
+          >
+            <Plus className="size-4 text-estrella-a" aria-hidden />
+            Nueva constelación
+          </Link>
         )}
       </header>
 
       {myEvents.length === 0 ? (
-        <section className="glass flex flex-1 flex-col items-center justify-center gap-6 rounded-3xl px-6 py-14 text-center">
+        <section className="glass flex flex-1 flex-col items-center justify-center gap-6 rounded-4xl px-6 py-14 text-center">
           {/* Una galaxia lejana: el evento que aún no existe */}
           <Galaxia size={88} className="opacity-80" />
           <div className="flex max-w-xs flex-col gap-2">
@@ -82,13 +91,16 @@ export default async function EventsPage() {
               aparecerás aquí. O enciende el tuyo.
             </p>
           </div>
-          <Button asChild size="lg" className="node-glow h-12 rounded-full px-7">
-            <Link href="/eventos/nuevo">Crear un evento</Link>
-          </Button>
+          <Link
+            href="/eventos/nuevo"
+            className="btn-cosmic flex h-12 items-center px-7 text-[15px] font-medium"
+          >
+            Crear una constelación
+          </Link>
         </section>
       ) : (
         <>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {myEvents.map((event, index) => {
               // El más reciente es el que abre `/home` sin `?e=`
               const isActive = index === 0;
@@ -99,64 +111,57 @@ export default async function EventsPage() {
               return (
                 <li
                   key={event.id}
-                  className={`glass relative flex flex-col gap-4 overflow-hidden rounded-3xl p-5 ${
-                    isActive ? "border-primary/40" : ""
-                  }`}
+                  className="glass group flex flex-col rounded-4xl p-5.5 transition-colors hover:border-celeste/35"
                 >
-                  {/* Cada evento es una galaxia (DESIGN.md v4) */}
-                  <Galaxia
-                    seed={event.slug.charCodeAt(0)}
-                    size={96}
-                    className={`absolute -top-6 -right-6 ${
-                      isActive ? "opacity-90" : "opacity-50"
-                    }`}
-                  />
-                  <div className="relative flex flex-col gap-1.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <Galaxia
+                      seed={event.slug.charCodeAt(0)}
+                      size={index === 0 ? 96 : 84}
+                      active={isActive}
+                      tilt={-18 - index * 7}
+                    />
                     {isActive && (
-                      <p className="font-mono text-[10px] tracking-[0.3em] text-lavanda uppercase">
-                        [ estás aquí ]
-                      </p>
+                      <span className="rounded-full border border-sol/30 bg-sol/[0.08] px-2.5 py-1.5 font-mono text-[10px] tracking-[0.16em] text-sol">
+                        ESTÁS AQUÍ
+                      </span>
                     )}
-                    <h2 className="text-xl leading-tight font-bold tracking-tight text-balance">
-                      {event.name}
-                    </h2>
-                    <p className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                      <CalendarDays className="size-3.5" aria-hidden />
-                      {date ?? "fecha por definir"}
-                    </p>
                   </div>
 
-                  <p className="font-mono text-sm">
-                    <span className="text-lavanda">{stars}</span>{" "}
-                    <span className="text-muted-foreground">
-                      {stars === 1 ? "estrella" : "estrellas"} · {links}{" "}
-                      {links === 1 ? "conexión tuya" : "conexiones tuyas"}
-                    </span>
+                  <h2 className="mt-5 text-xl leading-tight font-semibold tracking-[-0.02em] text-balance">
+                    {event.name}
+                  </h2>
+                  <p className="mt-2 text-[13px] leading-snug text-muted-foreground">
+                    {event.city ?? date ?? "lugar por definir"}
                   </p>
 
-                  <div className="mt-auto flex items-center gap-2">
-                    <Button
-                      asChild
-                      variant={isActive ? "default" : "secondary"}
-                      className="h-11 flex-1 rounded-full"
+                  <div className="mt-5 flex items-center gap-4 border-t border-white/5 pt-4">
+                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+                      {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"}
+                      {links > 0 ? ` · ${links} ${links === 1 ? "TUYA" : "TUYAS"}` : ""}
+                    </span>
+                    <span className="ml-auto font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
+                      {date ?? ""}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-2">
+                    <Link
+                      href={`/home?e=${event.slug}`}
+                      className={`flex h-11 flex-1 items-center justify-center text-sm font-medium ${
+                        isActive
+                          ? "btn-cosmic"
+                          : "chip-star rounded-full hover:text-foreground"
+                      }`}
                     >
-                      <Link href={`/home?e=${event.slug}`}>
-                        Ver constelación
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="icon"
-                      className="size-11 rounded-full border border-border"
+                      Ver constelación
+                    </Link>
+                    <a
+                      href={`/e/${event.slug}`}
+                      aria-label={`QR de ${event.name}`}
+                      className="chip-star grid size-11 place-items-center"
                     >
-                      <a
-                        href={`/e/${event.slug}`}
-                        aria-label={`QR de ${event.name}`}
-                      >
-                        <QrCode className="size-4" aria-hidden />
-                      </a>
-                    </Button>
+                      <QrCode className="size-4" aria-hidden />
+                    </a>
                   </div>
                 </li>
               );
@@ -165,10 +170,10 @@ export default async function EventsPage() {
 
           <Link
             href="/eventos/nuevo"
-            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary sm:mt-2"
+            className="flex min-h-14 items-center justify-center gap-2 rounded-full border border-dashed border-white/15 px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-celeste/40 hover:text-celeste lg:hidden"
           >
             <Plus className="size-4" aria-hidden />
-            encender otra galaxia
+            nueva constelación
           </Link>
         </>
       )}

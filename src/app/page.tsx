@@ -1,426 +1,285 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { CosmicSky, Planeta } from "@/components/cosmos";
+import { CosmicSky } from "@/components/cosmos";
+import { GoogleButton } from "@/app/login/google-button";
+import { createClient } from "@/lib/supabase/server";
 
 /*
- * CONTRATO DE DIRECCIÓN — v4 «Cinematic Universe» (DESIGN.md v4)
+ * CONTRATO DE DIRECCIÓN — v5 «Observatorio» (diseño 1a, Constela.dc.html)
  *
- * THESIS: tu red del evento ES un universo y se demuestra dibujándolo en
- * vivo, no afirmándolo; rechazo del hero SaaS (mockup + badges).
- * OWN-WORLD: deep space #050816 con nebulosas en deriva; estrellas de núcleo
- * blanco, halo espectral y difracción; el "tú" es un sol dorado #FFD97A;
- * chrome y CTAs nebula purple #6E63FF; cristal con blur; Geist display
- * gigante + mono de observatorio; grain de cine.
- * STORY: ver el universo dibujarse → entender que cada encuentro es una
- * estrella → entrar a explorar el propio.
- * FIRST VIEWPORT: titular "Tu red es tu universo." arriba-izquierda, CTA
- * violeta "Explorar universo", constelación REAL con el sol "tú" bajo el
- * copy; cielo profundo con nebulosas detrás.
- * FORM: dirección pineada por el usuario (imagen + master prompt); cierre:
- * el CTA final amanece sobre el limbo de un planeta.
+ * THESIS: la landing es la puerta, no un folleto: un titular, un botón y el
+ * universo detrás. Toda la promesa cabe en un viewport; rechazo del hero
+ * SaaS con secciones, marquee y features.
+ * OWN-WORLD: cielo #0A0C12 casi monocromo con horizonte de planeta; la red
+ * del evento dibujándose arriba a la derecha; titular gigante Geist con
+ * «tu universo.» en celeste #9DC8FF; CTA de cristal cosmic blue; mono de
+ * observatorio para las coordenadas.
+ * STORY: ver la red dibujarse → «tu red es tu universo» → entrar con Google
+ * en 8 segundos.
+ * FORM: dirección pineada por el usuario (claude.ai/design, 2026-07-28).
  */
 
-// Constelación del hero. Cada nodo lleva su clase espectral (halo); el
-// índice 1 eres tú: un sol dorado. El núcleo de toda estrella es blanco.
-const NODES = [
-  { x: 22, y: 60, r: 1.0, halo: "#CDD8FF", core: "#F8FAFF" },
-  { x: 38, y: 34, r: 1.5, halo: "#FFD97A", core: "#FFF6E3" }, // tú — sol
-  { x: 58, y: 48, r: 1.1, halo: "#F4F2EE", core: "#FFFFFF" },
-  { x: 72, y: 26, r: 0.85, halo: "#9DB4FF", core: "#EEF2FF" },
-  { x: 84, y: 58, r: 0.75, halo: "#FFB380", core: "#FFF3E6" },
-  { x: 46, y: 74, r: 0.85, halo: "#CDD8FF", core: "#F8FAFF" },
-];
+/** mulberry32 — misma familia de PRNG que el resto del cosmos. */
+function prng(seed: number) {
+  let s = seed | 0;
+  return function () {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
-const EDGES: Array<[number, number, string, boolean?]> = [
-  [1, 0, "0.2s"],
-  [1, 2, "0.55s"],
-  [2, 3, "0.9s"],
-  [2, 4, "1.25s"],
-  [0, 5, "1.6s"],
-  [0, 2, "2.1s", true], // cierre del triángulo 0-1-2
-];
+/**
+ * Constelación decorativa: el StarMap del diseño en modo `decor`, con el
+ * mismo universo demo determinista de `constela-data.js` (36 estrellas,
+ * ángulo áureo + vecino más cercano + cierre triádico). Es ilustración,
+ * no datos: va `aria-hidden` y sin interacción — pero el dibujo es el
+ * mismo del render: triángulos H-alfa, halos espectrales con blur, sol
+ * con corona y picos de difracción.
+ */
+const CLASES_DECOR = ["#9DB4FF", "#CDD8FF", "#E6ECFF", "#FFD9A8", "#FFB380"];
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Escanea",
-    body: "Cada asistente lleva su QR. Lo apuntas, y ya está: la conexión existe. Sin buscar nombres, sin solicitudes pendientes.",
-  },
-  {
-    n: "02",
-    title: "Anota",
-    body: "«Hablamos de diseño de producto — le presento a Ana». Una línea opcional en el momento, que vale oro una semana después del evento.",
-  },
-  {
-    n: "03",
-    title: "Constela",
-    body: "Tu red se dibuja en vivo: tus conexiones, las de tus conexiones, y los triángulos que se cierran entre ustedes.",
-  },
-];
+function universoDecor(seed = 11, n = 36) {
+  const rand = prng(seed);
+  // Mismo consumo de rand() que buildUniverse: los descartes mantienen la
+  // secuencia y con ella las posiciones exactas del render del diseño.
+  const stars: Array<{ x: number; y: number; halo: string; sun: boolean }> =
+    [];
+  for (let i = 0; i < n; i++) {
+    const a = i * 2.39996 + (rand() - 0.5) * 0.5;
+    const r =
+      i === 0 ? 0 : (0.16 + 0.84 * Math.sqrt(i / n)) * (0.86 + rand() * 0.28);
+    const halo =
+      i === 0
+        ? "#FFD97A"
+        : CLASES_DECOR[Math.floor(rand() * CLASES_DECOR.length)];
+    const x = 500 + Math.cos(a) * r * 410;
+    const y = 500 + Math.sin(a) * r * 400;
+    if (i > 0) rand(); // rol
+    rand(); // interés
+    rand(); // intención
+    rand(); // twinkle
+    rand(); // delay
+    stars.push({ x, y, halo, sun: i === 0 });
+  }
 
-/** Una estrella creíble dentro del SVG del hero: halo + difracción + núcleo. */
-function HeroStar({
-  x,
-  y,
-  r,
-  halo,
-  core,
-  isSun,
-  delay,
-}: {
-  x: number;
-  y: number;
-  r: number;
-  halo: string;
-  core: string;
-  isSun?: boolean;
-  delay: string;
-}) {
-  const spike = r * (isSun ? 6 : 4.2);
+  const adj = stars.map(() => new Set<number>());
+  const edges: Array<{ a: number; b: number }> = [];
+  const link = (a: number, b: number) => {
+    if (a === b || adj[a].has(b)) return;
+    adj[a].add(b);
+    adj[b].add(a);
+    edges.push({ a, b });
+  };
+  for (let i = 1; i < n; i++) {
+    const near = stars
+      .slice(0, i)
+      .map((s, j) => ({
+        id: j,
+        d: (s.x - stars[i].x) ** 2 + (s.y - stars[i].y) ** 2,
+      }))
+      .sort((p, q) => p.d - q.d)
+      .slice(0, 5);
+    const first = near[Math.floor(rand() * Math.min(2, near.length))].id;
+    link(i, first);
+    const fn = [...adj[first]].filter((x) => x !== i);
+    if (fn.length && rand() < 0.72) link(i, fn[Math.floor(rand() * fn.length)]);
+    if (rand() < 0.3 && near[2]) link(i, near[2].id);
+    if (i < 7) link(i, 0);
+  }
+
+  const mags = stars.map((s, i) =>
+    s.sun ? 5.4 : 1 + Math.min(adj[i].size, 7) * 0.34,
+  );
+
+  // Cierres triádicos del sol: los polígonos H-alfa del render
+  const triads: string[] = [];
+  for (const e of edges) {
+    const shared = [...adj[e.a]].filter((x) => x > e.b && adj[e.b].has(x));
+    for (const c of shared) {
+      if (e.a !== 0 && e.b !== 0 && c !== 0) continue;
+      triads.push(
+        [stars[e.a], stars[e.b], stars[c]]
+          .map((s) => `${s.x.toFixed(1)},${s.y.toFixed(1)}`)
+          .join(" "),
+      );
+    }
+  }
+
+  return { stars, edges, mags, triads };
+}
+
+function ConstelacionDecor() {
+  const { stars, edges, mags, triads } = universoDecor();
   return (
-    <g>
-      {/* Corona del sol: luz que se desvanece, nunca un disco plano */}
-      {isSun && (
-        <circle
-          cx={x}
-          cy={y}
-          r={r * 6}
-          fill="url(#sun-corona)"
-          className="animate-corona"
-          style={{ transformOrigin: `${x}px ${y}px` }}
+    <svg
+      aria-hidden
+      viewBox="0 0 1000 1000"
+      preserveAspectRatio="xMidYMid slice"
+      className="absolute inset-0 h-full w-full"
+    >
+      {triads.map((pts, i) => (
+        <polygon
+          key={i}
+          points={pts}
+          fill="#F0699F"
+          fillOpacity={0.085}
+          stroke="#F0699F"
+          strokeOpacity={0.34}
+          strokeWidth={0.6}
         />
-      )}
-      <circle
-        cx={x}
-        cy={y}
-        r={r * 2.6}
-        fill={isSun ? "url(#sun-corona)" : halo}
-        opacity={isSun ? 1 : 0.3}
-        filter={isSun ? undefined : "url(#hero-halo)"}
-      />
-      {/* Picos de difracción */}
-      <line
-        x1={x - spike}
-        x2={x + spike}
-        y1={y}
-        y2={y}
-        stroke={halo}
-        strokeWidth={isSun ? 0.22 : 0.16}
-        strokeLinecap="round"
-        opacity={0.55}
-      />
-      <line
-        x1={x}
-        x2={x}
-        y1={y - spike}
-        y2={y + spike}
-        stroke={halo}
-        strokeWidth={isSun ? 0.22 : 0.16}
-        strokeLinecap="round"
-        opacity={0.55}
-      />
-      {/* Núcleo blanco-caliente */}
-      <circle
-        cx={x}
-        cy={y}
-        r={r}
-        fill={core}
-        className="animate-twinkle"
-        style={{ animationDelay: delay }}
-      />
-    </g>
+      ))}
+      {edges.map((e, i) => (
+        <line
+          key={i}
+          x1={stars[e.a].x.toFixed(1)}
+          y1={stars[e.a].y.toFixed(1)}
+          x2={stars[e.b].x.toFixed(1)}
+          y2={stars[e.b].y.toFixed(1)}
+          stroke="#CDD8FF"
+          strokeWidth={0.65}
+          opacity={0.34}
+          pathLength={1}
+          className="animate-draw"
+          style={{
+            animationDelay: `${0.25 + i * 0.035}s`,
+            filter: "drop-shadow(0 0 3px rgba(205,216,255,0.35))",
+          }}
+        />
+      ))}
+      {stars.map((s, i) => {
+        const mag = mags[i];
+        const m = mag * 0.9; // decor: apenas más discreto que el mapa real
+        return (
+          <g key={i} transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`}>
+            {s.sun && (
+              <>
+                <circle
+                  r={46}
+                  fill="#FFD97A"
+                  opacity={0.16}
+                  className="animate-corona"
+                  style={{
+                    filter: "blur(16px)",
+                    transformBox: "fill-box",
+                    transformOrigin: "center",
+                  }}
+                />
+                <circle
+                  r={22}
+                  fill="#FFE9A8"
+                  opacity={0.5}
+                  style={{ filter: "blur(7px)" }}
+                />
+              </>
+            )}
+            <circle
+              r={(m * 4.2).toFixed(1)}
+              fill={s.halo}
+              opacity={s.sun ? 0.3 : 0.22}
+              style={{ filter: `blur(${(m * 1.5).toFixed(1)}px)` }}
+            />
+            <circle
+              r={(m * 1.9).toFixed(1)}
+              fill={s.halo}
+              opacity={s.sun ? 0.95 : 0.62}
+            />
+            <circle r={(m * (s.sun ? 0.62 : 0.72)).toFixed(2)} fill="#FFFFFF" />
+            {(mag > 2.1 || s.sun) && (
+              <>
+                <line
+                  x1={(-m * 4.6).toFixed(1)}
+                  y1="0"
+                  x2={(m * 4.6).toFixed(1)}
+                  y2="0"
+                  stroke={s.sun ? "#FFF4C7" : "#FFFFFF"}
+                  strokeWidth={0.5}
+                  opacity={0.45}
+                  style={{ filter: "blur(0.6px)" }}
+                />
+                <line
+                  x1="0"
+                  y1={(-m * 4.6).toFixed(1)}
+                  x2="0"
+                  y2={(m * 4.6).toFixed(1)}
+                  stroke={s.sun ? "#FFF4C7" : "#FFFFFF"}
+                  strokeWidth={0.5}
+                  opacity={0.45}
+                  style={{ filter: "blur(0.6px)" }}
+                />
+              </>
+            )}
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
-export default function Home() {
-  return (
-    <div className="grain relative flex flex-1 flex-col overflow-x-clip">
-      {/* El cielo: un universo vivo — estrellas, Vía Láctea, nebulosas en deriva */}
-      <CosmicSky seed={7} stars={170} nebulas="rich" shootingStar />
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      {/* Nav */}
-      <header className="relative z-10 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5 lg:px-10">
-        <span className="text-xl font-semibold tracking-tight">
+  return (
+    <main className="grain relative flex min-h-svh flex-col overflow-hidden">
+      <CosmicSky seed={9} stars={110} nebulas="rich" planet />
+
+      {/* La red del evento, dibujándose en el cielo */}
+      <div
+        aria-hidden
+        className="absolute -top-[6%] right-0 left-0 h-[56%] [-webkit-mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] [mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] lg:-top-[14%] lg:-right-[8%] lg:left-auto lg:h-[124%] lg:w-[66%] lg:[-webkit-mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)] lg:[mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)]"
+      >
+        <ConstelacionDecor />
+      </div>
+
+      {/* Chrome mínimo: wordmark + coordenadas del evento */}
+      <header className="relative z-10 flex items-center justify-center px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:justify-between lg:px-14 lg:pt-8">
+        <p className="text-[17px] font-semibold tracking-tight lg:text-[19px]">
           constela<span className="text-sol">✦</span>
-        </span>
-        <Button asChild size="sm" className="h-10 rounded-full px-4">
-          <Link href="/login">
-            <span className="sm:hidden">Entrar</span>
-            <span className="hidden sm:inline">Explorar universo</span>
-          </Link>
-        </Button>
+        </p>
+        <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground lg:block">
+          [ PARA CUALQUIER EVENTO ]
+        </p>
       </header>
 
-      <main className="flex flex-1 flex-col">
-        {/* Hero */}
-        <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-7 px-5 pt-12 pb-16 sm:gap-6 sm:px-8 sm:pt-14 sm:pb-20 lg:px-10">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            [ el networking que por fin se ve ]
-          </p>
-
-          <h1 className="max-w-4xl text-[clamp(2.8rem,8vw,5.5rem)] leading-[0.98] font-bold tracking-tight text-balance">
-            Tu red es{" "}
-            <span className="text-glow text-lavanda">tu universo.</span>
+      {/* El titular y la puerta */}
+      <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:justify-center lg:px-22 lg:pb-24">
+        <div className="animate-rise max-w-[41rem]">
+          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance lg:leading-[0.94]">
+            Tu red es
+            <br />
+            <span className="text-celeste">tu universo.</span>
           </h1>
-
-          <p className="max-w-xl text-lg leading-8 text-muted-foreground sm:text-xl">
-            Cada persona que conoces se vuelve una estrella; cada encuentro
-            dibuja una línea. Conecta con un escaneo y mira la red del evento
-            crecer en vivo.
+          <p className="mt-5 max-w-100 text-[15px] leading-relaxed text-muted-foreground lg:mt-6.5 lg:text-lg">
+            El networking que por fin se ve. Escaneas, y la red del evento se
+            dibuja.
           </p>
-
-          <div className="flex w-full flex-wrap items-center gap-5 sm:w-auto">
-            <Button
-              asChild
-              size="lg"
-              className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
-            >
-              <Link href="/login">Explorar universo</Link>
-            </Button>
-            <a
-              href="#como-funciona"
-              className="rounded-sm font-mono text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-            >
-              ver cómo funciona ↓
-            </a>
-          </div>
-
-          {/* La constelación: estrellas reales que se conectan */}
-          <svg
-            aria-hidden
-            className="animate-float mt-6 w-full max-w-3xl self-center sm:-mt-4 sm:max-w-2xl"
-            viewBox="16 18 73 62"
-            fill="none"
-          >
-            <defs>
-              <filter
-                id="hero-halo"
-                x="-150%"
-                y="-150%"
-                width="400%"
-                height="400%"
+          <div className="mt-8 flex flex-col gap-3.5 lg:mt-10 lg:flex-row lg:items-center lg:gap-4.5">
+            {user ? (
+              <Link
+                href="/home"
+                className="btn-cosmic flex h-14 items-center justify-center px-7 text-base font-medium lg:h-[54px]"
               >
-                <feGaussianBlur stdDeviation="1.3" />
-              </filter>
-              <radialGradient id="sun-corona">
-                <stop offset="0%" stopColor="#FFD97A" stopOpacity="0.5" />
-                <stop offset="45%" stopColor="#FFD97A" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#FFD97A" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            {/* El triángulo 0-1-2 se ioniza al cerrarse: relleno H-alfa */}
-            <polygon
-              points={`${NODES[0].x},${NODES[0].y} ${NODES[1].x},${NODES[1].y} ${NODES[2].x},${NODES[2].y}`}
-              fill="var(--halfa)"
-              fillOpacity={0.06}
-            />
-
-            {EDGES.map(([a, b, delay, closes], i) => (
-              <line
-                key={i}
-                x1={NODES[a].x}
-                y1={NODES[a].y}
-                x2={NODES[b].x}
-                y2={NODES[b].y}
-                pathLength={1}
-                stroke={closes ? "var(--halfa)" : "var(--estrella-a)"}
-                strokeOpacity={closes ? 0.85 : 0.4}
-                strokeWidth={closes ? 0.3 : 0.2}
-                className="animate-draw"
-                style={{ animationDelay: delay }}
-              />
-            ))}
-
-            {NODES.map((n, i) => (
-              <HeroStar
-                key={i}
-                x={n.x}
-                y={n.y}
-                r={n.r}
-                halo={n.halo}
-                core={n.core}
-                isSun={i === 1}
-                delay={`${i * 0.5}s`}
-              />
-            ))}
-
-            <text
-              x={NODES[1].x}
-              y={NODES[1].y - 4.6}
-              fontSize="2.6"
-              fill="var(--sol)"
-              fontFamily="var(--font-geist-mono)"
-              textAnchor="middle"
-            >
-              tú
-            </text>
-          </svg>
-        </section>
-
-        {/* Marquee */}
-        <div
-          aria-hidden
-          className="relative z-10 overflow-hidden border-y border-border py-3"
-        >
-          <div className="animate-marquee flex w-max gap-8 font-mono text-xs tracking-[0.25em] whitespace-nowrap text-muted-foreground uppercase">
-            {/* 4 copias: el loop desplaza -50%, y dos sets deben cubrir el viewport más ancho */}
-            {Array.from({ length: 4 }).map((_, i) => (
-              <span key={i} className="flex gap-8">
-                <span>cada persona es una estrella ·</span>
-                <span>tu red, dibujada en vivo ·</span>
-                <span>escanea. conecta. constela. ·</span>
-                <span>los triángulos se cierran ·</span>
-              </span>
-            ))}
+                Entrar a tu constelación
+              </Link>
+            ) : (
+              <div className="w-full lg:w-72">
+                <GoogleButton next="/home" />
+              </div>
+            )}
+            <p className="text-center font-mono text-[11px] tracking-[0.16em] text-faint lg:text-left">
+              [ 8 SEGUNDOS ]
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Cómo funciona */}
-        <section
-          id="como-funciona"
-          className="relative z-10 mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10"
-        >
-          <h2 className="mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
-            Tres gestos, <span className="text-lavanda">una constelación</span>
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {STEPS.map((s) => (
-              <article
-                key={s.n}
-                className="glass rounded-3xl p-6 transition-colors hover:border-primary/30 sm:p-8"
-              >
-                <span className="font-mono text-sm text-lavanda">{s.n}</span>
-                <h3 className="mt-3 mb-3 text-2xl font-semibold">{s.title}</h3>
-                <p className="text-sm leading-7 text-muted-foreground">
-                  {s.body}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Cierre triádico */}
-        <section className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-16 sm:grid-cols-2 sm:gap-12 sm:px-8 sm:py-24 lg:px-10">
-          <div className="flex flex-col gap-6">
-            <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-              [ cierre triádico ]
-            </p>
-            <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-5xl">
-              Cuando el círculo <span className="text-halfa">se cierra</span>
-            </h2>
-            <p className="max-w-md leading-8 text-muted-foreground">
-              Conociste a alguien, que conoció a alguien… que tú también
-              conociste. Ese triángulo tiene nombre en teoría de redes — y aquí
-              tiene luz propia: Constela lo detecta y lo enciende en rosa
-              H-alfa, la señal de un grupo que de verdad se encontró.
-            </p>
-          </div>
-          {/* El triángulo ionizado: tres estrellas reales y gas H-alfa dentro */}
-          <svg
-            aria-hidden
-            className="mx-auto w-full max-w-xs"
-            viewBox="0 0 100 100"
-            fill="none"
-          >
-            <defs>
-              <filter
-                id="tri-halo"
-                x="-150%"
-                y="-150%"
-                width="400%"
-                height="400%"
-              >
-                <feGaussianBlur stdDeviation="2" />
-              </filter>
-              <radialGradient id="tri-gas" cx="50%" cy="62%">
-                <stop offset="0%" stopColor="var(--halfa)" stopOpacity="0.16" />
-                <stop offset="100%" stopColor="var(--halfa)" stopOpacity="0.03" />
-              </radialGradient>
-            </defs>
-            <polygon
-              points="50,16 18,78 82,78"
-              fill="url(#tri-gas)"
-              stroke="var(--halfa)"
-              strokeOpacity="0.7"
-              strokeWidth="0.5"
-            />
-            {[
-              [50, 16, 2.4, "#FFD97A", "#FFF6E3"],
-              [18, 78, 2, "#CDD8FF", "#F8FAFF"],
-              [82, 78, 2, "#9DB4FF", "#EEF2FF"],
-            ].map(([x, y, r, halo, core], i) => (
-              <g key={i}>
-                <circle
-                  cx={x as number}
-                  cy={y as number}
-                  r={(r as number) * 3}
-                  fill={halo as string}
-                  opacity={0.28}
-                  filter="url(#tri-halo)"
-                />
-                <line
-                  x1={(x as number) - (r as number) * 4}
-                  x2={(x as number) + (r as number) * 4}
-                  y1={y as number}
-                  y2={y as number}
-                  stroke={halo as string}
-                  strokeWidth={0.4}
-                  strokeLinecap="round"
-                  opacity={0.5}
-                />
-                <line
-                  x1={x as number}
-                  x2={x as number}
-                  y1={(y as number) - (r as number) * 4}
-                  y2={(y as number) + (r as number) * 4}
-                  stroke={halo as string}
-                  strokeWidth={0.4}
-                  strokeLinecap="round"
-                  opacity={0.5}
-                />
-                <circle
-                  cx={x as number}
-                  cy={y as number}
-                  r={r as number}
-                  fill={core as string}
-                  className="animate-twinkle"
-                  style={{ animationDelay: `${i * 0.7}s` }}
-                />
-              </g>
-            ))}
-          </svg>
-        </section>
-
-        {/* CTA final: amanecer sobre un mundo nuevo */}
-        <section className="relative z-10 overflow-hidden">
-          <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-5 pt-20 pb-44 text-center sm:px-8 sm:pt-28 sm:pb-56">
-            <h2 className="text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
-              Tu próximo evento merece{" "}
-              <span className="text-lavanda">más que tarjetas</span>
-            </h2>
-            <Button
-              asChild
-              size="lg"
-              className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
-            >
-              <Link href="/login">Explorar universo</Link>
-            </Button>
-          </div>
-          {/* El limbo del planeta: el próximo evento como mundo por conocer */}
-          <Planeta
-            size={1100}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[78%] opacity-90"
-          />
-        </section>
-      </main>
-
-      <footer className="relative z-10 flex items-center justify-between gap-4 border-t border-border px-5 py-6 font-mono text-xs text-muted-foreground sm:px-8 lg:px-10">
-        <span>
-          constela<span className="text-sol">✦</span> 2026
-        </span>
-        <span>hecho para encontrarse</span>
-      </footer>
-    </div>
+      {/* La tesis, como coordenada de observatorio */}
+      <p className="absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.2em] whitespace-nowrap text-faint lg:bottom-10 lg:left-22 lg:translate-x-0 lg:text-[11px]">
+        CADA PERSONA ES UNA ESTRELLA
+      </p>
+    </main>
   );
 }

@@ -5,7 +5,7 @@ import { safeNext } from "@/lib/nav";
 import { fetchTagCatalog, type TagChoice } from "@/lib/tags";
 import { OnboardingFlow } from "./onboarding-flow";
 
-/** El nombre del evento al que ibas, para que el botón final diga a dónde. */
+/** El nombre del evento al que ibas, para hablar de SU constelación. */
 async function eventNameFromNext(
   supabase: Awaited<ReturnType<typeof createClient>>,
   next: string,
@@ -18,6 +18,10 @@ async function eventNameFromNext(
   return data?.[0]?.name ?? null;
 }
 
+/**
+ * Bienvenida (diseño 2a): una pantalla, un tap. Ya estás dentro — solo
+ * falta decir qué haces para aparecer en el cielo.
+ */
 export default async function BienvenidaPage({
   searchParams,
 }: {
@@ -57,28 +61,34 @@ export default async function BienvenidaPage({
       label: options.find((o) => o.slug === slug)?.label ?? slug,
     }));
 
-  const firstName = profile.name?.split(" ")[0] ?? "";
-
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center px-6 py-12">
-      <CosmicSky seed={31} stars={100} milkyWay={false} nebulas="none" />
+    <main className="grain relative flex flex-1 flex-col justify-center px-6 py-12 lg:px-16">
+      <CosmicSky seed={31} stars={110} nebulas="faint" />
 
-      <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
-        <p className="font-mono text-xs tracking-[0.3em] text-primary uppercase">
-          [ {firstName ? `hola ${firstName.toLowerCase()}` : "bienvenida"} ]
-        </p>
-
-        {error && (
-          <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            No pudimos guardar tu estrella. Intenta de nuevo.
+      <div className="relative z-10 mx-auto grid w-full max-w-md gap-8 lg:max-w-5xl lg:grid-cols-[1fr_30rem] lg:items-center lg:gap-16">
+        <header className="flex flex-col gap-5">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-faint">
+            [ PASO 1 DE 1 ]
           </p>
-        )}
+          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance">
+            Ya estás <span className="text-celeste">dentro.</span>
+          </h1>
+          <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground lg:text-lg">
+            {eventName
+              ? `Ya perteneces a la constelación de ${eventName}. Dinos qué haces y apareces en el cielo.`
+              : "Dinos qué haces y apareces en el cielo del evento."}
+          </p>
+          {error && (
+            <p className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              No pudimos guardar tu estrella. Intenta de nuevo.
+            </p>
+          )}
+        </header>
 
         <OnboardingFlow
           eventName={eventName}
           next={next}
           roleOptions={catalog.rol}
-          interestOptions={catalog.interes}
           intentOptions={catalog.intencion}
           initialRole={
             profile.role ? toChoices([profile.role], catalog.rol) : []

@@ -28,11 +28,11 @@ export default async function LoginPage({
         <div className="flex flex-col gap-3">
           {/* Tu sol, a punto de nacer */}
           <Sol size={52} className="mb-3" />
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-faint uppercase">
             [ entrar ]
           </p>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Tu universo <span className="text-lavanda">te espera</span>
+          <h1 className="text-3xl font-bold tracking-[-0.035em] sm:text-4xl">
+            Tu universo <span className="text-celeste">te espera</span>
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Un toque y adentro: tu nombre y tu foto llegan solos.

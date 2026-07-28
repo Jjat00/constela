@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { CalmMode } from "@/components/calm-mode";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 // `cover` deja que el fondo llegue bajo la barra del teléfono; las áreas
 // seguras se respetan con env(safe-area-inset-*) donde toca (barra inferior).
 export const viewport: Viewport = {
-  themeColor: "#050816",
+  themeColor: "#02030A",
   viewportFit: "cover",
 };
 
@@ -35,7 +36,10 @@ export default function RootLayout({
       lang="es"
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased motion-safe:scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <CalmMode />
+        {children}
+      </body>
     </html>
   );
 }

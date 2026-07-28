@@ -4,7 +4,16 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export type ConnectResult =
-  | { status: "conectados"; eventName: string; eventSlug: string }
+  | {
+      status: "conectados";
+      eventName: string;
+      eventSlug: string;
+      /** Tus números en ESTE evento, ya con la arista nueva. */
+      connections: number;
+      triangles: number;
+      /** Nombre del tercer vértice si este escaneo cerró un triángulo. */
+      closedWith: string | null;
+    }
   | { status: "sin-evento" }
   | { status: "sin-sesion" }
   | { status: "error" };
@@ -66,9 +75,45 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
     redirect(`/bienvenida?next=${encodeURIComponent(`/u/${slug}`)}`);
   }
 
+  // Los números del momento (diseño 2c): cuántas líneas tienes ya en este
+  // evento, cuántos triángulos cierras y con quién se cerró este último.
+  let connections = 0;
+  let triangles = 0;
+  let closedWith: string | null = null;
+  const { data: graph } = await supabase.rpc("get_event_graph", {
+    p_event_id: event.event_id,
+  });
+  if (graph?.edges) {
+    const edges = graph.edges as Array<{ source: string; target: string }>;
+    const neighbors = new Map<string, Set<string>>();
+    for (const e of edges) {
+      if (!neighbors.has(e.source)) neighbors.set(e.source, new Set());
+      if (!neighbors.has(e.target)) neighbors.set(e.target, new Set());
+      neighbors.get(e.source)!.add(e.target);
+      neighbors.get(e.target)!.add(e.source);
+    }
+    const mine = neighbors.get(user.id) ?? new Set<string>();
+    connections = mine.size;
+    for (const p of mine) {
+      for (const q of neighbors.get(p) ?? []) {
+        if (q !== user.id && mine.has(q) && p < q) triangles++;
+      }
+    }
+    const shared = [...mine].filter(
+      (id) => id !== target.id && neighbors.get(target.id)?.has(id),
+    );
+    if (shared.length > 0) {
+      const nodes = (graph.nodes ?? []) as Array<{ id: string; name: string }>;
+      closedWith = nodes.find((n) => n.id === shared[0])?.name ?? null;
+    }
+  }
+
   return {
     status: "conectados",
     eventName: event.event_name,
     eventSlug: event.event_slug,
+    connections,
+    triangles,
+    closedWith,
   };
 }

@@ -1,9 +1,10 @@
 -- Seed de desarrollo local (se aplica con `supabase db reset`, nunca en prod vía db push)
 
-insert into public.events (slug, name, starts_at, ends_at)
+insert into public.events (slug, name, city, starts_at, ends_at)
 values (
   'demo-bogota',
   '[demo] Evento de prueba local',
+  'Bogotá · Colombia',
   '2026-08-20 17:00:00-05',
   '2026-08-20 22:00:00-05'
 )

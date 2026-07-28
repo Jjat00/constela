@@ -2,20 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  CalendarDays,
-  LogOut,
-  Orbit,
-  QrCode,
-  UserRound,
-} from "lucide-react";
+import { Globe, Orbit, QrCode, SlidersHorizontal, Users } from "lucide-react";
+import { useActiveConstellation } from "@/components/active-constellation";
+import { AuraSol } from "@/components/cosmos";
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { href: "/home", label: "Universo", icon: Orbit },
-  { href: "/eventos", label: "Eventos", icon: CalendarDays },
+  { href: "/home", label: "Constelación", icon: Orbit },
+  { href: "/estrellas", label: "Estrellas", icon: Users },
   { href: "/qr", label: "Mi QR", icon: QrCode },
-  { href: "/perfil", label: "Perfil", icon: UserRound },
+  { href: "/eventos", label: "Constelaciones", icon: Globe },
+  { href: "/perfil", label: "Ajustes", icon: SlidersHorizontal },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -36,41 +33,51 @@ function Wordmark() {
   );
 }
 
-function SignOut({ iconOnly = false }: { iconOnly?: boolean }) {
+function AvatarSol({
+  identity,
+  size,
+}: {
+  identity: Identity;
+  size: number;
+}) {
   return (
-    <form action="/auth/signout" method="post">
-      <button
-        type="submit"
-        className={cn(
-          "flex items-center gap-2.5 rounded-xl text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground",
-          iconOnly ? "p-3.5" : "w-full px-3 py-2.5",
-        )}
-      >
-        <LogOut className="size-4" aria-hidden />
-        {iconOnly ? <span className="sr-only">Salir</span> : "Salir"}
-      </button>
-    </form>
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <AuraSol size={size} />
+      {identity.avatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={identity.avatarUrl}
+          alt=""
+          className="relative z-1 h-full w-full rounded-full border border-sol/50 object-cover"
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <div className="relative z-1 flex h-full w-full items-center justify-center rounded-full border border-sol/50 bg-card text-sm font-semibold text-sol">
+          {identity.name.charAt(0).toUpperCase()}
+        </div>
+      )}
+    </div>
   );
 }
 
 /**
- * Navegación del command center en dos formas: sidebar de cristal flotando
- * sobre el cosmos en desktop, y barra inferior al alcance del pulgar en
- * móvil (el evento se vive de pie y a una mano). La identidad llega del
- * layout servidor: tú eres el sol, y el sol vive abajo a la izquierda.
+ * Navegación del observatorio en dos formas: sidebar de cristal flotando
+ * sobre el cosmos en desktop (diseño 1b), y barra inferior al alcance del
+ * pulgar en móvil (el evento se vive de pie y a una mano). La identidad
+ * llega del layout servidor: tú eres el sol, y el sol vive abajo.
  */
 export function AppNav({ identity }: { identity: Identity | null }) {
   const pathname = usePathname();
 
   return (
     <>
-      {/* Desktop: sidebar de cristal */}
-      <aside className="glass fixed top-4 bottom-4 left-4 z-40 hidden w-60 flex-col rounded-3xl p-4 lg:flex">
-        <div className="px-2 pt-1 pb-6">
+      {/* Desktop: sidebar de cristal (1b) */}
+      <aside className="glass fixed top-5 bottom-5 left-5 z-40 hidden w-56 flex-col rounded-4xl px-4 py-5 lg:flex">
+        <div className="px-2">
           <Wordmark />
         </div>
 
-        <nav aria-label="Secciones" className="flex flex-col gap-1">
+        <nav aria-label="Secciones" className="mt-7 flex flex-col gap-1">
           {TABS.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
             return (
@@ -79,14 +86,14 @@ export function AppNav({ identity }: { identity: Identity | null }) {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                  "flex items-center gap-3 rounded-2xl border px-3 py-2.5 text-[13.5px] font-medium transition-colors",
                   active
-                    ? "bg-primary/20 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                    ? "border-cosmic/40 bg-cosmic/15 text-foreground"
+                    : "border-transparent text-muted-foreground hover:bg-white/5 hover:text-foreground",
                 )}
               >
                 <Icon
-                  className={cn("size-[1.15rem]", active && "text-lavanda")}
+                  className="size-[1.15rem]"
                   strokeWidth={active ? 2.2 : 1.8}
                   aria-hidden
                 />
@@ -96,37 +103,22 @@ export function AppNav({ identity }: { identity: Identity | null }) {
           })}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-2">
-          {identity && (
-            <Link
-              href="/perfil"
-              className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-3 transition-colors hover:bg-white/[0.06]"
-            >
-              {identity.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={identity.avatarUrl}
-                  alt=""
-                  className="sol-glow size-9 shrink-0 rounded-full border border-sol/50"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="sol-glow flex size-9 shrink-0 items-center justify-center rounded-full border border-sol/50 bg-card text-sm font-semibold text-sol">
-                  {identity.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <span className="flex min-w-0 flex-col">
-                <span className="truncate text-sm font-medium">
-                  {identity.name}
-                </span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {identity.subtitle ?? "completa tu perfil"}
-                </span>
+        {identity && (
+          <Link
+            href="/perfil"
+            className="mt-auto flex items-center gap-3 rounded-full border border-sol/20 bg-sol/5 p-2 transition-colors hover:bg-sol/10"
+          >
+            <AvatarSol identity={identity} size={38} />
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate text-[13px] font-medium">
+                {identity.name}
               </span>
-            </Link>
-          )}
-          <SignOut />
-        </div>
+              <span className="mt-0.5 truncate font-mono text-[10px] tracking-[0.14em] text-sol uppercase">
+                {identity.subtitle ?? "completa tu perfil"}
+              </span>
+            </span>
+          </Link>
+        )}
       </aside>
 
       {/* Móvil y tablet: wordmark arriba, tabs abajo */}
@@ -134,14 +126,11 @@ export function AppNav({ identity }: { identity: Identity | null }) {
         <span className="glass rounded-full px-4 py-2">
           <Wordmark />
         </span>
-        <span className="glass rounded-full">
-          <SignOut iconOnly />
-        </span>
       </header>
 
       <nav
         aria-label="Secciones"
-        className="glass fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 rounded-2xl lg:hidden"
+        className="glass fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 rounded-full lg:hidden"
       >
         <ul className="grid grid-cols-4">
           {TABS.map(({ href, label, icon: Icon }) => {
@@ -153,7 +142,7 @@ export function AppNav({ identity }: { identity: Identity | null }) {
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex min-h-14 flex-col items-center justify-center gap-1 px-1 py-2 text-[10px] transition-colors",
-                    active ? "text-lavanda" : "text-muted-foreground",
+                    active ? "text-celeste" : "text-muted-foreground",
                   )}
                 >
                   <Icon

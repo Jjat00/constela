@@ -3,9 +3,12 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { eventDateLong } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
-import { Button } from "@/components/ui/button";
-import { CosmicSky, Galaxia, Planeta } from "@/components/cosmos";
+import { CosmicSky, Galaxia } from "@/components/cosmos";
 
+/**
+ * La puerta del evento: cualquiera escanea este QR y entra. Para asistentes,
+ * también es el acceso a la proyección en vivo (diseño 2f).
+ */
 export default async function EventPage({
   params,
 }: {
@@ -49,14 +52,10 @@ export default async function EventPage({
   const dateLabel = eventDateLong(event.starts_at);
 
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 pt-10 pb-36 sm:px-8 sm:pt-16 sm:pb-44">
-      {/* La puerta del evento también se proyecta: cielo con más presencia */}
-      <CosmicSky seed={51} stars={150} />
-      {/* Entrar al evento es aterrizar en un mundo nuevo */}
-      <Planeta
-        size={900}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-[82%] opacity-90"
-      />
+    <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 sm:px-8 sm:py-16">
+      {/* La puerta del evento también se proyecta: cielo con más presencia
+          y el horizonte del planeta — entrar es aterrizar en un mundo */}
+      <CosmicSky seed={51} stars={150} nebulas="rich" planet />
 
       {/* Móvil: una columna centrada. Desktop: ficha a la izquierda, QR grande
           a la derecha — es la pantalla que se proyecta en la entrada. */}
@@ -68,47 +67,51 @@ export default async function EventPage({
         }`}
       >
         <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">
-          {/* El evento es una galaxia (DESIGN.md v3) */}
-          <Galaxia seed={event.name.length} size={80} />
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+          {/* El evento es una galaxia */}
+          <Galaxia seed={event.name.length} size={80} active={isAttending} />
+          <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
             [ evento ]
           </p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-bold tracking-[-0.035em] text-balance sm:text-4xl lg:text-5xl">
             {event.name}
           </h1>
-          {dateLabel && (
-            <p className="font-mono text-xs text-muted-foreground sm:text-sm">
-              {dateLabel}
+          {(event.city || dateLabel) && (
+            <p className="font-mono text-xs leading-5 text-muted-foreground sm:text-sm">
+              {[event.city, dateLabel].filter(Boolean).join(" · ")}
             </p>
           )}
 
           {isAttending ? (
             <>
-              <p className="font-mono text-sm text-primary">
+              <p className="font-mono text-sm tracking-[0.14em] text-aurora">
                 [ estás dentro ]
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="node-glow h-12 w-full rounded-full px-7 sm:w-auto"
+              <Link
+                href={`/home?e=${slug}`}
+                className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
               >
-                <Link href={`/home?e=${slug}`}>Ir a esta constelación</Link>
-              </Button>
+                Ir a esta constelación
+              </Link>
+              <Link
+                href={`/e/${slug}/live`}
+                className="font-mono text-xs text-celeste underline-offset-4 hover:underline"
+              >
+                proyección en vivo ↗
+              </Link>
             </>
           ) : (
-            <Button
-              asChild
-              size="lg"
-              className="node-glow h-12 w-full rounded-full px-7 sm:w-auto"
+            <a
+              href={`/login?next=/e/${slug}`}
+              className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
             >
-              <a href={`/login?next=/e/${slug}`}>Entrar al evento</a>
-            </Button>
+              Entrar al evento
+            </a>
           )}
         </div>
 
         {/* La puerta se comparte: cualquiera escanea esto y entra */}
         {isAttending && (
-          <section className="mx-auto flex w-full max-w-xs flex-col items-center gap-4 rounded-2xl border border-border bg-card p-6 lg:max-w-sm lg:p-8">
+          <section className="glass mx-auto flex w-full max-w-xs flex-col items-center gap-4 rounded-4xl p-6 lg:max-w-sm lg:p-8">
             <div
               className="w-full max-w-44 [&_svg]:h-auto [&_svg]:w-full lg:max-w-full"
               dangerouslySetInnerHTML={{ __html: eventQr }}

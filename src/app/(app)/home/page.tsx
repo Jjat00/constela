@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, Link2, Orbit, Star, Triangle } from "lucide-react";
+import { ChevronRight, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate, timeAgo } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
-import { Button } from "@/components/ui/button";
 import { Galaxia } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
 import {
   buildFacets,
   fetchTagCatalog,
+  labelFor,
   type TagCategory,
   type TagFacet,
 } from "@/lib/tags";
@@ -33,6 +33,14 @@ function countTriangles(edges: GraphEdge[]) {
     }
   }
   return count;
+}
+
+function RailLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
+      {children}
+    </p>
+  );
 }
 
 export default async function HomePage({
@@ -98,19 +106,19 @@ export default async function HomePage({
         .select("id, name, slug, starts_at")
         .order("starts_at", { ascending: true, nullsFirst: false })
         .limit(12),
-      qrSvg(`/u/${profile.qr_slug}`),
+      qrSvg(`/u/${profile.qr_slug}`, "sol"),
     ]);
     const availableEvents = events ?? [];
 
     return (
       <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-5 py-8 sm:px-0">
-        <div className="flex flex-col gap-3">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+        <div className="flex flex-col gap-3.5">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-faint uppercase">
             [ tu universo ]
           </p>
-          <h1 className="text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-5xl">
+          <h1 className="text-4xl leading-[1.05] font-bold tracking-[-0.035em] text-balance sm:text-5xl">
             Tu universo empieza{" "}
-            <span className="text-lavanda">en un evento.</span>
+            <span className="text-celeste">en un evento.</span>
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Escanea el QR de alguien que ya esté dentro, entra a un evento
@@ -119,15 +127,13 @@ export default async function HomePage({
         </div>
 
         <section className="flex flex-col gap-2">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            [ eventos activos ]
-          </p>
+          <RailLabel>[ eventos activos ]</RailLabel>
           {availableEvents.length > 0 ? (
             availableEvents.map((event) => (
               <a
                 key={event.id}
                 href={`/e/${event.slug}`}
-                className="glass group flex min-h-16 items-center gap-3 rounded-2xl px-4 py-3 transition-colors hover:border-primary/40"
+                className="glass group flex min-h-16 items-center gap-3 rounded-3xl px-4 py-3 transition-colors hover:border-celeste/35"
               >
                 <Galaxia seed={event.slug.charCodeAt(0)} size={40} />
                 <span className="flex min-w-0 flex-1 flex-col">
@@ -141,7 +147,7 @@ export default async function HomePage({
                   )}
                 </span>
                 <ChevronRight
-                  className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-lavanda"
+                  className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-celeste"
                   aria-hidden
                 />
               </a>
@@ -153,18 +159,17 @@ export default async function HomePage({
           )}
         </section>
 
-        <Button
-          asChild
-          size="lg"
-          className="node-glow h-12 rounded-full text-base"
+        <Link
+          href="/eventos/nuevo"
+          className="btn-cosmic flex h-13 items-center justify-center text-base font-medium"
         >
-          <Link href="/eventos/nuevo">Crear un evento</Link>
-        </Button>
+          Crear una constelación
+        </Link>
 
         {/* El QR personal existe desde ya, pero conecta dentro de un evento */}
-        <section className="glass flex flex-col items-center gap-4 rounded-3xl p-6">
+        <section className="glass flex flex-col items-center gap-4 rounded-4xl p-6">
           <div
-            className="w-full max-w-40 opacity-70 [&_svg]:h-auto [&_svg]:w-full"
+            className="w-full max-w-40 opacity-80 [&_svg]:h-auto [&_svg]:w-full"
             dangerouslySetInnerHTML={{ __html: qr }}
           />
           <p className="text-center font-mono text-xs text-muted-foreground">
@@ -185,77 +190,64 @@ export default async function HomePage({
     (e) => e.source === user.id || e.target === user.id,
   ).length;
   const triangleCount = countTriangles(graph.edges);
+  const magnitude = (1.1 + connectionCount * 0.14).toFixed(1);
 
   // Actividad reciente: las últimas líneas dibujadas en ESTA galaxia
   const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+  const firstName = (id: string) =>
+    id === user.id
+      ? "Tú"
+      : (nodeById.get(id)?.name ?? "alguien").split(" ")[0];
   const activity = [...graph.edges]
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 4)
-    .map((edge) => {
-      const mine = edge.source === user.id || edge.target === user.id;
-      const peerId = mine
-        ? edge.source === user.id
-          ? edge.target
-          : edge.source
-        : edge.source;
-      const peer = nodeById.get(peerId);
-      const other = mine ? null : nodeById.get(edge.target);
-      return {
-        id: edge.id,
-        avatarUrl: peer?.avatarUrl ?? null,
-        name: peer?.name ?? "alguien",
-        text: mine
-          ? "se conectó contigo"
-          : `y ${other?.name?.split(" ")[0] ?? "alguien"} se conectaron`,
-        when: timeAgo(edge.createdAt),
-      };
-    });
+    .map((edge) => ({
+      id: edge.id,
+      a: firstName(edge.source),
+      b: firstName(edge.target),
+      when: timeAgo(edge.createdAt),
+    }));
 
-  // Galaxias por explorar: eventos donde aún no estás
-  const myIds = myEvents.map((ev) => ev.id);
-  let galaxiesQuery = supabase
-    .from("events")
-    .select("id, name, slug, starts_at")
-    .order("starts_at", { ascending: true, nullsFirst: false })
-    .limit(3);
-  if (myIds.length > 0) {
-    galaxiesQuery = galaxiesQuery.not("id", "in", `(${myIds.join(",")})`);
-  }
-  const { data: otherGalaxies } = await galaxiesQuery;
-
-  const stats = [
-    {
-      label: connectionCount === 1 ? "Conexión tuya" : "Conexiones tuyas",
-      value: connectionCount,
-      icon: Link2,
-      chip: "bg-primary/20 text-lavanda",
-    },
-    {
-      label: graph.nodes.length === 1 ? "Estrella" : "Estrellas",
-      value: graph.nodes.length,
-      icon: Star,
-      chip: "bg-cosmic/15 text-cosmic",
-    },
-    {
-      label: triangleCount === 1 ? "Triángulo" : "Triángulos",
-      value: triangleCount,
-      icon: Triangle,
-      chip: "bg-halfa/15 text-halfa",
-    },
-    {
-      label: myEvents.length === 1 ? "Galaxia" : "Galaxias",
-      value: myEvents.length,
-      icon: Orbit,
-      chip: "bg-estrella-k/15 text-estrella-k",
-    },
-  ];
+  // Cerca de tu órbita: estrellas aún sin línea contigo que comparten señales
+  const connectedIds = new Set(
+    graph.edges.flatMap((e) =>
+      e.source === user.id ? [e.target] : e.target === user.id ? [e.source] : [],
+    ),
+  );
+  const me = nodeById.get(user.id);
+  const mySignals = new Set([
+    ...(me?.role ? [me.role] : []),
+    ...(me?.tags ?? []),
+    ...(me?.intents ?? []),
+  ]);
+  const nearby = graph.nodes
+    .filter((n) => n.id !== user.id && !connectedIds.has(n.id))
+    .map((n) => {
+      const signals = [
+        ...(n.role ? [n.role] : []),
+        ...n.tags,
+        ...n.intents,
+      ];
+      const shared = signals.filter((s) => mySignals.has(s));
+      return { node: n, shared: shared.length };
+    })
+    .sort((a, b) => b.shared - a.shared)
+    .slice(0, 3)
+    .map(({ node }) => ({
+      id: node.id,
+      name: node.name,
+      role: node.role ? labelFor(catalog, "rol", node.role) : null,
+      why: node.intents[0]
+        ? labelFor(catalog, "intencion", node.intents[0])
+        : null,
+    }));
 
   return (
     <main className="relative z-10 flex flex-1 flex-col xl:h-svh xl:flex-row xl:overflow-hidden">
-      <h1 className="sr-only">Tu universo — {activeEvent.name}</h1>
+      <h1 className="sr-only">Tu constelación — {activeEvent.name}</h1>
 
-      {/* El universo: el grafo es la sala, no una card */}
-      <div className="relative h-[56vh] min-h-80 shrink-0 sm:h-[60vh] lg:h-[68vh] xl:h-auto xl:min-h-0 xl:flex-1 xl:shrink">
+      {/* El universo: el grafo es la sala. En desktop, dentro de su marco. */}
+      <div className="relative h-[62vh] min-h-80 shrink-0 sm:h-[64vh] lg:h-[70vh] xl:my-5 xl:h-auto xl:min-h-0 xl:flex-1 xl:shrink xl:overflow-hidden xl:rounded-4xl xl:border xl:border-white/5">
         <ConstellationPanel
           nodes={graph.nodes}
           edges={graph.edges}
@@ -268,65 +260,90 @@ export default async function HomePage({
             switchHref: "/eventos",
             switchLabel: myEvents.length > 1 ? "cambiar" : "tus eventos",
           }}
-          showHero
         />
       </div>
 
-      {/* Rail de observación: datos reales de ESTE universo */}
-      <aside className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 flex flex-col gap-4 px-4 pb-6 sm:px-6 lg:px-8 xl:w-[21rem] xl:shrink-0 xl:overflow-y-auto xl:py-4 xl:pr-4 xl:pb-4 xl:pl-0">
-        <section className="glass rounded-3xl p-5">
-          <h2 className="text-sm font-semibold">Tu universo</h2>
-          <div className="mt-4 grid grid-cols-2 gap-2.5">
-            {stats.map(({ label, value, icon: Icon, chip }) => (
-              <div
-                key={label}
-                className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.03] p-3"
-              >
-                <span
-                  className={`flex size-8 items-center justify-center rounded-lg ${chip}`}
-                >
-                  <Icon className="size-4" aria-hidden />
-                </span>
-                <p className="text-xl leading-none font-bold">{value}</p>
-                <p className="text-[11px] leading-tight text-muted-foreground">
-                  {label}
+      {/* Rail de observación (1b): datos reales de ESTE universo */}
+      <aside className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 flex flex-col gap-4 px-4 pt-4 pb-6 sm:px-6 lg:px-8 xl:w-[19.5rem] xl:shrink-0 xl:overflow-y-auto xl:px-0 xl:py-5 xl:pr-5 xl:pl-4">
+        <section className="glass flex flex-col gap-4.5 rounded-4xl p-5">
+          <div className="hidden flex-col gap-2 xl:flex">
+            <RailLabel>[ constelación activa ]</RailLabel>
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  {activeEvent.name}
+                </p>
+                <p className="mt-1 font-mono text-xs text-muted-foreground">
+                  {graph.nodes.length}{" "}
+                  {graph.nodes.length === 1 ? "estrella" : "estrellas"}
+                  {eventDate(activeEvent.starts_at)
+                    ? ` · ${eventDate(activeEvent.starts_at)}`
+                    : ""}
                 </p>
               </div>
-            ))}
+              <Link
+                href="/eventos"
+                className="shrink-0 font-mono text-xs text-celeste underline-offset-4 hover:underline"
+              >
+                {myEvents.length > 1 ? "cambiar" : "ver todas"}
+              </Link>
+            </div>
           </div>
-          {connectionCount === 0 && (
-            <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
-              tus líneas nacen al escanear — muestra tu QR o abre el de alguien
-            </p>
-          )}
+
+          <div>
+            <RailLabel>[ tu red ]</RailLabel>
+            <div className="mt-3 flex gap-2.5">
+              <div className="flex-1 rounded-2xl border border-white/5 bg-white/[0.03] px-2.5 py-3">
+                <p className="text-[22px] leading-none font-semibold">
+                  {connectionCount}
+                </p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  {connectionCount === 1 ? "conexión" : "conexiones"}
+                </p>
+              </div>
+              <div className="flex-1 rounded-2xl border border-halfa/20 bg-halfa/5 px-2.5 py-3">
+                <p className="text-[22px] leading-none font-semibold text-halfa">
+                  {triangleCount}
+                </p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  {triangleCount === 1 ? "triángulo" : "triángulos"}
+                </p>
+              </div>
+              <div className="flex-1 rounded-2xl border border-sol/20 bg-sol/5 px-2.5 py-3">
+                <p className="text-[22px] leading-none font-semibold text-sol">
+                  {magnitude}
+                </p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  magnitud
+                </p>
+              </div>
+            </div>
+            {connectionCount === 0 && (
+              <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
+                tus líneas nacen al escanear — muestra tu QR o abre el de
+                alguien
+              </p>
+            )}
+          </div>
         </section>
 
-        <section className="glass rounded-3xl p-5">
-          <h2 className="text-sm font-semibold">Actividad reciente</h2>
+        <section className="glass rounded-4xl p-5">
+          <RailLabel>[ se acaban de conectar ]</RailLabel>
           {activity.length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-3">
+            <ul className="mt-2.5 flex flex-col">
               {activity.map((item) => (
-                <li key={item.id} className="flex items-center gap-3">
-                  {item.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={item.avatarUrl}
-                      alt=""
-                      className="size-8 shrink-0 rounded-full border border-white/10"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-semibold text-estrella-a">
-                      {item.name.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                  <p className="min-w-0 flex-1 text-sm leading-snug">
-                    <span className="font-medium">
-                      {item.name.split(" ")[0]}
-                    </span>{" "}
-                    <span className="text-muted-foreground">{item.text}</span>
+                <li
+                  key={item.id}
+                  className="flex items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-white/[0.04] -mx-2"
+                >
+                  <span
+                    aria-hidden
+                    className="size-[5px] shrink-0 rounded-full bg-estrella-a"
+                  />
+                  <p className="min-w-0 flex-1 truncate text-[13px]">
+                    {item.a} <span className="text-faint">↔</span> {item.b}
                   </p>
-                  <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                  <span className="shrink-0 font-mono text-[10px] text-faint">
                     {item.when}
                   </span>
                 </li>
@@ -339,53 +356,50 @@ export default async function HomePage({
           )}
         </section>
 
-        <section className="glass rounded-3xl p-5">
-          <div className="flex items-baseline justify-between gap-2">
-            <h2 className="text-sm font-semibold">Explora galaxias</h2>
-            <Link
-              href="/eventos"
-              className="font-mono text-xs text-lavanda underline-offset-4 hover:underline"
-            >
-              ver todas
-            </Link>
-          </div>
-          {otherGalaxies && otherGalaxies.length > 0 ? (
-            <ul className="mt-2 flex flex-col">
-              {otherGalaxies.map((event) => (
-                <li key={event.id}>
-                  <a
-                    href={`/e/${event.slug}`}
-                    className="group -mx-2 flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-white/5"
-                  >
-                    <Galaxia seed={event.slug.charCodeAt(0)} size={44} />
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-sm font-medium">
-                        {event.name}
-                      </span>
-                      <span className="font-mono text-[11px] text-muted-foreground">
-                        {eventDate(event.starts_at) ?? "fecha por definir"}
-                      </span>
-                    </span>
-                    <ChevronRight
-                      className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-lavanda"
-                      aria-hidden
-                    />
-                  </a>
+        <section className="glass rounded-4xl p-5">
+          <RailLabel>[ cerca de tu órbita ]</RailLabel>
+          {nearby.length > 0 ? (
+            <ul className="mt-3 flex flex-col gap-2">
+              {nearby.map((person) => (
+                <li
+                  key={person.id}
+                  className="flex items-center gap-2.5 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-2.5"
+                >
+                  <span
+                    aria-hidden
+                    className="size-[7px] shrink-0 rounded-full bg-estrella-b"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-medium">
+                      {person.name}
+                    </p>
+                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                      {[person.role, person.why].filter(Boolean).join(" · ") ||
+                        "todavía sin señales"}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
             <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
-              todo el universo conocido ya es tuyo —{" "}
-              <Link
-                href="/eventos/nuevo"
-                className="text-lavanda underline-offset-4 hover:underline"
-              >
-                enciende otra galaxia
-              </Link>
+              cuando lleguen estrellas afines a tu órbita, aparecen aquí
             </p>
           )}
         </section>
+
+        <Link
+          href="/qr"
+          className="glass flex items-center gap-3.5 rounded-4xl p-4.5 transition-colors hover:border-sol/30"
+        >
+          <QrCode className="size-6.5 shrink-0 text-sol" aria-hidden />
+          <span className="min-w-0">
+            <span className="block text-[13px] font-medium">Tu QR</span>
+            <span className="mt-0.5 block text-[11px] text-muted-foreground">
+              a un tap, siempre
+            </span>
+          </span>
+        </Link>
       </aside>
     </main>
   );

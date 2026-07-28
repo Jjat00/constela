@@ -43,7 +43,8 @@
   --color-sol: var(--sol);
   --color-supernova: var(--supernova);
   --color-cosmic: var(--cosmic);
-  --color-lavanda: var(--lavanda);
+  --color-celeste: var(--celeste);
+  --color-faint: var(--faint);
   --color-estrella-b: var(--estrella-b);
   --color-estrella-a: var(--estrella-a);
   --color-estrella-k: var(--estrella-k);
@@ -60,104 +61,105 @@
 }
 
 /*
- * Constela v4 — "Cinematic Universe" (command center índigo).
- * Dos familias: el chrome (deep space, cristal, nebula purple para CTAs)
- * viene del master prompt del usuario; los colores físicos (sol dorado = tú,
- * espectrales, H-alfa, aurora) se heredan de la v3 porque existen en el
- * cielo y mapean al dominio. App dark-only: :root y .dark comparten paleta.
- * Fuente de verdad: DESIGN.md.
+ * Constela v5 — "Observatorio" (proyecto claude.ai/design «Constela UI
+ * design options», Constela.dc.html). El chrome vira del violeta al azul
+ * cósmico: CTAs y controles activos en cosmic blue #4EA8FF translúcido,
+ * acento de titulares y links en celeste #9DC8FF, cielo casi monocromo
+ * (#0A0C12, nebulosas grises). El oro #FFD97A sigue siendo solo «tú»;
+ * H-alfa #F0699F, los cierres triádicos; aurora #63D6B4, éxito.
+ * App dark-only: :root y .dark comparten paleta. Fuente de verdad: DESIGN.md.
  */
 :root {
-  --background: oklch(0.12 0.035 265); /* deep space #050816 */
-  --foreground: oklch(0.98 0.005 255); /* starlight white #F8FAFF */
-  --card: oklch(0.17 0.03 258); /* galaxy #09111F */
-  --card-foreground: oklch(0.98 0.005 255);
-  --popover: oklch(0.17 0.03 258);
-  --popover-foreground: oklch(0.98 0.005 255);
-  --primary: oklch(0.58 0.21 281); /* nebula purple #6E63FF */
-  --primary-foreground: oklch(0.98 0.005 255);
-  --secondary: oklch(0.22 0.04 275);
-  --secondary-foreground: oklch(0.98 0.005 255);
-  --muted: oklch(0.2 0.035 268);
-  --muted-foreground: oklch(0.75 0.025 265); /* soft gray #AAB2C8 */
-  --accent: oklch(0.25 0.06 275); /* violeta profundo para superficies hover */
-  --accent-foreground: oklch(0.98 0.005 255);
+  --background: #02030a; /* el vacío — cuerpo bajo el cielo */
+  --foreground: #f8faff; /* starlight white */
+  --card: #0b0f19;
+  --card-foreground: #f8faff;
+  --popover: #0b0f19;
+  --popover-foreground: #f8faff;
+  --primary: #4ea8ff; /* cosmic blue — tinta del chrome */
+  --primary-foreground: #04101e;
+  --secondary: #121826;
+  --secondary-foreground: #f8faff;
+  --muted: #10151f;
+  --muted-foreground: #aab2c8; /* soft gray */
+  --accent: #16202e; /* superficie hover azulada */
+  --accent-foreground: #f8faff;
   --destructive: oklch(0.7 0.19 22);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.58 0.21 281);
-  --chart-1: oklch(0.58 0.21 281); /* nebula purple */
-  --chart-2: oklch(0.7 0.15 250); /* cosmic blue */
-  --chart-3: oklch(0.68 0.17 355); /* H-alfa */
-  --chart-4: oklch(0.79 0.09 170); /* aurora OIII */
-  --chart-5: oklch(0.89 0.11 90); /* golden star */
+  --ring: #4ea8ff;
+  --chart-1: #4ea8ff;
+  --chart-2: #9dc8ff;
+  --chart-3: #f0699f;
+  --chart-4: #63d6b4;
+  --chart-5: #ffd97a;
   --radius: 0.625rem;
-  --sidebar: oklch(0.17 0.03 258);
-  --sidebar-foreground: oklch(0.98 0.005 255);
-  --sidebar-primary: oklch(0.58 0.21 281);
-  --sidebar-primary-foreground: oklch(0.98 0.005 255);
-  --sidebar-accent: oklch(0.25 0.06 275);
-  --sidebar-accent-foreground: oklch(0.98 0.005 255);
+  --sidebar: #0b0f19;
+  --sidebar-foreground: #f8faff;
+  --sidebar-primary: #4ea8ff;
+  --sidebar-primary-foreground: #04101e;
+  --sidebar-accent: #16202e;
+  --sidebar-accent-foreground: #f8faff;
   --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.58 0.21 281);
-  --sol: oklch(0.89 0.11 90); /* golden star #FFD97A — solo tú */
-  --supernova: oklch(0.97 0.05 95); /* #FFF4C7 */
-  --cosmic: oklch(0.7 0.15 250); /* cosmic blue #4EA8FF */
-  --lavanda: oklch(0.75 0.13 285); /* #A9A1FF — acento de texto fino */
-  --estrella-b: oklch(0.76 0.09 265);
-  --estrella-a: oklch(0.87 0.05 270);
-  --estrella-k: oklch(0.88 0.07 75);
-  --estrella-m: oklch(0.79 0.1 55);
-  --halfa: oklch(0.68 0.17 355);
-  --aurora: oklch(0.79 0.09 170);
-  --glow-sol: 0 0 32px oklch(0.89 0.11 90 / 40%);
-  --glow-nebula: 0 0 32px oklch(0.58 0.21 281 / 45%);
+  --sidebar-ring: #4ea8ff;
+  --sol: #ffd97a; /* golden star — solo tú */
+  --supernova: #fff4c7;
+  --cosmic: #4ea8ff; /* cosmic blue — CTAs */
+  --celeste: #9dc8ff; /* acento de titulares y links */
+  --faint: #79839c; /* microetiquetas mono, texto terciario */
+  --estrella-b: #9db4ff;
+  --estrella-a: #cdd8ff;
+  --estrella-k: #ffd9a8;
+  --estrella-m: #ffb380;
+  --halfa: #f0699f;
+  --aurora: #63d6b4;
+  --glow-sol: 0 0 32px rgb(255 217 122 / 40%);
 }
 
 .dark {
-  --background: oklch(0.12 0.035 265);
-  --foreground: oklch(0.98 0.005 255);
-  --card: oklch(0.17 0.03 258);
-  --card-foreground: oklch(0.98 0.005 255);
-  --popover: oklch(0.17 0.03 258);
-  --popover-foreground: oklch(0.98 0.005 255);
-  --primary: oklch(0.58 0.21 281);
-  --primary-foreground: oklch(0.98 0.005 255);
-  --secondary: oklch(0.22 0.04 275);
-  --secondary-foreground: oklch(0.98 0.005 255);
-  --muted: oklch(0.2 0.035 268);
-  --muted-foreground: oklch(0.75 0.025 265);
-  --accent: oklch(0.25 0.06 275);
-  --accent-foreground: oklch(0.98 0.005 255);
+  --background: #02030a;
+  --foreground: #f8faff;
+  --card: #0b0f19;
+  --card-foreground: #f8faff;
+  --popover: #0b0f19;
+  --popover-foreground: #f8faff;
+  --primary: #4ea8ff;
+  --primary-foreground: #04101e;
+  --secondary: #121826;
+  --secondary-foreground: #f8faff;
+  --muted: #10151f;
+  --muted-foreground: #aab2c8;
+  --accent: #16202e;
+  --accent-foreground: #f8faff;
   --destructive: oklch(0.7 0.19 22);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.58 0.21 281);
-  --chart-1: oklch(0.58 0.21 281);
-  --chart-2: oklch(0.7 0.15 250);
-  --chart-3: oklch(0.68 0.17 355);
-  --chart-4: oklch(0.79 0.09 170);
-  --chart-5: oklch(0.89 0.11 90);
-  --sidebar: oklch(0.17 0.03 258);
-  --sidebar-foreground: oklch(0.98 0.005 255);
-  --sidebar-primary: oklch(0.58 0.21 281);
-  --sidebar-primary-foreground: oklch(0.98 0.005 255);
-  --sidebar-accent: oklch(0.25 0.06 275);
-  --sidebar-accent-foreground: oklch(0.98 0.005 255);
+  --ring: #4ea8ff;
+  --chart-1: #4ea8ff;
+  --chart-2: #9dc8ff;
+  --chart-3: #f0699f;
+  --chart-4: #63d6b4;
+  --chart-5: #ffd97a;
+  --sidebar: #0b0f19;
+  --sidebar-foreground: #f8faff;
+  --sidebar-primary: #4ea8ff;
+  --sidebar-primary-foreground: #04101e;
+  --sidebar-accent: #16202e;
+  --sidebar-accent-foreground: #f8faff;
   --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.58 0.21 281);
-  --sol: oklch(0.89 0.11 90);
-  --supernova: oklch(0.97 0.05 95);
-  --cosmic: oklch(0.7 0.15 250);
-  --lavanda: oklch(0.75 0.13 285);
-  --estrella-b: oklch(0.76 0.09 265);
-  --estrella-a: oklch(0.87 0.05 270);
-  --estrella-k: oklch(0.88 0.07 75);
-  --estrella-m: oklch(0.79 0.1 55);
-  --halfa: oklch(0.68 0.17 355);
-  --aurora: oklch(0.79 0.09 170);
-  --glow-sol: 0 0 32px oklch(0.89 0.11 90 / 40%);
-  --glow-nebula: 0 0 32px oklch(0.58 0.21 281 / 45%);
+  --sidebar-ring: #4ea8ff;
+  --sol: #ffd97a;
+  --supernova: #fff4c7;
+  --cosmic: #4ea8ff;
+  --celeste: #9dc8ff;
+  --faint: #79839c;
+  --estrella-b: #9db4ff;
+  --estrella-a: #cdd8ff;
+  --estrella-k: #ffd9a8;
+  --estrella-m: #ffb380;
+  --halfa: #f0699f;
+  --aurora: #63d6b4;
+  --glow-sol: 0 0 32px rgb(255 217 122 / 40%);
 }
 
 @layer base {
@@ -165,27 +167,15 @@
     @apply border-border outline-ring/50;
   }
   body {
-    /* Nunca un negro plano: el espacio tiene profundidad — velo violeta
-       arriba, vacío #02030A hacia los bordes */
-    background:
-      radial-gradient(
-        120% 90% at 50% 0%,
-        oklch(0.16 0.05 280) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        140% 120% at 50% 50%,
-        var(--background) 40%,
-        oklch(0.08 0.02 265) 100%
-      ),
-      var(--background);
+    /* v5: el vacío es plano — la profundidad la pone CosmicSky, no el body */
+    background: var(--background);
     @apply text-foreground;
   }
   html {
     @apply font-sans;
   }
   ::selection {
-    background: oklch(0.58 0.21 281 / 35%);
+    background: rgb(78 168 255 / 30%);
   }
 }
 
@@ -197,37 +187,85 @@
     inset: 0;
     z-index: 50;
     pointer-events: none;
-    opacity: 0.04;
+    opacity: 0.045;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  /* Cristal v4: paneles flotando sobre el cosmos — blur real, borde fino,
-     gradiente sutil. Nunca un panel opaco encima del cielo. */
+  /* Cristal v5: relleno blanco neutro al 5%, borde fino, blur 26 —
+     sin tinte de color. Nunca un panel opaco encima del cielo. */
   .glass {
-    background: linear-gradient(
-      165deg,
-      rgba(255, 255, 255, 0.07),
-      rgba(255, 255, 255, 0.03) 45%,
-      rgba(110, 99, 255, 0.04)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    box-shadow: 0 12px 40px rgba(2, 3, 10, 0.45);
+    background: rgb(255 255 255 / 5%);
+    border: 1px solid rgb(255 255 255 / 8%);
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
+    box-shadow: 0 30px 70px -30px rgb(2 3 10 / 90%);
   }
-  .text-glow {
-    text-shadow: 0 0 40px oklch(0.58 0.21 281 / 55%);
+  /* CTA principal: píldora de cristal con tinta cosmic blue. Sin glow. */
+  .btn-cosmic {
+    border: 1px solid rgb(78 168 255 / 75%);
+    background: rgb(78 168 255 / 14%);
+    color: var(--foreground);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: calc(infinity * 1px);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
   }
-  /* Glow del chrome (CTAs violeta) */
-  .node-glow {
-    box-shadow: var(--glow-nebula);
+  .btn-cosmic:hover {
+    background: rgb(78 168 255 / 26%);
   }
-  /* Glow de identidad (tú: avatar, QR) — dorado, nunca en botones */
+  /* Acción de identidad (tu QR): oro, nunca para chrome genérico */
+  .btn-sol {
+    border: 1px solid rgb(255 217 122 / 45%);
+    background: rgb(255 217 122 / 12%);
+    color: var(--sol);
+    border-radius: calc(infinity * 1px);
+    transition: background-color 0.2s ease;
+  }
+  .btn-sol:hover {
+    background: rgb(255 217 122 / 20%);
+  }
+  /* Chip de filtro/tag: reposo gris, activo cosmic blue */
+  .chip-star {
+    border: 1px solid rgb(255 255 255 / 9%);
+    background: rgb(255 255 255 / 4%);
+    color: var(--muted-foreground);
+    border-radius: calc(infinity * 1px);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .chip-star:hover {
+    border-color: rgb(255 255 255 / 20%);
+    color: var(--foreground);
+  }
+  .chip-star[data-active="true"],
+  .chip-star[aria-pressed="true"] {
+    border-color: rgb(78 168 255 / 80%);
+    background: rgb(78 168 255 / 22%);
+    color: var(--foreground);
+  }
+  /* Toggle triádico: H-alfa cuando está encendido */
+  .chip-triad {
+    border: 1px solid rgb(255 255 255 / 9%);
+    background: rgb(255 255 255 / 4%);
+    color: var(--muted-foreground);
+    border-radius: calc(infinity * 1px);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .chip-triad[data-active="true"],
+  .chip-triad[aria-pressed="true"] {
+    border-color: rgb(240 105 159 / 60%);
+    background: rgb(240 105 159 / 14%);
+    color: var(--halfa);
+  }
+  /* Glow de identidad (tú: avatar, QR) — dorado, nunca en botones de chrome */
   .sol-glow {
     box-shadow: var(--glow-sol);
   }
   /* Halo del icono activo en la barra de navegación móvil */
   .drop-shadow-glow {
-    filter: drop-shadow(0 0 8px oklch(0.58 0.21 281 / 65%));
+    filter: drop-shadow(0 0 8px rgb(157 200 255 / 60%));
   }
 }
 
@@ -247,9 +285,14 @@
   }
 }
 
-@keyframes marquee {
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
   to {
-    transform: translateX(-50%);
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -274,22 +317,10 @@
   }
 }
 
-/* Estrella fugaz: un trazo que cruza y muere; vive oculta casi todo el ciclo */
-@keyframes shoot {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(-32deg);
-    opacity: 0;
-  }
-  1% {
-    opacity: 0.9;
-  }
-  4% {
-    transform: translate3d(-38vw, 24vh, 0) rotate(-32deg);
-    opacity: 0;
-  }
-  100% {
-    transform: translate3d(-38vw, 24vh, 0) rotate(-32deg);
-    opacity: 0;
+/* Giro galáctico: los brazos rotan a escala de minutos */
+@keyframes galaxy {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -316,8 +347,8 @@
   animation: draw 1.8s cubic-bezier(0.6, 0, 0.2, 1) forwards;
 }
 
-.animate-marquee {
-  animation: marquee 36s linear infinite;
+.animate-rise {
+  animation: rise 0.6s ease-out both;
 }
 
 .animate-float {
@@ -328,28 +359,42 @@
   animation: drift 48s ease-in-out infinite;
 }
 
-.animate-shoot {
-  animation: shoot 34s linear infinite;
-}
-
 .animate-corona {
   animation: corona 7s ease-in-out infinite;
 }
 
+.animate-galaxy {
+  animation: galaxy 140s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-twinkle,
-  .animate-marquee,
   .animate-float,
   .animate-drift,
-  .animate-corona {
+  .animate-corona,
+  .animate-galaxy {
     animation: none !important;
   }
-  .animate-shoot {
+  .animate-rise {
     animation: none !important;
-    opacity: 0;
   }
   .animate-draw {
     animation: none !important;
     stroke-dashoffset: 0;
   }
+}
+
+/* Preferencia in-app «Movimiento reducido» (Ajustes 3a): congela el cielo
+   sin tocar el ajuste del sistema. */
+.calm .animate-twinkle,
+.calm .animate-float,
+.calm .animate-drift,
+.calm .animate-corona,
+.calm .animate-galaxy,
+.calm .animate-rise {
+  animation: none !important;
+}
+.calm .animate-draw {
+  animation: none !important;
+  stroke-dashoffset: 0;
 }

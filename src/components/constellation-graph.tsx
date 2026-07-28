@@ -1,18 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import type ForceGraph2DComponent from "react-force-graph-2d";
 import { spectrumOf } from "@/components/cosmos";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { MiniPerfil } from "@/components/mini-perfil";
 
 export type GraphNode = {
   id: string;
@@ -42,12 +33,15 @@ type SimNode = GraphNode & {
   fy?: number;
 };
 
-// Cinematic Universe (DESIGN.md v4): el tú es un sol dorado; el resto,
-// estrellas con clase espectral estable y magnitud según conexiones. Las
-// líneas son filamentos de atlas (blanco azulado) y los triángulos, H-alfa.
+// StarMap v5 (diseño 1b): estrellas puras — núcleo blanco, halo espectral,
+// picos de difracción. Las fotos no viven en el mapa: viven en el MiniPerfil.
+// El tú es un sol dorado; las líneas son filamentos blanco azulado y los
+// triángulos, gas H-alfa con borde.
 const SOL = "#FFD97A";
 const SOL_CORE = "#FFF6E3";
 const HALFA = "240, 105, 159"; // rgb de --halfa, para armar alphas
+const FILAMENTO = "205, 216, 255"; // rgb de estrella A
+const CELESTE = "#9DC8FF"; // anillo de selección
 
 function hexA(hex: string, alpha: number) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -61,36 +55,34 @@ function isLit(id: string, myId: string, matched: Set<string>) {
   return id === myId || matched.has(id);
 }
 
-/**
- * El canvas no puede dibujar imágenes de otro origen sin CORS, y proveedores
- * como pravatar no lo mandan. El optimizador de Next las re-sirve desde
- * nuestro propio origen, así que dejan de ser cross-origin.
- */
-function sameOriginAvatar(url: string) {
-  return `/_next/image?url=${encodeURIComponent(url)}&w=64&q=75`;
-}
-
 export function ConstellationGraph({
   nodes,
   edges,
   myId,
   matchedIds = null,
+  tagLabels,
+  showTriads = true,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
   myId: string;
   /**
    * Filtro activo: las estrellas fuera del conjunto no desaparecen — se
-   * apagan hasta ser polvo. El mapa sigue siendo el mismo (los nodos no
-   * saltan de sitio) y las que te interesan son lo único que brilla.
+   * apagan al 14 %. El mapa sigue siendo el mismo (los nodos no saltan de
+   * sitio) y las que te interesan son lo único que brilla.
    */
   matchedIds?: Set<string> | null;
+  /** slug → label del catálogo, para que el MiniPerfil hable en humano. */
+  tagLabels?: Map<string, string>;
+  /** Apagar el gas H-alfa de los cierres triádicos (toggle del panel). */
+  showTriads?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
-  // Tocar una estrella la abre en un panel; nunca navega ni conecta: la
+  // Tocar una estrella la abre en el MiniPerfil; nunca navega ni conecta: la
   // conexión solo nace de escanear un QR en persona (ADR 0001).
   const [selected, setSelected] = useState<GraphNode | null>(null);
+  const [zoomLabel, setZoomLabel] = useState("×1.0");
 
   // Import manual (no next/dynamic): necesitamos pasar ref para zoomToFit
   const [ForceGraph2D, setForceGraph2D] = useState<
@@ -99,12 +91,16 @@ export function ConstellationGraph({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fgRef = useRef<any>(null);
   const didFit = useRef(false);
-  // Las fotos se dibujan en canvas: hay que cargar y cachear los Image a mano
-  const imgCache = useRef(new Map<string, HTMLImageElement>());
   // Dónde empezó el gesto, para distinguir un toque de un paneo
   const pressRef = useRef<{ x: number; y: number } | null>(null);
   // La estrella que se está arrastrando ahora mismo, si hay alguna
   const dragRef = useRef<SimNode | null>(null);
+  // La estrella bajo el cursor: el canvas la lee en cada frame sin re-render
+  const hoverRef = useRef<string | null>(null);
+  const selectedRef = useRef<string | null>(null);
+  useEffect(() => {
+    selectedRef.current = selected?.id ?? null;
+  }, [selected]);
 
   // Mis aristas, para contar en el panel de quién ya conozco y con qué nota.
   // Se lee de `edges` (el prop) y no de los links del grafo, que force-graph
@@ -118,7 +114,7 @@ export function ConstellationGraph({
     return map;
   }, [edges, myId]);
 
-  // Magnitud: más conexiones = más brillo y radio (DESIGN.md v3)
+  // Magnitud: más conexiones = más brillo y radio (DESIGN.md)
   const degreeOf = useMemo(() => {
     const map = new Map<string, number>();
     for (const edge of edges) {
@@ -207,8 +203,17 @@ export function ConstellationGraph({
       document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
+  // Escape cierra el MiniPerfil (el ✕ existe, pero el teclado también)
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelected(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected]);
+
   const { width, height } = size;
-  const isMeSelected = selected?.id === myId;
   const sharedEdge = selected ? myEdgeByPeer.get(selected.id) : undefined;
 
   // Estos arrays se pasan tal cual a force-graph, que los MUTA añadiendo x/y a
@@ -229,17 +234,6 @@ export function ConstellationGraph({
     for (const node of graphNodes) map.set(node.id, node);
     return map;
   }, [graphNodes]);
-
-  // Las aristas que forman parte de un triángulo se dibujan en H-alfa
-  const triangleEdges = useMemo(() => {
-    const set = new Set<string>();
-    for (const [a, b, c] of triangles) {
-      set.add(`${a}|${b}`);
-      set.add(`${a}|${c}`);
-      set.add(`${b}|${c}`);
-    }
-    return set;
-  }, [triangles]);
 
   /**
    * Detección de toque propia. force-graph la resuelve con un canvas oculto
@@ -281,11 +275,19 @@ export function ConstellationGraph({
     return nodeAt(touch?.clientX ?? ev.clientX, touch?.clientY ?? ev.clientY);
   }
 
-  // La altura la decide el contenedor (h-80 en móvil, columna completa en desktop)
+  function zoomBy(factor: number) {
+    const fg = fgRef.current;
+    if (!fg) return;
+    const next = Math.max(0.4, Math.min(6, (fg.zoom() || 1) * factor));
+    fg.zoom(next, 200);
+    setZoomLabel(`×${next.toFixed(1)}`);
+  }
+
+  // La altura la decide el contenedor (columna completa en desktop)
   return (
     <div
       ref={containerRef}
-      className="h-full w-full"
+      className="relative h-full w-full"
       onPointerDown={(e) => {
         pressRef.current = { x: e.clientX, y: e.clientY };
         const node = nodeAt(e.clientX, e.clientY);
@@ -329,7 +331,12 @@ export function ConstellationGraph({
         }
 
         if (e.pointerType !== "mouse") return;
-        el.style.cursor = nodeAt(e.clientX, e.clientY) ? "pointer" : "";
+        const over = nodeAt(e.clientX, e.clientY);
+        hoverRef.current = over?.id ?? null;
+        el.style.cursor = over ? "pointer" : "";
+      }}
+      onPointerLeave={() => {
+        hoverRef.current = null;
       }}
     >
       {width > 0 && height > 0 && ForceGraph2D && (
@@ -347,7 +354,7 @@ export function ConstellationGraph({
           // se congelaba, y el zoomToFit de onEngineStop movía las estrellas
           // después: las zonas táctiles quedaban en las posiciones viejas y
           // solo respondían las de cerca del centro. Sin autopausa, el canvas
-          // oculto sigue el zoom, el arrastre y las fotos que cargan tarde.
+          // oculto sigue el zoom, el arrastre y el hover.
           autoPauseRedraw={false}
           nodeLabel={() => ""}
           // El arrastre nativo usa el mismo canvas oculto que falla al detectar
@@ -356,12 +363,14 @@ export function ConstellationGraph({
           // Y para que el mapa no se desplace a la vez que la estrella, el
           // paneo se desactiva cuando el gesto empieza sobre una.
           enablePanInteraction={(ev) => !nodeUnderEvent(ev)}
+          onZoomEnd={({ k }) => setZoomLabel(`×${k.toFixed(1)}`)}
           onEngineStop={() => {
             if (didFit.current || nodes.length < 2) return;
             didFit.current = true;
             fgRef.current?.zoomToFit(0, 48);
             // Con pocos nodos zoomToFit acerca demasiado: tope de zoom
             if ((fgRef.current?.zoom() ?? 1) > 3) fgRef.current?.zoom(3, 0);
+            setZoomLabel(`×${(fgRef.current?.zoom() ?? 1).toFixed(1)}`);
           }}
           linkColor={(link) => {
             const end = (e: unknown) =>
@@ -375,16 +384,33 @@ export function ConstellationGraph({
             const lit =
               !matchedIds ||
               (isLit(a, myId, matchedIds) && isLit(b, myId, matchedIds));
-            if (!lit) return `rgba(205, 216, 255, ${0.07 * fade})`;
-            // La arista que cierra un triángulo se ioniza en H-alfa
-            const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-            return triangleEdges.has(key)
-              ? `rgba(${HALFA}, ${0.55 * fade})`
-              : `rgba(205, 216, 255, ${0.4 * fade})`;
+            if (!lit) return `rgba(${FILAMENTO}, ${0.05 * fade})`;
+            // Tocar un extremo enciende el filamento
+            const hot =
+              hoverRef.current === a ||
+              hoverRef.current === b ||
+              selectedRef.current === a ||
+              selectedRef.current === b;
+            return `rgba(${FILAMENTO}, ${(hot ? 0.85 : 0.34) * fade})`;
           }}
-          linkWidth={0.8}
+          linkWidth={(link) => {
+            const end = (e: unknown) =>
+              typeof e === "object" && e !== null
+                ? String((e as { id?: string }).id ?? "")
+                : String(e);
+            const a = end(link.source);
+            const b = end(link.target);
+            const hot =
+              hoverRef.current === a ||
+              hoverRef.current === b ||
+              selectedRef.current === a ||
+              selectedRef.current === b;
+            return hot ? 1.1 : 0.65;
+          }}
           // El gas ionizado de los cierres triádicos, debajo de líneas y estrellas
           onRenderFramePre={(ctx) => {
+            if (!showTriads) return;
+            const fade = drawInFade();
             for (const [a, b, c] of triangles) {
               if (
                 matchedIds &&
@@ -405,71 +431,93 @@ export function ConstellationGraph({
               ctx.lineTo(nb.x ?? 0, nb.y ?? 0);
               ctx.lineTo(nc.x ?? 0, nc.y ?? 0);
               ctx.closePath();
-              ctx.fillStyle = `rgba(${HALFA}, ${0.07 * drawInFade()})`;
+              ctx.fillStyle = `rgba(${HALFA}, ${0.085 * fade})`;
               ctx.fill();
+              ctx.strokeStyle = `rgba(${HALFA}, ${0.34 * fade})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
             }
           }}
           nodeCanvasObject={(node, ctx, globalScale) => {
-            const isMe = node.id === myId;
+            const id = String(node.id);
+            const isMe = id === myId;
             const x = node.x ?? 0;
             const y = node.y ?? 0;
-
-            // Fuera del filtro: polvo tenue, sin foto ni nombre
-            if (matchedIds && !isLit(String(node.id), myId, matchedIds)) {
-              ctx.beginPath();
-              ctx.arc(x, y, 1.8, 0, 2 * Math.PI);
-              ctx.fillStyle = "rgba(244, 242, 238, 0.16)";
-              ctx.fill();
-              return;
-            }
+            const dimmed = matchedIds ? !isLit(id, myId, matchedIds) : false;
+            const hot = hoverRef.current === id;
+            const isSel = selectedRef.current === id;
 
             const spec = isMe
               ? { halo: SOL, core: SOL_CORE }
-              : spectrumOf(String(node.id));
+              : spectrumOf(id);
             // Magnitud: el brillo y el radio crecen con las conexiones.
             // El tope ajeno es menor que el del sol: tú brillas más siempre.
-            const degree = degreeOf.get(String(node.id)) ?? 0;
-            const mag = Math.min(isMe ? 1.6 : 1.35, 1 + Math.log2(1 + degree) * 0.22);
-
-            // Foto de perfil (si existe y ya cargó); si no, estrella pura
-            const url = (node as GraphNode).avatarUrl;
-            let img: HTMLImageElement | undefined;
-            if (url) {
-              img = imgCache.current.get(url);
-              if (!img) {
-                img = new Image();
-                img.src = sameOriginAvatar(url);
-                imgCache.current.set(url, img);
-              }
-            }
-            const hasPhoto = Boolean(
-              img && img.complete && img.naturalWidth > 0,
+            const degree = degreeOf.get(id) ?? 0;
+            const mag = Math.min(
+              isMe ? 1.6 : 1.35,
+              1 + Math.log2(1 + degree) * 0.22,
             );
+            const coreR = (isMe ? 4.6 : 2.4) * mag;
 
-            const coreR = (isMe ? 6 : 3) * mag;
-            const photoR = (isMe ? 8.5 : 5.5) * mag;
-            const baseR = hasPhoto ? photoR : coreR;
+            // Fuera del filtro: la estrella no desaparece — baja al 14 %
+            if (dimmed) ctx.globalAlpha = 0.14;
 
-            // Corona: luz que se desvanece (gradiente), nunca un disco plano.
-            // La del sol respira — quieta si el sistema pide calma.
-            const breath =
-              isMe && !reducedMotion
-                ? 1 + 0.05 * Math.sin(performance.now() / 1100)
-                : 1;
-            const haloR = baseR * (isMe ? 3.6 : 2.6) * breath;
-            const glow = ctx.createRadialGradient(x, y, baseR * 0.4, x, y, haloR);
-            glow.addColorStop(0, hexA(spec.halo, isMe ? 0.5 : 0.35));
-            glow.addColorStop(0.55, hexA(spec.halo, isMe ? 0.16 : 0.09));
+            // El sol lleva corona respirando y fotosfera cálida
+            if (isMe) {
+              const breath = reducedMotion
+                ? 1
+                : 1 + 0.05 * Math.sin(performance.now() / 1100);
+              const coronaR = coreR * 7 * breath;
+              const corona = ctx.createRadialGradient(x, y, 0, x, y, coronaR);
+              corona.addColorStop(0, hexA(SOL, 0.16));
+              corona.addColorStop(1, hexA(SOL, 0));
+              ctx.beginPath();
+              ctx.arc(x, y, coronaR, 0, 2 * Math.PI);
+              ctx.fillStyle = corona;
+              ctx.fill();
+
+              const photo = ctx.createRadialGradient(
+                x,
+                y,
+                0,
+                x,
+                y,
+                coreR * 2.6,
+              );
+              photo.addColorStop(0, hexA("#FFE9A8", 0.5));
+              photo.addColorStop(1, hexA("#FFE9A8", 0));
+              ctx.beginPath();
+              ctx.arc(x, y, coreR * 2.6, 0, 2 * Math.PI);
+              ctx.fillStyle = photo;
+              ctx.fill();
+            }
+
+            // Corona espectral: luz que se desvanece, nunca un disco plano
+            const glowR = coreR * (hot || isSel ? 5.2 : 4.2);
+            const glow = ctx.createRadialGradient(x, y, coreR * 0.4, x, y, glowR);
+            glow.addColorStop(0, hexA(spec.halo, isMe ? 0.3 : 0.22));
             glow.addColorStop(1, hexA(spec.halo, 0));
             ctx.beginPath();
-            ctx.arc(x, y, haloR, 0, 2 * Math.PI);
+            ctx.arc(x, y, glowR, 0, 2 * Math.PI);
             ctx.fillStyle = glow;
             ctx.fill();
 
+            // Halo cercano: aquí vive el color
+            ctx.beginPath();
+            ctx.arc(x, y, coreR * 1.9, 0, 2 * Math.PI);
+            ctx.fillStyle = hexA(spec.halo, isMe ? 0.95 : 0.62);
+            ctx.fill();
+
+            // Núcleo blanco-caliente
+            ctx.beginPath();
+            ctx.arc(x, y, coreR * 0.72, 0, 2 * Math.PI);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fill();
+
             // Picos de difracción: el sol siempre; el resto, al ganar magnitud
-            if (isMe || degree >= 1) {
-              const spike = baseR * (isMe ? 2.6 : 2.1);
-              ctx.strokeStyle = hexA(spec.halo, 0.5);
+            if (isMe || degree >= 2) {
+              const spike = coreR * 4.6;
+              ctx.strokeStyle = hexA(isMe ? SOL_CORE : "#FFFFFF", 0.45);
               ctx.lineWidth = 0.5;
               ctx.lineCap = "round";
               ctx.beginPath();
@@ -480,117 +528,77 @@ export function ConstellationGraph({
               ctx.stroke();
             }
 
-            let labelY: number;
-            if (hasPhoto && img) {
-              ctx.save();
+            // Anillo de selección
+            if (isSel) {
               ctx.beginPath();
-              ctx.arc(x, y, photoR, 0, 2 * Math.PI);
-              ctx.clip();
-              ctx.drawImage(img, x - photoR, y - photoR, photoR * 2, photoR * 2);
-              ctx.restore();
-              // Anillo espectral: la foto vive dentro de su estrella
-              ctx.beginPath();
-              ctx.arc(x, y, photoR, 0, 2 * Math.PI);
-              ctx.strokeStyle = hexA(spec.halo, isMe ? 1 : 0.6);
-              ctx.lineWidth = isMe ? 0.9 : 0.5;
+              ctx.arc(x, y, coreR * 3.4, 0, 2 * Math.PI);
+              ctx.strokeStyle = hexA(CELESTE, 0.9);
+              ctx.lineWidth = 1.1 / globalScale;
               ctx.stroke();
-              labelY = y + photoR + 2;
-            } else {
-              // Núcleo blanco-caliente: el color vive en el halo
-              ctx.beginPath();
-              ctx.arc(x, y, coreR, 0, 2 * Math.PI);
-              ctx.fillStyle = spec.core;
-              ctx.fill();
-              labelY = y + coreR * 2.2 + 2;
             }
 
-            // nombre (primer nombre) debajo
-            const label = isMe
-              ? "tú"
-              : String(node.name ?? "").split(" ")[0].toLowerCase();
-            const fontSize = Math.max(10 / globalScale, 3.5);
-            ctx.font = `${fontSize}px ui-monospace, monospace`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "top";
-            ctx.fillStyle = isMe ? SOL : "rgba(244, 242, 238, 0.55)";
-            ctx.fillText(label, x, labelY);
+            // Etiqueta: tú siempre; el resto al pasar, seleccionar o filtrar
+            const showLabel =
+              !dimmed &&
+              (isMe || hot || isSel || (matchedIds?.has(id) ?? false));
+            if (showLabel) {
+              const label = isMe
+                ? "tú"
+                : String(node.name ?? "").split(" ")[0].toLowerCase();
+              const fontSize = Math.max(11 / globalScale, 3.5);
+              ctx.font = `500 ${fontSize}px ui-monospace, monospace`;
+              ctx.textAlign = "left";
+              ctx.textBaseline = "middle";
+              const labelX = x + coreR * 3.6 + 3;
+              ctx.lineWidth = fontSize / 4;
+              ctx.strokeStyle = "rgba(2, 3, 10, 0.75)";
+              ctx.strokeText(label, labelX, y);
+              ctx.fillStyle = isMe ? SOL : "#F8FAFF";
+              ctx.fillText(label, labelX, y);
+            }
+
+            if (dimmed) ctx.globalAlpha = 1;
           }}
         />
       )}
 
-      <Sheet
-        open={selected !== null}
-        onOpenChange={(open) => !open && setSelected(null)}
-      >
-        <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
-          {selected && (
-            <>
-              <SheetHeader className="flex-row items-center gap-4 text-left">
-                {selected.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={selected.avatarUrl}
-                    alt=""
-                    className="size-14 shrink-0 rounded-full border border-border"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div
-                    className="flex size-14 shrink-0 items-center justify-center rounded-full border bg-card text-xl font-bold"
-                    style={{
-                      color: isMeSelected ? SOL : spectrumOf(selected.id).halo,
-                      borderColor: `${isMeSelected ? SOL : spectrumOf(selected.id).halo}66`,
-                    }}
-                  >
-                    {selected.name?.charAt(0)?.toUpperCase() ?? "?"}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <SheetTitle className="text-xl">
-                    {isMeSelected ? "Tu estrella" : selected.name}
-                  </SheetTitle>
-                  <SheetDescription>
-                    {selected.headline ?? "sin titular todavía"}
-                  </SheetDescription>
-                </div>
-              </SheetHeader>
+      {/* Control de zoom (diseño StarMap): esquina inferior izquierda */}
+      <div className="glass absolute bottom-4 left-4 z-10 hidden items-center gap-0.5 rounded-full p-1 lg:flex">
+        <button
+          type="button"
+          onClick={() => zoomBy(0.8)}
+          aria-label="Alejar"
+          className="grid size-7.5 place-items-center rounded-full text-[15px] text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+        >
+          −
+        </button>
+        <span className="min-w-8.5 text-center font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+          {zoomLabel}
+        </span>
+        <button
+          type="button"
+          onClick={() => zoomBy(1.25)}
+          aria-label="Acercar"
+          className="grid size-7.5 place-items-center rounded-full text-[15px] text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+        >
+          +
+        </button>
+      </div>
 
-              <div className="flex flex-col gap-4 px-4 pb-6">
-                {selected.tags?.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selected.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                {isMeSelected ? (
-                  <Button asChild variant="outline" className="rounded-full">
-                    <Link href="/perfil">Editar mi estrella</Link>
-                  </Button>
-                ) : sharedEdge ? (
-                  <div className="flex flex-col gap-1">
-                    <p className="font-mono text-xs text-primary">
-                      [ conectados ]
-                    </p>
-                    {sharedEdge.note && (
-                      <p className="text-sm text-muted-foreground">
-                        “{sharedEdge.note}”
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="font-mono text-xs leading-5 text-muted-foreground">
-                    aún no se han cruzado — escanea su QR cuando se encuentren
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
+      {/* La ficha de la estrella tocada: card flotante en desktop, sheet en móvil */}
+      {selected && (
+        <div className="absolute inset-x-0 bottom-0 z-20 lg:inset-x-auto lg:bottom-6 lg:left-6 lg:w-[344px]">
+          <MiniPerfil
+            node={selected}
+            isMe={selected.id === myId}
+            degree={degreeOf.get(selected.id) ?? 0}
+            connected={Boolean(sharedEdge)}
+            note={sharedEdge?.note ?? null}
+            tagLabels={tagLabels}
+            onClose={() => setSelected(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }
