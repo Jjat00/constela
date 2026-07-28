@@ -21,8 +21,8 @@ Escanear el QR personal de alguien que ya está en un evento te une a su evento 
 _Avoid_: Invitación implícita, auto-registro
 
 **Conexión**:
-La arista entre dos asistentes, creada cuando uno escanea el QR personal del otro. Puede llevar una nota opcional del momento. Es simétrica y única por par.
-_Avoid_: Amistad, follow, match
+La arista entre dos asistentes, creada automáticamente cuando uno abre el QR personal del otro — sin botón ni confirmación. Puede llevar una nota opcional (editable después). Es simétrica y única por par y por evento.
+_Avoid_: Amistad, follow, match, solicitud
 
 **QR personal**:
 El código propio de cada estrella (`/u/{slug}`); que te lo escaneen crea una conexión.

@@ -76,7 +76,7 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 - **Entregable**: entro con Google, tengo mi QR, estoy en el evento y veo la constelación (aunque sea mi sola estrella).
 
 ### Fase 2 — Conexión (semana 2)
-- [x] Flujo de conexión v1 (2026-07-24): en `/u/[slug]` → nota opcional + botón "Conectar ✦" (server action, par canónico, 23505 = ya conectados) → redirect a la constelación
+- [x] Flujo de conexión v1 (2026-07-24): abrir `/u/[slug]` conecta automáticamente (sin botón, ADR 0001; par canónico, 23505 = ya conectados); la nota del encuentro se añadirá desde la lista de conexiones
 - [ ] Escáner QR in-app (cámara) — hoy funciona el fallback universal: la cámara del teléfono abre la URL del QR
 - [ ] Lista "Mis conexiones" con búsqueda y notas editables
 - [ ] Confirmación con avatar + micro-interacción al conectar

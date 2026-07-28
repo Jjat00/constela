@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type ForceGraph2DComponent from "react-force-graph-2d";
 
 export type GraphNode = {
@@ -9,6 +10,7 @@ export type GraphNode = {
   headline: string | null;
   tags: string[];
   avatarUrl: string | null;
+  qrSlug: string;
 };
 
 export type GraphEdge = {
@@ -32,6 +34,7 @@ export function ConstellationGraph({
   edges: GraphEdge[];
   myId: string;
 }) {
+  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -42,6 +45,8 @@ export function ConstellationGraph({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fgRef = useRef<any>(null);
   const didFit = useRef(false);
+  // Las fotos se dibujan en canvas: hay que cargar y cachear los Image a mano
+  const imgCache = useRef(new Map<string, HTMLImageElement>());
 
   useEffect(() => {
     let mounted = true;
@@ -86,6 +91,15 @@ export function ConstellationGraph({
           }}
           backgroundColor="rgba(0,0,0,0)"
           cooldownTicks={80}
+          nodeLabel={() => ""}
+          onNodeClick={(node) => {
+            if (node.id === myId) {
+              router.push("/perfil");
+              return;
+            }
+            const slug = (node as GraphNode).qrSlug;
+            if (slug) router.push(`/u/${slug}`);
+          }}
           onEngineStop={() => {
             if (didFit.current || nodes.length < 2) return;
             didFit.current = true;
@@ -99,22 +113,57 @@ export function ConstellationGraph({
             const isMe = node.id === myId;
             const x = node.x ?? 0;
             const y = node.y ?? 0;
-            const r = isMe ? 5 : 3.5;
-            const color = isMe ? LUMEN : STAR;
 
-            // halo
-            ctx.beginPath();
-            ctx.arc(x, y, r * 2.4, 0, 2 * Math.PI);
-            ctx.fillStyle = isMe
-              ? "rgba(240, 169, 75, 0.15)"
-              : "rgba(245, 243, 238, 0.08)";
-            ctx.fill();
+            // Foto de perfil (si existe y ya cargó); si no, estrella-punto
+            const url = (node as GraphNode).avatarUrl;
+            let img: HTMLImageElement | undefined;
+            if (url) {
+              img = imgCache.current.get(url);
+              if (!img) {
+                img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = url;
+                img.onload = () => {
+                  // Nudge sin efecto visual: fuerza un repintado del canvas
+                  const z = fgRef.current?.zoom();
+                  if (z) fgRef.current?.zoom(z, 0);
+                };
+                imgCache.current.set(url, img);
+              }
+            }
+            const hasPhoto = Boolean(
+              img && img.complete && img.naturalWidth > 0,
+            );
 
-            // estrella
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, 2 * Math.PI);
-            ctx.fillStyle = color;
-            ctx.fill();
+            let labelY: number;
+            if (hasPhoto && img) {
+              const ir = isMe ? 7 : 5.5;
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(x, y, ir, 0, 2 * Math.PI);
+              ctx.clip();
+              ctx.drawImage(img, x - ir, y - ir, ir * 2, ir * 2);
+              ctx.restore();
+              ctx.beginPath();
+              ctx.arc(x, y, ir, 0, 2 * Math.PI);
+              ctx.strokeStyle = isMe ? LUMEN : "rgba(245, 243, 238, 0.35)";
+              ctx.lineWidth = isMe ? 0.8 : 0.4;
+              ctx.stroke();
+              labelY = y + ir + 2;
+            } else {
+              const r = isMe ? 5 : 3.5;
+              ctx.beginPath();
+              ctx.arc(x, y, r * 2.4, 0, 2 * Math.PI);
+              ctx.fillStyle = isMe
+                ? "rgba(240, 169, 75, 0.15)"
+                : "rgba(245, 243, 238, 0.08)";
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(x, y, r, 0, 2 * Math.PI);
+              ctx.fillStyle = isMe ? LUMEN : STAR;
+              ctx.fill();
+              labelY = y + r * 2.4 + 2;
+            }
 
             // nombre (primer nombre) debajo
             const label = isMe
@@ -125,11 +174,12 @@ export function ConstellationGraph({
             ctx.textAlign = "center";
             ctx.textBaseline = "top";
             ctx.fillStyle = isMe ? LUMEN : "rgba(245, 243, 238, 0.55)";
-            ctx.fillText(label, x, y + r * 2.4 + 2);
+            ctx.fillText(label, x, labelY);
           }}
           nodePointerAreaPaint={(node, color, ctx) => {
+            // Área de agarre generosa: cubre foto/halo y algo del label
             ctx.beginPath();
-            ctx.arc(node.x ?? 0, node.y ?? 0, 10, 0, 2 * Math.PI);
+            ctx.arc(node.x ?? 0, node.y ?? 0, 14, 0, 2 * Math.PI);
             ctx.fillStyle = color;
             ctx.fill();
           }}
