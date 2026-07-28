@@ -167,6 +167,10 @@
   .node-glow {
     box-shadow: var(--glow-lumen);
   }
+  /* Halo del icono activo en la barra de navegación móvil */
+  .drop-shadow-glow {
+    filter: drop-shadow(0 0 8px oklch(0.8 0.14 70 / 55%));
+  }
 }
 
 @keyframes twinkle {

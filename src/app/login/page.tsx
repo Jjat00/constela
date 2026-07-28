@@ -20,7 +20,7 @@ export default async function LoginPage({
   }
 
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center px-6">
+    <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-32 left-1/2 h-[28rem] w-[44rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
@@ -30,12 +30,12 @@ export default async function LoginPage({
         }}
       />
 
-      <div className="relative z-10 flex w-full max-w-sm flex-col gap-8">
+      <div className="relative z-10 flex w-full max-w-sm flex-col gap-8 sm:max-w-md">
         <div className="flex flex-col gap-3">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ entrar ]
           </p>
-          <h1 className="font-display text-4xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Tu constelación{" "}
             <em className="font-serif font-normal text-primary italic">
               te espera

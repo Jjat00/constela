@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Bricolage_Grotesque,
   Geist,
@@ -33,6 +33,13 @@ export const metadata: Metadata = {
   title: "Constela — El networking que por fin se ve",
   description:
     "Conecta con un escaneo. Cada persona que conoces se vuelve una estrella en tu constelación del evento — con las conexiones de tus conexiones, en vivo.",
+};
+
+// `cover` deja que el fondo llegue bajo la barra del teléfono; las áreas
+// seguras se respetan con env(safe-area-inset-*) donde toca (barra inferior).
+export const viewport: Viewport = {
+  themeColor: "#131019",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

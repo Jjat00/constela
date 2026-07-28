@@ -93,17 +93,20 @@ export default function Home() {
       </svg>
 
       {/* Nav */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-5 sm:px-10">
+      <header className="relative z-10 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5 lg:px-10">
         <span className="font-display text-xl font-semibold tracking-tight">
           constela<span className="text-primary">✦</span>
         </span>
-        <Button asChild size="sm" className="rounded-full px-4">
-          <Link href="/login">Crear mi constelación</Link>
+        <Button asChild size="sm" className="h-10 rounded-full px-4">
+          <Link href="/login">
+            <span className="sm:hidden">Entrar</span>
+            <span className="hidden sm:inline">Crear mi constelación</span>
+          </Link>
         </Button>
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-6 pt-16 pb-24 sm:px-10 sm:pt-24">
+      <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-7 px-5 pt-12 pb-16 sm:gap-8 sm:px-8 sm:pt-24 sm:pb-24 lg:px-10">
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
           [ red viva para eventos presenciales ]
         </p>
@@ -119,11 +122,11 @@ export default function Home() {
           tus conexiones, en vivo.
         </p>
 
-        <div className="flex flex-wrap items-center gap-5">
+        <div className="flex w-full flex-wrap items-center gap-5 sm:w-auto">
           <Button
             asChild
             size="lg"
-            className="node-glow h-12 rounded-full px-7 text-base"
+            className="node-glow h-12 w-full rounded-full px-7 text-base sm:w-auto"
           >
             <Link href="/login">Crea tu constelación</Link>
           </Button>
@@ -209,9 +212,9 @@ export default function Home() {
       {/* Cómo funciona */}
       <section
         id="como-funciona"
-        className="relative z-10 mx-auto w-full max-w-6xl px-6 py-24 sm:px-10"
+        className="relative z-10 mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:px-10"
       >
-        <h2 className="font-display mb-12 text-3xl font-bold tracking-tight sm:text-5xl">
+        <h2 className="font-display mb-8 text-3xl font-bold tracking-tight sm:mb-12 sm:text-5xl">
           Tres gestos,{" "}
           <em className="font-serif font-normal text-primary italic">
             una constelación
@@ -221,7 +224,7 @@ export default function Home() {
           {STEPS.map((s) => (
             <article
               key={s.n}
-              className="group bg-background p-8 transition-colors hover:bg-card"
+              className="group bg-background p-6 transition-colors hover:bg-card sm:p-8"
             >
               <span className="font-mono text-sm text-primary">{s.n}</span>
               <h3 className="font-display mt-3 mb-3 text-2xl font-semibold">
@@ -236,7 +239,7 @@ export default function Home() {
       </section>
 
       {/* Cierre triádico */}
-      <section className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-6 py-24 sm:grid-cols-2 sm:px-10">
+      <section className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-16 sm:grid-cols-2 sm:gap-12 sm:px-8 sm:py-24 lg:px-10">
         <div className="flex flex-col gap-6">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
             [ cierre triádico ]
@@ -289,21 +292,21 @@ export default function Home() {
       </section>
 
       {/* CTA final */}
-      <section className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6 py-28 text-center sm:px-10">
-        <h2 className="font-display text-4xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
+      <section className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-5 py-20 text-center sm:px-8 sm:py-28 lg:px-10">
+        <h2 className="font-display text-3xl leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl">
           Tu próximo evento merece{" "}
           <em className="font-serif text-primary italic">más que tarjetas</em>
         </h2>
         <Button
           asChild
           size="lg"
-          className="node-glow h-13 rounded-full px-8 text-base"
+          className="node-glow h-13 w-full rounded-full px-8 text-base sm:w-auto"
         >
           <Link href="/login">Crea tu constelación</Link>
         </Button>
       </section>
 
-      <footer className="relative z-10 flex items-center justify-between border-t border-border px-6 py-6 font-mono text-xs text-muted-foreground sm:px-10">
+      <footer className="relative z-10 flex items-center justify-between gap-4 border-t border-border px-5 py-6 font-mono text-xs text-muted-foreground sm:px-8 lg:px-10">
         <span>
           constela<span className="text-primary">✦</span> 2026
         </span>
