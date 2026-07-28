@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AutoConnect } from "./auto-connect";
 
 export default async function PublicProfilePage({
   params,
@@ -24,32 +25,9 @@ export default async function PublicProfilePage({
   } = await supabase.auth.getUser();
   const isMe = user?.id === profile.id;
 
-  // Abrir el QR de alguien lo hace TODO solo (ADR 0001): te une a su evento
-  // (membresía contagiosa) y crea la conexión — sin botones ni formularios.
-  let joinedEvent:
-    | { event_id: string; event_name: string; event_slug: string }
-    | undefined;
-  let connected = false;
-  if (user && !isMe) {
-    const { data: joined } = await supabase.rpc("join_event_via_profile", {
-      p_slug: slug,
-    });
-    joinedEvent = joined?.[0];
-
-    if (joinedEvent) {
-      // Par canónico: el orden hex textual de los uuid coincide con el de PG
-      const [a, b] =
-        user.id < profile.id ? [user.id, profile.id] : [profile.id, user.id];
-      const { error } = await supabase.from("connections").insert({
-        event_id: joinedEvent.event_id,
-        user_a: a,
-        user_b: b,
-        created_by: user.id,
-      });
-      // 23505 = ya estaban conectados: mismo estado feliz
-      connected = !error || error.code === "23505";
-    }
-  }
+  // Esta página solo pinta la estrella. Unirse al evento y crear la arista
+  // (ADR 0001: sin botón ni confirmación) ocurre en <AutoConnect />, que invoca
+  // una server action desde el cliente — nunca durante el render de un GET.
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
@@ -108,27 +86,7 @@ export default async function PublicProfilePage({
             <Link href="/qr">Este eres tú ✦ volver a mi QR</Link>
           </Button>
         ) : user ? (
-          connected && joinedEvent ? (
-            <div className="flex w-full flex-col items-center gap-3">
-              <p className="font-mono text-sm text-primary">
-                [ conectados en {joinedEvent.event_name} ✦ ]
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="node-glow h-12 w-full rounded-full px-7 sm:w-auto"
-              >
-                <Link href={`/home?e=${joinedEvent.event_slug}`}>
-                  Ver la constelación
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              Esta estrella aún no está en ningún evento. Cuando entre a uno,
-              abrir su QR los conectará.
-            </p>
-          )
+          <AutoConnect slug={slug} />
         ) : (
           <Button
             asChild

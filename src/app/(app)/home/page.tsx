@@ -211,7 +211,7 @@ export default async function HomePage({
             </div>
             <p className="px-2 pb-2 text-center font-mono text-[10px] leading-4 text-muted-foreground sm:text-xs">
               la constelación de {activeEvent.name} ✦ toca una estrella para
-              abrirla
+              verla
             </p>
           </section>
         </div>
