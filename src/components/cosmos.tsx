@@ -345,11 +345,14 @@ export function Sol({
   size?: number;
   className?: string;
 }) {
-  return (
+return (
     <div
       aria-hidden
       className={cn("relative", className)}
-      style={{ width: size, height: size }}
+      style={{
+        width: size,
+        aspectRatio: "1/1",
+      }}
     >
       {/* Corona externa: muy amplia, muy tenue, respirando */}
       <div
@@ -407,7 +410,11 @@ export function Planeta({
     <div
       aria-hidden
       className={cn("relative", className)}
-      style={{ width: size, height: size }}
+      style={{
+        width: size,
+        aspectRatio: "1/1",
+        clipPath: "circle(50%)",
+      }}
     >
       {/* Cuerpo: iluminado desde arriba-izquierda por el sol */}
       <div
