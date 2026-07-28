@@ -6,11 +6,15 @@ import { eventDate } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
+import { ConstellationPanel } from "@/components/constellation-panel";
 import {
-  ConstellationGraph,
-  type GraphEdge,
-  type GraphNode,
-} from "@/components/constellation-graph";
+  buildFacets,
+  fetchTagCatalog,
+  labelFor,
+  type TagCategory,
+  type TagFacet,
+} from "@/lib/tags";
 
 export default async function HomePage({
   searchParams,
@@ -26,10 +30,18 @@ export default async function HomePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, headline, tags, qr_slug, avatar_url")
+    .select(
+      "name, headline, role, tags, intents, qr_slug, avatar_url, onboarded_at",
+    )
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
+
+  // Primera vez: describe tu estrella antes de ver la constelación (ADR 0004)
+  if (!profile.onboarded_at) {
+    const back = requestedSlug ? `/home?e=${requestedSlug}` : "/home";
+    redirect(`/bienvenida?next=${encodeURIComponent(back)}`);
+  }
 
   const qr = await qrSvg(`/u/${profile.qr_slug}`);
 
@@ -64,6 +76,27 @@ export default async function HomePage({
     starts_at: string | null;
   }> = [];
 
+  let facets: Record<TagCategory, TagFacet[]> = {
+    rol: [],
+    interes: [],
+    intencion: [],
+  };
+
+  // El catálogo traduce slugs a nombres: en la DB vive `ai-engineer`, en la
+  // pantalla "ai engineer"
+  const catalog = await fetchTagCatalog(supabase);
+  const myRoleLabel = profile.role
+    ? labelFor(catalog, "rol", profile.role)
+    : null;
+  const myTagLabels = [
+    ...((profile.tags ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "interes", slug),
+    ),
+    ...((profile.intents ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "intencion", slug),
+    ),
+  ];
+
   if (activeEvent) {
     const { data: graphData } = await supabase.rpc("get_event_graph", {
       p_event_id: activeEvent.id,
@@ -72,6 +105,8 @@ export default async function HomePage({
     connectionCount = graph.edges.filter(
       (e) => e.source === user.id || e.target === user.id,
     ).length;
+    // Los filtros salen de quién está en ESTE evento, no del catálogo entero
+    facets = buildFacets(graph.nodes, catalog);
   } else {
     const { data: events } = await supabase
       .from("events")
@@ -100,9 +135,9 @@ export default async function HomePage({
         <h1 className="font-display truncate text-xl font-bold tracking-tight sm:text-2xl">
           {profile.name}
         </h1>
-        {profile.headline ? (
+        {(profile.headline ?? myRoleLabel) ? (
           <p className="truncate text-sm text-muted-foreground">
-            {profile.headline}
+            {profile.headline ?? myRoleLabel}
           </p>
         ) : (
           <Link
@@ -112,15 +147,22 @@ export default async function HomePage({
             completa tu perfil →
           </Link>
         )}
-        {profile.tags.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {profile.tags.map((tag: string) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          {myRoleLabel && profile.headline && (
+            <Badge className="text-xs">{myRoleLabel}</Badge>
+          )}
+          {myTagLabels.map((label) => (
+            <Badge key={label} variant="outline" className="text-xs">
+              {label}
+            </Badge>
+          ))}
+          <Link
+            href="/perfil"
+            className="font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {myTagLabels.length > 0 ? "editar" : "+ añade tus intereses"}
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -201,19 +243,13 @@ export default async function HomePage({
           </div>
 
           {/* La constelación: media pantalla en móvil, columna entera en desktop */}
-          <section className="flex min-h-0 flex-col gap-2 rounded-2xl border border-border bg-card p-2 lg:flex-1">
-            <div className="h-[52vh] min-h-64 lg:h-auto lg:min-h-0 lg:flex-1">
-              <ConstellationGraph
-                nodes={graph.nodes}
-                edges={graph.edges}
-                myId={user.id}
-              />
-            </div>
-            <p className="px-2 pb-2 text-center font-mono text-[10px] leading-4 text-muted-foreground sm:text-xs">
-              la constelación de {activeEvent.name} ✦ toca una estrella para
-              verla
-            </p>
-          </section>
+          <ConstellationPanel
+            nodes={graph.nodes}
+            edges={graph.edges}
+            myId={user.id}
+            facets={facets}
+            eventName={activeEvent.name}
+          />
         </div>
       ) : (
         <div className="mx-auto flex w-full max-w-sm flex-col gap-7 sm:max-w-md">

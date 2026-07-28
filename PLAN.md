@@ -27,12 +27,15 @@
 ## Modelo de datos (Postgres / Supabase)
 
 ```sql
-profiles         (id uuid PK → auth.users, name, headline, tags text[], avatar_url, qr_slug text unique)
+profiles         (id uuid PK → auth.users, name, headline, avatar_url, qr_slug text unique,
+                  role text, tags text[], intents text[], onboarded_at timestamptz)
 events           (id uuid PK, slug text unique, name, starts_at, ends_at, created_by)
 event_attendees  (event_id, user_id, joined_at, PK(event_id, user_id))
 connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
                   CHECK (user_a < user_b),            -- par canónico, sin duplicados espejo
                   UNIQUE (event_id, user_a, user_b))
+tags             (category, label, slug GENERATED, aliases text[], is_curated, created_by,
+                  PK(category, slug))                 -- catálogo vivo, ADR 0004
 ```
 
 - **RLS**: solo asistentes del evento leen datos del evento; una conexión solo la insertan sus dos extremos.
@@ -68,7 +71,8 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 > home centrado en el evento (`/home`), modelo abierto de eventos con auto-join y
 > membresía contagiosa (ADR 0001), constelación = grafo completo del evento (ADR 0003).
 - [x] Auth: solo Google (ADR 0002) — acceso dev por correo/Mailpit solo en local
-- [x] Sin onboarding: perfil editable opcional en `/perfil` (nombre, headline, tags)
+- [x] Onboarding mínimo de una pantalla en `/bienvenida` la primera vez (rol → intereses → intención), sobre un **catálogo vivo de tags** que crece con lo que la gente escribe (ADR 0004) — reintroduce lo que el ADR 0002 había quitado, con "lo hago después" siempre a mano
+- [x] Perfil editable en `/perfil` (nombre, headline, rol, intereses, intención) con el mismo selector
 - [x] QR personal: `qr_slug` → página pública `/u/[slug]` + membresía contagiosa (RPC `join_event_via_profile`)
 - [x] Eventos: crear en `/eventos/nuevo` (cualquier usuario), auto-join al abrir `/e/[slug]`, QR del evento compartible
 - [x] `/home`: evento activo + constelación (grafo completo, `get_event_graph`) + Mi QR; sin evento → eventos activos + crear
@@ -85,6 +89,7 @@ connections      (id uuid PK, event_id, user_a, user_b, note text, created_at,
 ### Fase 3 — La constelación (semana 3)
 - [x] Grafo completo del evento sin límite de profundidad (`react-force-graph-2d` + RPC `get_event_graph`, ADR 0003) — v1 adelantada al home en fase 1
 - [x] Tap en nodo → mini-perfil (sheet inferior, 2026-07-27): foto, titular, tags y el estado de la relación (conectados + nota del encuentro, o "aún no se han cruzado"). **No conecta**: la arista solo nace de escanear un QR en persona
+- [x] Filtro por rol / intereses / intención (2026-07-27): chips con conteo del evento; lo que no coincide se apaga en vez de desaparecer, el grafo no se reordena (ADR 0004)
 - [ ] Triángulos cerrados resaltados visualmente
 - [ ] Sugerencias de cierre: "Tú y Ana conocieron ambos a Carlos"
 - **Entregable**: el momento "wow" personal — la constelación viva del evento.

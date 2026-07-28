@@ -1,141 +1,142 @@
 "use client";
 
 import { useState } from "react";
-import { updateProfile } from "./actions";
-import { Badge } from "@/components/ui/badge";
+import { TagPicker } from "@/components/tag-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const MAX_TAGS = 3;
-
-const SUGGESTED = [
-  "frontend",
-  "backend",
-  "ia",
-  "datos",
-  "producto",
-  "diseño",
-  "devops",
-  "móvil",
-];
+import {
+  CATEGORY_COPY,
+  serializeChoices,
+  type CatalogTag,
+  type TagCategory,
+  type TagChoice,
+} from "@/lib/tags";
+import { updateProfile } from "./actions";
 
 export function ProfileForm({
   defaultName,
   defaultHeadline,
-  defaultTags,
+  roleOptions,
+  interestOptions,
+  intentOptions,
+  defaultRole,
+  defaultInterests,
+  defaultIntents,
 }: {
   defaultName: string;
   defaultHeadline: string;
-  defaultTags: string[];
+  roleOptions: CatalogTag[];
+  interestOptions: CatalogTag[];
+  intentOptions: CatalogTag[];
+  defaultRole: TagChoice[];
+  defaultInterests: TagChoice[];
+  defaultIntents: TagChoice[];
 }) {
-  const [tags, setTags] = useState<string[]>(defaultTags);
-  const [tagInput, setTagInput] = useState("");
-
-  function addTag(raw: string) {
-    const tag = raw.trim().toLowerCase();
-    if (!tag || tags.includes(tag) || tags.length >= MAX_TAGS) return;
-    setTags([...tags, tag]);
-    setTagInput("");
-  }
-
-  function removeTag(tag: string) {
-    setTags(tags.filter((t) => t !== tag));
-  }
+  const [role, setRole] = useState<TagChoice[]>(defaultRole);
+  const [interests, setInterests] = useState<TagChoice[]>(defaultInterests);
+  const [intents, setIntents] = useState<TagChoice[]>(defaultIntents);
 
   return (
-    <form action={updateProfile} className="flex flex-col gap-5">
-      <input type="hidden" name="tags" value={tags.join(",")} />
+    <form action={updateProfile} className="flex flex-col gap-8">
+      <input type="hidden" name="role" value={serializeChoices(role)} />
+      <input
+        type="hidden"
+        name="interests"
+        value={serializeChoices(interests)}
+      />
+      <input type="hidden" name="intents" value={serializeChoices(intents)} />
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="name" className="font-mono text-xs text-muted-foreground">
-          tu nombre
-        </label>
-        <Input
-          id="name"
-          name="name"
-          required
-          defaultValue={defaultName}
-          placeholder="Ana Ruiz"
-          className="h-12 rounded-lg text-base"
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="name"
+            className="font-mono text-xs text-muted-foreground"
+          >
+            tu nombre
+          </label>
+          <Input
+            id="name"
+            name="name"
+            required
+            defaultValue={defaultName}
+            placeholder="Ana Ruiz"
+            className="h-12 rounded-lg text-base"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="headline"
+            className="font-mono text-xs text-muted-foreground"
+          >
+            una línea sobre ti (opcional)
+          </label>
+          <Input
+            id="headline"
+            name="headline"
+            defaultValue={defaultHeadline}
+            placeholder="Frontend en Rappi · construyendo con IA"
+            className="h-12 rounded-lg text-base"
+          />
+        </div>
+      </div>
+
+      <TagSection category="rol">
+        <TagPicker
+          options={roleOptions}
+          value={role}
+          onChange={setRole}
+          mode="single"
+          placeholder="busca tu rol o escríbelo"
         />
-      </div>
+      </TagSection>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="headline"
-          className="font-mono text-xs text-muted-foreground"
-        >
-          qué haces (opcional)
-        </label>
-        <Input
-          id="headline"
-          name="headline"
-          defaultValue={defaultHeadline}
-          placeholder="Frontend en Rappi · construyendo con IA"
-          className="h-12 rounded-lg text-base"
+      <TagSection category="interes">
+        <TagPicker
+          options={interestOptions}
+          value={interests}
+          onChange={setInterests}
+          placeholder="busca un tema o escríbelo"
         />
-      </div>
+      </TagSection>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="tag" className="font-mono text-xs text-muted-foreground">
-          tus temas (opcional) · máx {MAX_TAGS}
-        </label>
-
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => removeTag(tag)}
-                title="Quitar"
-              >
-                <Badge className="cursor-pointer px-3 py-1 text-sm">
-                  {tag} ✕
-                </Badge>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {tags.length < MAX_TAGS && (
-          <>
-            <Input
-              id="tag"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === ",") {
-                  e.preventDefault();
-                  addTag(tagInput);
-                }
-              }}
-              placeholder="escribe y presiona Enter"
-              className="h-12 rounded-lg text-base"
-            />
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTED.filter((s) => !tags.includes(s)).map((s) => (
-                <button key={s} type="button" onClick={() => addTag(s)}>
-                  <Badge
-                    variant="outline"
-                    className="cursor-pointer px-3 py-1 text-sm text-muted-foreground hover:border-primary/50 hover:text-primary"
-                  >
-                    + {s}
-                  </Badge>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+      <TagSection category="intencion">
+        <TagPicker
+          options={intentOptions}
+          value={intents}
+          onChange={setIntents}
+          placeholder="busca o escríbelo"
+        />
+      </TagSection>
 
       <Button
         type="submit"
         size="lg"
-        className="node-glow mt-2 h-12 rounded-full text-base"
+        className="node-glow h-12 rounded-full text-base"
       >
         Guardar
       </Button>
     </form>
+  );
+}
+
+function TagSection({
+  category,
+  children,
+}: {
+  category: TagCategory;
+  children: React.ReactNode;
+}) {
+  const copy = CATEGORY_COPY[category];
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
+          [ {copy.title} ]
+        </p>
+        <p className="font-mono text-xs text-muted-foreground">{copy.hint}</p>
+      </div>
+      {children}
+    </section>
   );
 }

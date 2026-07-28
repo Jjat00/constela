@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export type ConnectResult =
@@ -51,6 +52,19 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
 
   // 23505 = ya estaban conectados en este evento: mismo estado feliz
   if (error && error.code !== "23505") return { status: "error" };
+
+  // Primera vez en Constela: la bienvenida va DESPUÉS de conectar, para no
+  // perder el encuentro si alguien abandona el onboarding (ADR 0004). Por eso
+  // el guard vive aquí y no en el render de la página: en ese punto la arista
+  // ya existe, así que abandonar la bienvenida no cuesta nada.
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("onboarded_at")
+    .eq("id", user.id)
+    .single();
+  if (me && !me.onboarded_at) {
+    redirect(`/bienvenida?next=${encodeURIComponent(`/u/${slug}`)}`);
+  }
 
   return {
     status: "conectados",

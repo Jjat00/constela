@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { eventDateLong } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
@@ -30,6 +30,18 @@ export default async function EventPage({
       .from("event_attendees")
       .insert({ event_id: event.id, user_id: user.id });
     isAttending = !error || error.code === "23505";
+
+    // Primera vez en Constela: la bienvenida antes de la constelación (ADR
+    // 0004). Va después del join para que nadie pierda la entrada al evento
+    // si abandona el onboarding a medias.
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarded_at")
+      .eq("id", user.id)
+      .single();
+    if (profile && !profile.onboarded_at) {
+      redirect(`/bienvenida?next=${encodeURIComponent(`/e/${slug}`)}`);
+    }
   }
 
   const eventQr = await qrSvg(`/e/${slug}`);

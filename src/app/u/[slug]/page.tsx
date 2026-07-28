@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { fetchTagCatalog, labelFor } from "@/lib/tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AutoConnect } from "./auto-connect";
@@ -20,6 +21,20 @@ export default async function PublicProfilePage({
   const profile = data?.[0];
   if (!profile) notFound();
 
+  // El catálogo es público: esta página también se ve sin sesión
+  const catalog = await fetchTagCatalog(supabase);
+  const roleLabel = profile.role
+    ? labelFor(catalog, "rol", profile.role)
+    : null;
+  const tagLabels = [
+    ...((profile.tags ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "interes", slug),
+    ),
+    ...((profile.intents ?? []) as string[]).map((slug) =>
+      labelFor(catalog, "intencion", slug),
+    ),
+  ];
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -28,6 +43,9 @@ export default async function PublicProfilePage({
   // Esta página solo pinta la estrella. Unirse al evento y crear la arista
   // (ADR 0001: sin botón ni confirmación) ocurre en <AutoConnect />, que invoca
   // una server action desde el cliente — nunca durante el render de un GET.
+  // El guard de la bienvenida (ADR 0004) vive en esa misma acción, después de
+  // crear la conexión: redirigir aquí se llevaría al recién llegado antes de
+  // que la arista exista, que es justo lo que ese ADR quiere evitar.
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
@@ -67,11 +85,12 @@ export default async function PublicProfilePage({
           )}
         </div>
 
-        {profile.tags?.length > 0 && (
+        {(roleLabel || tagLabels.length > 0) && (
           <div className="flex flex-wrap justify-center gap-2">
-            {profile.tags.map((tag: string) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
+            {roleLabel && <Badge className="text-xs">{roleLabel}</Badge>}
+            {tagLabels.map((label) => (
+              <Badge key={label} variant="outline" className="text-xs">
+                {label}
               </Badge>
             ))}
           </div>

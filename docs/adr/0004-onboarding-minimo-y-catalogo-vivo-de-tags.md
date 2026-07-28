@@ -1,0 +1,11 @@
+# Onboarding mínimo la primera vez, sobre un catálogo vivo de tags
+
+El ADR 0002 eliminó el onboarding: nombre y foto llegan de Google y `/perfil` es opcional. Se decidió (2026-07-27) reintroducir **una sola pantalla** al entrar por primera vez a un evento (`/bienvenida`, guard en `/e/[slug]`, `/u/[slug]` y `/home`), porque sin rol ni intereses la constelación es un mapa de nombres: no se puede filtrar ni decidir a quién acercarse. El onboarding pregunta rol (obligatorio, un tap), intereses (los que quieras) e intención (opcional, "estoy contratando", "busco cofundador"), y siempre ofrece "lo hago después" — que marca `onboarded_at` y no vuelve a aparecer: nadie queda atrapado en medio de un evento.
+
+El guard va **después** del auto-join y de crear la conexión, nunca antes: abandonar la bienvenida no puede costarte la entrada al evento ni el encuentro que acabas de tener.
+
+Los tags viven en `public.tags (category, slug, label, aliases)` con `category ∈ (rol, interes, intencion)` y clave primaria compuesta — el mismo texto puede ser rol e interés sin colisionar. El catálogo arranca curado (~95 tags) pero **crece**: lo que alguien escribe queda guardado y disponible para los demás. Contra los gemelos hay dos defensas: `slug` es una columna **generada** desde el label (`tag_slugify`, sin acentos ni separadores — imposible desalinearlos) y `aliases` mapea las otras formas de decirlo (`sre` → devops, `pm` → product manager, `ux/ui` → ui design). `ensure_tags` es el único camino de escritura: resuelve primero por slug, después por alias, y solo entonces crea.
+
+Las alternativas descartadas: catálogo cerrado (cada tag nuevo exigiría una migración, y en un evento real siempre falta uno) y texto libre sin catálogo (filtros ruidosos: frontend / front-end / Frontend como tres cosas). `profiles.role/tags/intents` guardan slugs sin FK — una FK compuesta obligaría a repetir la categoría en cada fila; la integridad la sostiene `ensure_tags`.
+
+El filtro de la constelación es de cliente y no reordena el grafo: las estrellas que no coinciden se apagan hasta ser polvo en vez de desaparecer, para que el mapa no salte bajo el dedo. Dentro de una categoría los chips suman (OR), entre categorías se cruzan (AND). Tu estrella nunca se apaga.
