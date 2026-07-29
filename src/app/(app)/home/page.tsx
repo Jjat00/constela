@@ -246,7 +246,7 @@ export default async function HomePage({
     <main className="relative z-10 flex flex-1 flex-col xl:h-svh xl:flex-row xl:overflow-hidden">
       <h1 className="sr-only">Tu constelación — {activeEvent.name}</h1>
 
-      {/* El universo: el grafo es la sala. En desktop, dentro de su marco. */}
+      {/* La constelación: el grafo es la sala. En desktop, dentro de su marco. */}
       <div className="relative h-[62vh] min-h-80 shrink-0 sm:h-[64vh] lg:h-[70vh] xl:my-5 xl:h-auto xl:min-h-0 xl:flex-1 xl:shrink xl:overflow-hidden xl:rounded-4xl xl:border xl:border-white/5">
         <ConstellationPanel
           nodes={graph.nodes}
@@ -263,7 +263,7 @@ export default async function HomePage({
         />
       </div>
 
-      {/* Rail de observación (1b): datos reales de ESTE universo */}
+      {/* Rail de observación: datos reales de ESTA constelación */}
       <aside className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 flex flex-col gap-4 px-4 pt-4 pb-6 sm:px-6 lg:px-8 xl:w-[19.5rem] xl:shrink-0 xl:overflow-y-auto xl:px-0 xl:py-5 xl:pr-5 xl:pl-4">
         <section className="glass flex flex-col gap-4.5 rounded-4xl p-5">
           <div className="hidden flex-col gap-2 xl:flex">
