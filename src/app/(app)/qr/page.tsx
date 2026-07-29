@@ -95,6 +95,9 @@ export default async function MyQrPage() {
         <p className="font-mono text-[10px] tracking-[0.18em] text-sol uppercase">
           {roleLabel ? `${roleLabel} · ` : ""}MAG {magnitude}
         </p>
+        <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground">
+          [ tu brillo en la red: conexiones × 0.14 + 1.1 ]
+        </p>
       </div>
 
       <div className="flex max-w-xs flex-col items-center gap-2.5 text-center">

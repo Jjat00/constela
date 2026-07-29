@@ -316,6 +316,7 @@ export default async function HomePage({
                 <p className="mt-1.5 text-[11px] text-muted-foreground">
                   magnitud
                 </p>
+                <p className="font-mono text-[9px] text-faint">tu brillo: conexiones × 0.14 + 1.1</p>
               </div>
             </div>
             {connectionCount === 0 && (
