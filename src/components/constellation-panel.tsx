@@ -173,11 +173,7 @@ export function ConstellationPanel({
         >
           <X className="size-3.5" aria-hidden />
         </button>
-      ) : (
-        <kbd className="hidden rounded border border-white/10 px-1.5 py-0.5 font-mono text-[10px] text-faint lg:inline">
-          ⌘K
-        </kbd>
-      )}
+      ) : null}
     </>
   );
 
@@ -222,10 +218,10 @@ export function ConstellationPanel({
             type="button"
             onClick={() => setShowNames(!showNames)}
             aria-pressed={showNames}
-            className="chip-star flex h-10 shrink-0 items-center gap-2 px-3.5 text-xs font-medium"
+            aria-label={showNames ? "Ocultar nombres" : "Mostrar nombres"}
+            className="chip-star grid size-10 shrink-0 place-items-center"
           >
-            <span aria-hidden>𝐀𝐁𝐂</span>
-            Nombres
+            <span aria-hidden className="text-sm font-bold">A</span>
           </button>
           <button
             type="button"

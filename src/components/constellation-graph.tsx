@@ -582,10 +582,11 @@ export function ConstellationGraph({
             }
 
             // Etiqueta: tú siempre; el resto al pasar, seleccionar o filtrar
+            // Nombres: si showNames=true, mostrar todos (excepto dimmed)
+            // Si showNames=false, mostrar solo "tú", hover, seleccionados o filtrados
             const showLabel =
-              showNames &&
               !dimmed &&
-              (isMe || hot || isSel || (matchedIds?.has(id) ?? false));
+              (showNames || isMe || hot || isSel || (matchedIds?.has(id) ?? false));
             if (showLabel) {
               const label = isMe
                 ? "tú"
