@@ -206,11 +206,12 @@ export function CosmicSky({
       </svg>
 
       {/* Horizonte de planeta: silueta oscura con rim light superior */}
-      {planet && (
+{planet && (
         <div
-          className="absolute -left-[14%] -bottom-[58%] h-[96%] w-[128%] rounded-full"
+          className="absolute left-1/2 w-[500vw] aspect-square rounded-full -translate-x-1/2"
           style={{
-            background: "#0C0E15",
+            top: "75vh",
+            background: "#0C0E13",
             boxShadow: "inset 0 2px 0 0 rgba(214,218,228,0.28)",
             clipPath: "circle(50%)",
           }}
