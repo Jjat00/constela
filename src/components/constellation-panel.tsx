@@ -165,7 +165,7 @@ export function ConstellationPanel({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar estrellas…"
         aria-label={`Buscar estrellas de ${event.name} por nombre`}
-        className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-faint"
+        className="min-w-28 flex-1 bg-transparent text-[15px] outline-none placeholder:text-faint"
       />
       {query ? (
         <button
@@ -202,7 +202,9 @@ export function ConstellationPanel({
           {quickChips.length > 0 && (
             <>
               <div className="h-5.5 w-px shrink-0 bg-white/10" aria-hidden />
-              <div className="flex shrink-0 gap-1.5">
+              {/* En laptops la barra no da para todo: los chips ceden ancho y
+                  scrollean antes que expulsar del pill a los controles fijos */}
+              <div className="flex min-w-0 gap-1.5 overflow-x-auto [scrollbar-width:none]">
                 {quickChips.map((facet) => (
                   <button
                     key={facet.slug}
@@ -230,10 +232,11 @@ export function ConstellationPanel({
             type="button"
             onClick={() => setTriads(!triads)}
             aria-pressed={triads}
+            aria-label="Cierres triádicos"
             className="chip-triad flex h-10 shrink-0 items-center gap-2 px-3.5 text-xs font-medium"
           >
             <Triangle className="size-3.5" aria-hidden />
-            Cierres triádicos
+            <span className="hidden xl:inline">Cierres triádicos</span>
           </button>
           {hasFacets && (
             <button
