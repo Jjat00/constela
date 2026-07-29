@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CosmicSky } from "@/components/cosmos";
 import { GoogleButton } from "@/app/login/google-button";
+import { LogoutButton } from "@/app/login/logout-button";
 import { createClient } from "@/lib/supabase/server";
 
 /*
@@ -235,13 +236,14 @@ export default async function LandingPage() {
       </div>
 
       {/* Chrome mínimo: wordmark + coordenadas del evento */}
-      <header className="relative z-10 flex items-center justify-center px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:justify-between lg:px-14 lg:pt-8">
+      <header className="relative z-10 flex items-center justify-between px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:px-14 lg:pt-8">
         <p className="text-[17px] font-semibold tracking-tight lg:text-[19px]">
           constela<span className="text-sol">✦</span>
         </p>
         <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground lg:block">
           [ PARA CUALQUIER EVENTO ]
         </p>
+        {user && <LogoutButton />}
       </header>
 
       {/* El titular y la puerta */}

@@ -1,19 +1,29 @@
--- Seed de desarrollo local (se aplica con `supabase db reset`, nunca en prod vía db push)
+-- Seed de desarrollo local — datos reales y conectados (se aplica con `supabase db reset`, nunca en prod vía db push)
+
+-- ============================================================
+-- Evento real: Bogotá 2026
+-- ============================================================
 
 insert into public.events (slug, name, city, starts_at, ends_at)
 values (
-  'demo-bogota',
-  '[demo] Evento de prueba local',
+  'bogota-2026-08',
+  'Bogotá Tech Meetup · Agosto 2026',
   'Bogotá · Colombia',
-  '2026-08-20 17:00:00-05',
-  '2026-08-20 22:00:00-05'
+  '2026-08-20 18:00:00-05',
+  '2026-08-20 23:00:00-05'
+),
+(
+  'medellin-2026-09',
+  'Medellín Dev Conference · Septiembre 2026',
+  'Medellín · Colombia',
+  '2026-09-15 09:00:00-05',
+  '2026-09-15 18:00:00-05'
 )
 on conflict (slug) do nothing;
 
 -- ============================================================
--- Personas demo: pueblan la constelación del evento de prueba.
--- Se insertan en auth.users (el trigger handle_new_user crea el perfil);
--- UUIDs fijos y ordenados para poder armar conexiones con par canónico.
+-- Personas demo: perfiles reales con headlines, roles e intereses
+-- UUIDs fijos y ordenados para garantizar par canónico en conexiones
 -- ============================================================
 
 insert into auth.users (
@@ -33,13 +43,13 @@ from (values
   ('a0000000-0000-4000-8000-000000000005'::uuid, 'fabian@demo.constela',   'Fabián Torres'),
   ('a0000000-0000-4000-8000-000000000006'::uuid, 'gabriela@demo.constela', 'Gabriela Pinzón'),
   ('a0000000-0000-4000-8000-000000000007'::uuid, 'hugo@demo.constela',     'Hugo Salazar'),
-  ('a0000000-0000-4000-8000-000000000008'::uuid, 'irene@demo.constela',    'Irene Castaño')
+  ('a0000000-0000-4000-8000-000000000008'::uuid, 'irene@demo.constela',    'Irene Castaño'),
+  ('b1111111-1111-4000-8000-000000000001'::uuid, 'jaime@demo.constela',    'Jaime Jjat')
 ) as d(id, email, full_name)
 on conflict (id) do nothing;
 
--- Rol, intereses e intención salen del catálogo curado (migración
--- 20260727000007): así el filtro de la constelación tiene con qué jugar en
--- local. onboarded_at marcado: las personas demo no pasan por la bienvenida.
+-- Perfiles completos: headline, avatar, rol, tags e intenciones
+-- onboarded_at = now() para que todos pasen la bienvenida automáticamente
 update public.profiles p
 set headline = d.headline,
     avatar_url = d.avatar,
@@ -48,64 +58,87 @@ set headline = d.headline,
     intents = d.intents,
     onboarded_at = now()
 from (values
-  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · APIs y datos',      'backend',        array['backend','datos','ia'],                array['conocer-gente'],                 'https://i.pravatar.cc/100?img=12'),
-  ('a0000000-0000-4000-8000-000000000002'::uuid, 'Product manager en fintech',  'product-manager',array['producto','fintech','carrera'],        array['contratando'],                   'https://i.pravatar.cc/100?img=32'),
-  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend con ojo de diseño',  'frontend',       array['frontend','diseno','carrera'],         array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=53'),
-  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data science · IA aplicada',  'data-scientist', array['ia','datos','educacion'],              array['ofrezco-mentoria'],              'https://i.pravatar.cc/100?img=47'),
-  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Growth y comunidad',          'marketing',      array['marketing','comunidad','startups'],    array['busco-clientes'],                'https://i.pravatar.cc/100?img=15'),
-  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto',      'product-design', array['diseno','producto'],                   array['busco-trabajo'],                 'https://i.pravatar.cc/100?img=45'),
-  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · plataforma',            'devops',         array['infraestructura','open-source'],       array['conocer-gente'],                 'https://i.pravatar.cc/100?img=68'),
-  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech con IA',   'founder',        array['startups','educacion','ia'],           array['busco-inversion','contratando'], 'https://i.pravatar.cc/100?img=25')
+  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · APIs en Go y Rust',          'backend',        array['backend','infraestructura','datos'],   array['conocer-gente','ofrezco-mentoria'],  'https://i.pravatar.cc/100?img=12'),
+  ('a0000000-0000-4000-8000-000000000002'::uuid, 'PM en fintech · en búsqueda activa',   'product-manager',array['producto','fintech','startups'],       array['contratando'],                       'https://i.pravatar.cc/100?img=32'),
+  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend · React + TypeScript',        'frontend',       array['frontend','diseño','carrera'],         array['busco-trabajo','conocer-gente'],     'https://i.pravatar.cc/100?img=53'),
+  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data scientist · ML en producción',    'data-scientist', array['ia','datos','machine-learning'],       array['ofrezco-mentoria'],                  'https://i.pravatar.cc/100?img=47'),
+  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Growth marketer · edtech',             'marketing',      array['marketing','comunidad','startups'],    array['busco-clientes','contratando'],      'https://i.pravatar.cc/100?img=15'),
+  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto · UX',          'product-design', array['diseño','producto','carrera'],         array['busco-trabajo'],                     'https://i.pravatar.cc/100?img=45'),
+  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · Kubernetes y AWS',               'devops',         array['infraestructura','open-source'],       array['conocer-gente','contratando'],       'https://i.pravatar.cc/100?img=68'),
+  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech + IA',              'founder',        array['startups','educacion','ia'],           array['busco-inversion','contratando'],     'https://i.pravatar.cc/100?img=25'),
+  ('b1111111-1111-4000-8000-000000000001'::uuid, 'Creador de Constela · full-stack',     'founder',        array['frontend','backend','open-source','ia'],array['conocer-gente'],                    'https://i.pravatar.cc/100?img=42')
 ) as d(id, headline, role, tags, intents, avatar)
 where p.id = d.id;
+
+-- ============================================================
+-- Asistentes: todos en Bogotá 2026 + Jaime también en Medellín
+-- ============================================================
 
 insert into public.event_attendees (event_id, user_id)
 select e.id, u.uid
 from public.events e,
   unnest(array[
-    'a0000000-0000-4000-8000-000000000001',
-    'a0000000-0000-4000-8000-000000000002',
-    'a0000000-0000-4000-8000-000000000003',
-    'a0000000-0000-4000-8000-000000000004',
-    'a0000000-0000-4000-8000-000000000005',
-    'a0000000-0000-4000-8000-000000000006',
-    'a0000000-0000-4000-8000-000000000007',
-    'a0000000-0000-4000-8000-000000000008'
+    'a0000000-0000-4000-8000-000000000001'::uuid,
+    'a0000000-0000-4000-8000-000000000002'::uuid,
+    'a0000000-0000-4000-8000-000000000003'::uuid,
+    'a0000000-0000-4000-8000-000000000004'::uuid,
+    'a0000000-0000-4000-8000-000000000005'::uuid,
+    'a0000000-0000-4000-8000-000000000006'::uuid,
+    'a0000000-0000-4000-8000-000000000007'::uuid,
+    'a0000000-0000-4000-8000-000000000008'::uuid,
+    'b1111111-1111-4000-8000-000000000001'::uuid
   ]::uuid[]) as u(uid)
-where e.slug = 'demo-bogota'
+where e.slug = 'bogota-2026-08'
 on conflict do nothing;
 
--- Conexiones demo: dos triángulos cerrados, una cadena y un nodo puente.
--- Par canónico garantizado: los UUIDs están ordenados por su último dígito.
-insert into public.connections (event_id, user_a, user_b, note, created_by)
-select e.id, d.a, d.b, d.note, d.a
-from public.events e,
-  (values
-    ('a0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000002'::uuid, 'Hablamos de pricing por uso'),
-    ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, null),
-    ('a0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, 'Triángulo cerrado en el demo ✦'),
-    ('a0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, 'RAG en producción'),
-    ('a0000000-0000-4000-8000-000000000004'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, null),
-    ('a0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, null),
-    ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000006'::uuid, 'Design systems'),
-    ('a0000000-0000-4000-8000-000000000006'::uuid, 'a0000000-0000-4000-8000-000000000007'::uuid, null),
-    ('a0000000-0000-4000-8000-000000000005'::uuid, 'a0000000-0000-4000-8000-000000000008'::uuid, 'Flutter + IA en edtech'),
-    ('a0000000-0000-4000-8000-000000000007'::uuid, 'a0000000-0000-4000-8000-000000000008'::uuid, null)
-  ) as d(a, b, note)
-where e.slug = 'demo-bogota'
+-- Jaime (Medellín)
+insert into public.event_attendees (event_id, user_id)
+select e.id, 'b1111111-1111-4000-8000-000000000001'::uuid
+from public.events e
+where e.slug = 'medellin-2026-09'
 on conflict do nothing;
 
 -- ============================================================
--- Regla de pruebas: mi estrella nunca aparece sola.
---
--- Los usuarios reales se crean al hacer login, después de este seed, así que
--- sus conexiones no se pueden dejar escritas aquí. En su lugar queda este
--- disparador: al entrar alguien al evento demo que no sea una de las ocho
--- personas de arriba, se le tienden tres líneas. Así la constelación tiene
--- aristas propias y triángulos desde el primer segundo, sin escanear nada.
---
--- Vive solo en el seed (`supabase db reset` local); nunca llega a producción,
--- que se despliega con las migraciones de supabase/migrations/.
+-- Conexiones en Bogotá 2026
+-- Estructura: triángulos cerrados, cadenas, puentes y conexiones con Jaime
+-- Par canónico garantizado: least(a) < greatest(b)
+-- ============================================================
+
+insert into public.connections (event_id, user_a, user_b, note, created_by)
+select e.id, least(d.a, d.b), greatest(d.a, d.b), d.note, d.created_by
+from public.events e,
+  (values
+    -- Triángulo 1: Backend + Datos + Jaime (infraestructura)
+    ('a0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, 'Cómo escalar pipelines de ML',    'a0000000-0000-4000-8000-000000000001'::uuid),
+    ('a0000000-0000-4000-8000-000000000001'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'Constela · stack backend Go',    'a0000000-0000-4000-8000-000000000001'::uuid),
+    ('a0000000-0000-4000-8000-000000000004'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'IA en producción · vector DBs', 'a0000000-0000-4000-8000-000000000004'::uuid),
+
+    -- Triángulo 2: Frontend + Diseño + PM
+    ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, 'Design to code en Next.js',      'a0000000-0000-4000-8000-000000000002'::uuid),
+    ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000006'::uuid, 'Roadmap de fintech',             'a0000000-0000-4000-8000-000000000002'::uuid),
+    ('a0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000006'::uuid, 'Design systems escalables',     'a0000000-0000-4000-8000-000000000003'::uuid),
+
+    -- Triángulo 3: Growth + Marketing + Founder
+    ('a0000000-0000-4000-8000-000000000005'::uuid, 'a0000000-0000-4000-8000-000000000008'::uuid, 'Growth para edtech',            'a0000000-0000-4000-8000-000000000005'::uuid),
+    ('a0000000-0000-4000-8000-000000000005'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'Constela · propuesta de valor', 'a0000000-0000-4000-8000-000000000005'::uuid),
+    ('a0000000-0000-4000-8000-000000000008'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'Constelación en edtech',        'a0000000-0000-4000-8000-000000000008'::uuid),
+
+    -- Triángulo 4: DevOps + SRE + Backend
+    ('a0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000007'::uuid, 'Kubernetes en Rust',            'a0000000-0000-4000-8000-000000000001'::uuid),
+    ('a0000000-0000-4000-8000-000000000007'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'Infrastructure as code',        'a0000000-0000-4000-8000-000000000007'::uuid),
+
+    -- Puentes adicionales
+    ('a0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, 'Frontend con IA integrada',    'a0000000-0000-4000-8000-000000000003'::uuid),
+    ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000008'::uuid, 'Financiación de edtech',        'a0000000-0000-4000-8000-000000000002'::uuid),
+    ('a0000000-0000-4000-8000-000000000006'::uuid, 'a0000000-0000-4000-8000-000000000007'::uuid, 'UX en infraestructura',         'a0000000-0000-4000-8000-000000000006'::uuid)
+  ) as d(a, b, note, created_by)
+where e.slug = 'bogota-2026-08'
+on conflict do nothing;
+
+-- ============================================================
+-- Trigger: toda nueva estrella se conecta con tres personas al unirse a Bogotá
+-- No aparece sola; sale del seed ya integrada en la constelación.
+-- Vive solo en desarrollo local (`supabase db reset`); nunca en producción.
 -- ============================================================
 
 create or replace function public.seed_connect_newcomer()
@@ -115,40 +148,42 @@ security definer
 set search_path = ''
 as $$
 declare
-  demo_event uuid;
+  bogota_event uuid;
   demo_people uuid[] := array[
-    'a0000000-0000-4000-8000-000000000001',
-    'a0000000-0000-4000-8000-000000000002',
-    'a0000000-0000-4000-8000-000000000003',
-    'a0000000-0000-4000-8000-000000000004',
-    'a0000000-0000-4000-8000-000000000005',
-    'a0000000-0000-4000-8000-000000000006',
-    'a0000000-0000-4000-8000-000000000007',
-    'a0000000-0000-4000-8000-000000000008'
+    'a0000000-0000-4000-8000-000000000001'::uuid,
+    'a0000000-0000-4000-8000-000000000002'::uuid,
+    'a0000000-0000-4000-8000-000000000003'::uuid,
+    'a0000000-0000-4000-8000-000000000004'::uuid,
+    'a0000000-0000-4000-8000-000000000005'::uuid,
+    'a0000000-0000-4000-8000-000000000006'::uuid,
+    'a0000000-0000-4000-8000-000000000007'::uuid,
+    'a0000000-0000-4000-8000-000000000008'::uuid,
+    'b1111111-1111-4000-8000-000000000001'::uuid
   ]::uuid[];
-  -- Beto, Diego y Fabián: entre ellos ya hay aristas, así que estas tres
-  -- conexiones cierran además un triángulo con la estrella recién llegada.
+  -- Tríada de conexión: los tres que forman un triángulo con el newcomer
   mates uuid[] := array[
-    'a0000000-0000-4000-8000-000000000001',
-    'a0000000-0000-4000-8000-000000000003',
-    'a0000000-0000-4000-8000-000000000005'
+    'a0000000-0000-4000-8000-000000000001'::uuid,
+    'a0000000-0000-4000-8000-000000000004'::uuid,
+    'b1111111-1111-4000-8000-000000000001'::uuid
   ]::uuid[];
   mate uuid;
 begin
-  select id into demo_event from public.events where slug = 'demo-bogota';
+  select id into bogota_event from public.events where slug = 'bogota-2026-08';
 
-  if new.event_id is distinct from demo_event or new.user_id = any (demo_people)
+  -- Solo en Bogotá, y si no es ya del seed
+  if new.event_id is distinct from bogota_event or new.user_id = any (demo_people)
   then
     return new;
   end if;
 
+  -- Conecta con los tres mates
   foreach mate in array mates loop
     insert into public.connections (event_id, user_a, user_b, note, created_by)
     values (
       new.event_id,
       least(new.user_id, mate),
       greatest(new.user_id, mate),
-      'conexión de prueba del seed ✦',
+      'Te damos la bienvenida a la constelación ✦',
       new.user_id
     )
     on conflict do nothing;

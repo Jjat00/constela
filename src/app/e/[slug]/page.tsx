@@ -52,7 +52,7 @@ export default async function EventPage({
   const dateLabel = eventDateLong(event.starts_at);
 
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 sm:px-8 sm:py-16">
+    <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 pb-32 sm:px-8 sm:py-16 sm:pb-40 lg:pb-48">
       {/* La puerta del evento comparte el vacío premium de la landing,
           con el horizonte del planeta — entrar es aterrizar en un mundo */}
       <CosmicSky planet />

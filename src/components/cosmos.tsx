@@ -116,7 +116,7 @@ export function CosmicSky({
     <div
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden bg-[#070A12]",
+        "pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#070A12]",
         className,
       )}
       style={{
