@@ -217,10 +217,13 @@ export function MiniPerfil({
             {infoOpen === "magnitud" ? (
               <div className="space-y-1.5 text-xs">
                 <p className="text-muted-foreground">
-                  Tu brillo en la constelacion.
+                  Tu brillo determina el tamaño de tu estrella.
+                </p>
+                <p className="text-muted-foreground">
+                  Se calcula por tus conexiones:
                 </p>
                 <p className="font-mono bg-white/5 rounded p-1.5">
-                  (Conexiones × 0.14) + 1.1
+                  (Conexiones × 0.34) + 1.0
                 </p>
                 <p className="text-muted-foreground">
                   Actual: <span className="text-foreground font-semibold">{magnitud}</span>
