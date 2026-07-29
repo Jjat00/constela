@@ -30,6 +30,11 @@ export function ProfileForm({
   defaultRole,
   defaultInterests,
   defaultIntents,
+  defaultWebsite,
+  defaultInstagram,
+  defaultLinkedin,
+  defaultGithub,
+  defaultWhatsappNumber,
 }: {
   defaultName: string;
   defaultHeadline: string;
@@ -39,6 +44,11 @@ export function ProfileForm({
   defaultRole: TagChoice[];
   defaultInterests: TagChoice[];
   defaultIntents: TagChoice[];
+  defaultWebsite?: string;
+  defaultInstagram?: string;
+  defaultLinkedin?: string;
+  defaultGithub?: string;
+  defaultWhatsappNumber?: string;
 }) {
   const [role, setRole] = useState<TagChoice[]>(defaultRole);
   const [interests, setInterests] = useState<TagChoice[]>(defaultInterests);
@@ -78,13 +88,71 @@ export function ProfileForm({
         </label>
       </div>
 
+      <section className="flex flex-col gap-4">
+        <SectionLabel>[ CONTACTO · OPCIONAL ]</SectionLabel>
+        <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-5">
+          <label className="flex flex-col gap-2.5">
+            <SectionLabel>SITIO WEB</SectionLabel>
+            <input
+              id="website"
+              name="website"
+              type="url"
+              defaultValue={defaultWebsite ?? ""}
+              placeholder="https://example.com"
+              className={INPUT}
+            />
+          </label>
+          <label className="flex flex-col gap-2.5">
+            <SectionLabel>INSTAGRAM</SectionLabel>
+            <input
+              id="instagram"
+              name="instagram"
+              defaultValue={defaultInstagram ?? ""}
+              placeholder="username"
+              className={INPUT}
+            />
+          </label>
+          <label className="flex flex-col gap-2.5">
+            <SectionLabel>LINKEDIN</SectionLabel>
+            <input
+              id="linkedin"
+              name="linkedin"
+              type="url"
+              defaultValue={defaultLinkedin ?? ""}
+              placeholder="https://linkedin.com/in/username"
+              className={INPUT}
+            />
+          </label>
+          <label className="flex flex-col gap-2.5">
+            <SectionLabel>GITHUB</SectionLabel>
+            <input
+              id="github"
+              name="github"
+              defaultValue={defaultGithub ?? ""}
+              placeholder="username"
+              className={INPUT}
+            />
+          </label>
+          <label className="flex flex-col gap-2.5 md:col-span-2">
+            <SectionLabel>WHATSAPP</SectionLabel>
+            <input
+              id="whatsapp_number"
+              name="whatsapp_number"
+              type="tel"
+              defaultValue={defaultWhatsappNumber ?? ""}
+              placeholder="+34 612 345 678"
+              className={INPUT}
+            />
+          </label>
+        </div>
+      </section>
+
       <section className="flex flex-col gap-3.5">
-        <SectionLabel>[ ROL ]</SectionLabel>
+        <SectionLabel>[ ROL · VARIOS ]</SectionLabel>
         <TagPicker
           options={roleOptions}
           value={role}
           onChange={setRole}
-          mode="single"
           placeholder="busca tu rol o escríbelo"
         />
       </section>

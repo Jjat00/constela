@@ -25,7 +25,9 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, headline, role, tags, intents, avatar_url")
+    .select(
+      "name, headline, role, tags, intents, avatar_url, website, instagram, linkedin, github, whatsapp_number",
+    )
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
@@ -47,7 +49,7 @@ export default async function ProfilePage({
       label: labelFor(catalog, category, slug),
     }));
 
-  const roleChoices = toChoices(profile.role ? [profile.role] : [], "rol");
+  const roleChoices = toChoices(profile.role ?? [], "rol");
   const interestChoices = toChoices(profile.tags, "interes");
   const intentChoices = toChoices(profile.intents, "intencion");
 
@@ -110,6 +112,11 @@ export default async function ProfilePage({
             defaultRole={roleChoices}
             defaultInterests={interestChoices}
             defaultIntents={intentChoices}
+            defaultWebsite={profile.website ?? ""}
+            defaultInstagram={profile.instagram ?? ""}
+            defaultLinkedin={profile.linkedin ?? ""}
+            defaultGithub={profile.github ?? ""}
+            defaultWhatsappNumber={profile.whatsapp_number ?? ""}
           />
         </div>
 

@@ -13,6 +13,11 @@ export async function updateProfile(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   const headline = String(formData.get("headline") ?? "").trim();
+  const website = String(formData.get("website") ?? "").trim();
+  const instagram = String(formData.get("instagram") ?? "").trim();
+  const linkedin = String(formData.get("linkedin") ?? "").trim();
+  const github = String(formData.get("github") ?? "").trim();
+  const whatsapp_number = String(formData.get("whatsapp_number") ?? "").trim();
 
   if (!name) redirect("/perfil?error=falta-nombre");
 
@@ -22,7 +27,7 @@ export async function updateProfile(formData: FormData) {
     resolveTagChoices(
       supabase,
       "rol",
-      parseChoices(formData.get("role")).slice(0, 1),
+      parseChoices(formData.get("role")),
     ),
     resolveTagChoices(
       supabase,
@@ -41,9 +46,14 @@ export async function updateProfile(formData: FormData) {
     .update({
       name,
       headline: headline || null,
-      role: roles[0] ?? null,
+      role: roles.length > 0 ? roles : [],
       tags,
       intents,
+      website: website || null,
+      instagram: instagram || null,
+      linkedin: linkedin || null,
+      github: github || null,
+      whatsapp_number: whatsapp_number || null,
     })
     .eq("id", user.id);
 

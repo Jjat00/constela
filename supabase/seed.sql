@@ -58,15 +58,15 @@ set headline = d.headline,
     intents = d.intents,
     onboarded_at = now()
 from (values
-  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · APIs en Go y Rust',          'backend',        array['backend','infraestructura','datos'],   array['conocer-gente','ofrezco-mentoria'],  'https://i.pravatar.cc/100?img=12'),
-  ('a0000000-0000-4000-8000-000000000002'::uuid, 'PM en fintech · en búsqueda activa',   'product-manager',array['producto','fintech','startups'],       array['contratando'],                       'https://i.pravatar.cc/100?img=32'),
-  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend · React + TypeScript',        'frontend',       array['frontend','diseño','carrera'],         array['busco-trabajo','conocer-gente'],     'https://i.pravatar.cc/100?img=53'),
-  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data scientist · ML en producción',    'data-scientist', array['ia','datos','machine-learning'],       array['ofrezco-mentoria'],                  'https://i.pravatar.cc/100?img=47'),
-  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Growth marketer · edtech',             'marketing',      array['marketing','comunidad','startups'],    array['busco-clientes','contratando'],      'https://i.pravatar.cc/100?img=15'),
-  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto · UX',          'product-design', array['diseño','producto','carrera'],         array['busco-trabajo'],                     'https://i.pravatar.cc/100?img=45'),
-  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · Kubernetes y AWS',               'devops',         array['infraestructura','open-source'],       array['conocer-gente','contratando'],       'https://i.pravatar.cc/100?img=68'),
-  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech + IA',              'founder',        array['startups','educacion','ia'],           array['busco-inversion','contratando'],     'https://i.pravatar.cc/100?img=25'),
-  ('b1111111-1111-4000-8000-000000000001'::uuid, 'Creador de Constela · full-stack',     'founder',        array['frontend','backend','open-source','ia'],array['conocer-gente'],                    'https://i.pravatar.cc/100?img=42')
+  ('a0000000-0000-4000-8000-000000000001'::uuid, 'Backend · APIs en Go y Rust',          array['backend'],        array['backend','infraestructura','datos'],   array['conocer-gente','ofrezco-mentoria'],  'https://i.pravatar.cc/100?img=12'),
+  ('a0000000-0000-4000-8000-000000000002'::uuid, 'PM en fintech · en búsqueda activa',   array['product-manager'],array['producto','fintech','startups'],       array['contratando'],                       'https://i.pravatar.cc/100?img=32'),
+  ('a0000000-0000-4000-8000-000000000003'::uuid, 'Frontend · React + TypeScript',        array['frontend'],       array['frontend','diseño','carrera'],         array['busco-trabajo','conocer-gente'],     'https://i.pravatar.cc/100?img=53'),
+  ('a0000000-0000-4000-8000-000000000004'::uuid, 'Data scientist · ML en producción',    array['data-scientist'], array['ia','datos','machine-learning'],       array['ofrezco-mentoria'],                  'https://i.pravatar.cc/100?img=47'),
+  ('a0000000-0000-4000-8000-000000000005'::uuid, 'Growth marketer · edtech',             array['marketing'],      array['marketing','comunidad','startups'],    array['busco-clientes','contratando'],      'https://i.pravatar.cc/100?img=15'),
+  ('a0000000-0000-4000-8000-000000000006'::uuid, 'Diseñadora de producto · UX',          array['product-design'], array['diseño','producto','carrera'],         array['busco-trabajo'],                     'https://i.pravatar.cc/100?img=45'),
+  ('a0000000-0000-4000-8000-000000000007'::uuid, 'SRE · Kubernetes y AWS',               array['devops'],         array['infraestructura','open-source'],       array['conocer-gente','contratando'],       'https://i.pravatar.cc/100?img=68'),
+  ('a0000000-0000-4000-8000-000000000008'::uuid, 'Fundadora · edtech + IA',              array['founder'],        array['startups','educacion','ia'],           array['busco-inversion','contratando'],     'https://i.pravatar.cc/100?img=25'),
+  ('b1111111-1111-4000-8000-000000000001'::uuid, 'Creador de Constela · full-stack',     array['founder'],        array['frontend','backend','open-source','ia'],array['conocer-gente'],                    'https://i.pravatar.cc/100?img=42')
 ) as d(id, headline, role, tags, intents, avatar)
 where p.id = d.id;
 
