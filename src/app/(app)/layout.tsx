@@ -3,10 +3,11 @@
  *
  * THESIS: la app es una sala de observación dentro del universo del evento;
  * rechaza el patrón "páginas con header" del SaaS.
- * OWN-WORLD: cosmos casi monocromo a pantalla completa (#0A0C12, nebulosas
- * grises, estrellas blancas) + cristal (blur 26, borde blanco 8%) + chrome
- * cosmic blue #4EA8FF / celeste #9DC8FF; el oro #FFD97A existe solo para
- * "tú"; H-alfa #F0699F solo para cierres triádicos. Geist-led.
+ * OWN-WORLD: el fondo premium del hero a pantalla completa — gradiente
+ * #070A12 en silencio, sin estrellas ni nebulosas: la única luz es el grafo —
+ * + cristal (blur 26, borde blanco 8%) + chrome cosmic blue #4EA8FF /
+ * celeste #9DC8FF; el oro #FFD97A existe solo para "tú"; H-alfa #F0699F solo
+ * para cierres triádicos. Geist-led.
  * STORY: quien entra ve su constelación real respirando y entiende que su red
  * ES este universo; la única forma de crecerlo es encontrarse en persona.
  * FIRST VIEWPORT: sidebar de cristal izquierda, grafo protagonista al centro
@@ -59,14 +60,8 @@ export default async function AppLayout({
 
   return (
     <div className="grain relative flex flex-1 flex-col">
-      {/* El cosmos es la sala: el shell entero vive dentro del universo */}
-      <CosmicSky
-        seed={11}
-        stars={190}
-        milkyWay
-        nebulas="rich"
-        className="fixed inset-0"
-      />
+      {/* El cosmos es la sala: el mismo vacío premium de la landing */}
+      <CosmicSky className="fixed inset-0" />
 
       <AppNav identity={identity} />
 

@@ -58,7 +58,7 @@ export default async function EventsPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-2.5">
           <h1 className="text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
-            Constelaciones
+            Tus eventos
           </h1>
           {myEvents.length > 0 && (
             <p className="max-w-xl text-sm leading-6 text-muted-foreground">
@@ -73,7 +73,7 @@ export default async function EventsPage() {
             className="btn-cosmic hidden h-12 items-center gap-2.5 px-5.5 text-sm font-medium lg:flex"
           >
             <Plus className="size-4 text-estrella-a" aria-hidden />
-            Nueva constelación
+            Nuevo evento
           </Link>
         )}
       </header>
@@ -95,7 +95,7 @@ export default async function EventsPage() {
             href="/eventos/nuevo"
             className="btn-cosmic flex h-12 items-center px-7 text-[15px] font-medium"
           >
-            Crear una constelación
+            Crear un evento
           </Link>
         </section>
       ) : (
@@ -158,9 +158,10 @@ export default async function EventsPage() {
                     <a
                       href={`/e/${event.slug}`}
                       aria-label={`QR de ${event.name}`}
-                      className="chip-star grid size-11 place-items-center"
+                      className="chip-star flex h-11 items-center gap-1.5 px-3.5 text-xs font-medium"
                     >
                       <QrCode className="size-4" aria-hidden />
+                      QR
                     </a>
                   </div>
                 </li>
@@ -173,7 +174,7 @@ export default async function EventsPage() {
             className="flex min-h-14 items-center justify-center gap-2 rounded-full border border-dashed border-white/15 px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-celeste/40 hover:text-celeste lg:hidden"
           >
             <Plus className="size-4" aria-hidden />
-            nueva constelación
+            nuevo evento
           </Link>
         </>
       )}

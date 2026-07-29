@@ -4,7 +4,7 @@ import { CosmicSky } from "@/components/cosmos";
 export default function NotFound() {
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center gap-6 px-5 py-16 text-center sm:px-8">
-      <CosmicSky seed={61} stars={110} milkyWay={false} />
+      <CosmicSky />
       <p className="relative z-10 font-mono text-[11px] tracking-[0.18em] text-faint uppercase">
         [ 404 ]
       </p>

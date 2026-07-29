@@ -163,7 +163,7 @@ export default async function HomePage({
           href="/eventos/nuevo"
           className="btn-cosmic flex h-13 items-center justify-center text-base font-medium"
         >
-          Crear una constelación
+          Crear un evento
         </Link>
 
         {/* El QR personal existe desde ya, pero conecta dentro de un evento */}

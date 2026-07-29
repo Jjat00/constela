@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AuraSol } from "@/components/cosmos";
@@ -112,6 +113,17 @@ export default async function MyQrPage() {
             estrella
           </p>
         )}
+        {/* Dos QRs distintos (CONTEXT.md): este es el tuyo; la puerta de
+            cada evento tiene el suyo propio en su página */}
+        <p className="font-mono text-xs leading-5 text-muted-foreground">
+          ¿el QR de un evento? cada uno tiene el suyo en{" "}
+          <Link
+            href="/eventos"
+            className="text-celeste underline-offset-4 hover:underline"
+          >
+            tus eventos
+          </Link>
+        </p>
         <p className="mt-1 font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
           [ sube el brillo de la pantalla ]
         </p>

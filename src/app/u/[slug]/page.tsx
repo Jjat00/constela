@@ -63,7 +63,7 @@ export default async function PublicProfilePage({
 
     return (
       <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-        <CosmicSky seed={41} stars={130} nebulas="faint" />
+        <CosmicSky />
         <div className="relative z-10 flex w-full max-w-sm flex-col items-center sm:max-w-md">
           <AutoConnect
             slug={slug}
@@ -86,7 +86,7 @@ export default async function PublicProfilePage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-      <CosmicSky seed={41} stars={130} nebulas="faint" />
+      <CosmicSky />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-6 text-center sm:max-w-md sm:gap-7">
         {/* La persona vive dentro de su estrella: el mismo tratamiento

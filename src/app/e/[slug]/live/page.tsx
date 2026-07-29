@@ -119,7 +119,10 @@ function CieloDelEvento({
             opacity={0.34}
             pathLength={1}
             className="animate-draw"
-            style={{ animationDelay: `${0.2 + i * 0.04}s` }}
+            style={{
+              animationDelay: `${0.2 + i * 0.04}s`,
+              filter: "drop-shadow(0 0 3px rgba(205,216,255,0.35))",
+            }}
           />
         );
       })}
@@ -129,9 +132,38 @@ function CieloDelEvento({
         const m = 1.4 + Math.min(degree.get(node.id) ?? 0, 7) * 0.5;
         return (
           <g key={node.id} transform={`translate(${p.x} ${p.y})`}>
-            <circle r={m * 4.2} fill={spec.halo} opacity={0.22} />
+            <circle
+              r={m * 4.2}
+              fill={spec.halo}
+              opacity={0.22}
+              style={{ filter: `blur(${(m * 1.5).toFixed(1)}px)` }}
+            />
             <circle r={m * 1.9} fill={spec.halo} opacity={0.62} />
             <circle r={m * 0.75} fill="#FFFFFF" />
+            {m > 2.3 && (
+              <>
+                <line
+                  x1={-m * 4.6}
+                  y1="0"
+                  x2={m * 4.6}
+                  y2="0"
+                  stroke="#FFFFFF"
+                  strokeWidth={0.5}
+                  opacity={0.45}
+                  style={{ filter: "blur(0.6px)" }}
+                />
+                <line
+                  x1="0"
+                  y1={-m * 4.6}
+                  x2="0"
+                  y2={m * 4.6}
+                  stroke="#FFFFFF"
+                  strokeWidth={0.5}
+                  opacity={0.45}
+                  style={{ filter: "blur(0.6px)" }}
+                />
+              </>
+            )}
           </g>
         );
       })}
@@ -167,7 +199,7 @@ export default async function LivePage({
   if (nodes.length === 0) {
     return (
       <main className="grain relative flex min-h-svh flex-col items-center justify-center gap-5 px-6 text-center">
-        <CosmicSky seed={5} stars={140} nebulas="rich" />
+        <CosmicSky />
         <p className="relative z-10 max-w-sm text-sm leading-6 text-muted-foreground">
           La proyección es para quienes están dentro del evento.
         </p>
@@ -196,7 +228,7 @@ export default async function LivePage({
   return (
     <main className="grain relative min-h-svh overflow-hidden">
       <LiveRefresh />
-      <CosmicSky seed={5} stars={170} nebulas="rich" />
+      <CosmicSky />
       <div className="absolute inset-0">
         <CieloDelEvento nodes={nodes} edges={edges} />
       </div>

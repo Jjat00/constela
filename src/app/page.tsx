@@ -224,7 +224,7 @@ export default async function LandingPage() {
 
   return (
     <main className="grain relative flex min-h-svh flex-col overflow-hidden">
-      <CosmicSky seed={9} stars={0} milkyWay={false} nebulas="none" planet />
+      <CosmicSky planet />
 
       {/* La red del evento, dibujándose en el cielo */}
       <div

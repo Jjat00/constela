@@ -63,7 +63,7 @@ export default async function BienvenidaPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col justify-center px-6 py-12 lg:px-16">
-      <CosmicSky seed={31} stars={110} nebulas="faint" />
+      <CosmicSky />
 
       <div className="relative z-10 mx-auto grid w-full max-w-md gap-8 lg:max-w-5xl lg:grid-cols-[1fr_30rem] lg:items-center lg:gap-16">
         <header className="flex flex-col gap-5">

@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Globe, Orbit, QrCode, SlidersHorizontal, Users } from "lucide-react";
-import { useActiveConstellation } from "@/components/active-constellation";
+import { Globe, Orbit, QrCode, SlidersHorizontal } from "lucide-react";
 import { AuraSol } from "@/components/cosmos";
 import { cn } from "@/lib/utils";
 
+// CONTEXT.md: la pantalla principal se llama «Universo»; «constelación» es
+// el dibujo, nunca el evento — por eso /eventos se llama por su nombre.
+// (El tab «Estrellas» volverá cuando exista la lista de conexiones.)
 const TABS = [
-  { href: "/home", label: "Constelación", icon: Orbit },
-  { href: "/estrellas", label: "Estrellas", icon: Users },
+  { href: "/home", label: "Universo", icon: Orbit },
   { href: "/qr", label: "Mi QR", icon: QrCode },
-  { href: "/eventos", label: "Constelaciones", icon: Globe },
+  { href: "/eventos", label: "Eventos", icon: Globe },
   { href: "/perfil", label: "Ajustes", icon: SlidersHorizontal },
 ];
 

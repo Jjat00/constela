@@ -124,6 +124,13 @@ export function ConstellationGraph({
     return map;
   }, [edges]);
 
+  // El orden de `edges` marca el escalonado del trazado (como el índice de
+  // línea en la constelación del hero).
+  const edgeIndexById = useMemo(
+    () => new Map(edges.map((edge, i) => [edge.id, i])),
+    [edges],
+  );
+
   // Cierres triádicos: cada triángulo del grafo se ioniza en H-alfa.
   // O(aristas × grado): de sobra para la escala de un evento.
   const triangles = useMemo(() => {
@@ -154,8 +161,9 @@ export function ConstellationGraph({
     [],
   );
 
-  // La constelación se dibuja al entrar (~1.8s): los filamentos aparecen en
-  // fundido. Con calma pedida, estado final directo.
+  // La constelación se dibuja al entrar: el mismo gesto que `.animate-draw`
+  // del hero — cada filamento se traza escalonado (delay 0.25 + i·0.035s,
+  // 1.8s, easing suave). Con calma pedida, estado final directo.
   const mountAt = useRef(0);
   useEffect(() => {
     mountAt.current = performance.now();
@@ -164,6 +172,14 @@ export function ConstellationGraph({
     reducedMotion || mountAt.current === 0
       ? 1
       : Math.min(1, (performance.now() - mountAt.current) / 1800);
+  const linkDrawProgress = (index: number) => {
+    if (reducedMotion || mountAt.current === 0) return 1;
+    const t = (performance.now() - mountAt.current) / 1000;
+    const p = (t - (0.25 + index * 0.035)) / 1.8;
+    if (p <= 0) return 0;
+    if (p >= 1) return 1;
+    return p * p * (3 - 2 * p);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -372,43 +388,68 @@ export function ConstellationGraph({
             if ((fgRef.current?.zoom() ?? 1) > 3) fgRef.current?.zoom(3, 0);
             setZoomLabel(`×${(fgRef.current?.zoom() ?? 1).toFixed(1)}`);
           }}
-          linkColor={(link) => {
-            const end = (e: unknown) =>
-              typeof e === "object" && e !== null
-                ? String((e as { id?: string }).id ?? "")
-                : String(e);
-            const a = end(link.source);
-            const b = end(link.target);
-            const fade = drawInFade();
-            // Una línea solo brilla si sus dos extremos siguen encendidos
+          // Filamentos con el trazo del hero: se dibujan escalonados al
+          // entrar y llevan un glow tenue (el drop-shadow de la landing,
+          // como pasada ancha bajo la línea fina).
+          linkCanvasObjectMode={() => "replace"}
+          linkCanvasObject={(link, ctx, globalScale) => {
+            const src = link.source;
+            const tgt = link.target;
+            if (
+              typeof src !== "object" ||
+              src === null ||
+              typeof tgt !== "object" ||
+              tgt === null
+            ) {
+              return;
+            }
+            const from = src as SimNode;
+            const to = tgt as SimNode;
+            const a = String(from.id);
+            const b = String(to.id);
+            const edgeId = String((link as { id?: string }).id ?? "");
+            const progress = linkDrawProgress(edgeIndexById.get(edgeId) ?? 0);
+            if (progress === 0) return;
+
+            // Una línea solo brilla si sus dos extremos siguen encendidos;
+            // tocar un extremo enciende el filamento.
             const lit =
               !matchedIds ||
               (isLit(a, myId, matchedIds) && isLit(b, myId, matchedIds));
-            if (!lit) return `rgba(${FILAMENTO}, ${0.05 * fade})`;
-            // Tocar un extremo enciende el filamento
             const hot =
               hoverRef.current === a ||
               hoverRef.current === b ||
               selectedRef.current === a ||
               selectedRef.current === b;
-            return `rgba(${FILAMENTO}, ${(hot ? 0.85 : 0.34) * fade})`;
-          }}
-          linkWidth={(link) => {
-            const end = (e: unknown) =>
-              typeof e === "object" && e !== null
-                ? String((e as { id?: string }).id ?? "")
-                : String(e);
-            const a = end(link.source);
-            const b = end(link.target);
-            const hot =
-              hoverRef.current === a ||
-              hoverRef.current === b ||
-              selectedRef.current === a ||
-              selectedRef.current === b;
-            return hot ? 1.1 : 0.65;
+            const alpha = lit ? (hot ? 0.85 : 0.34) : 0.05;
+            // Filamentos finos SIEMPRE (px de pantalla, como el hero): el
+            // zoom separa las estrellas, nunca engorda el trazo.
+            const s = 1 / globalScale;
+            const width = (hot ? 1.1 : 0.65) * s;
+
+            const x1 = from.x ?? 0;
+            const y1 = from.y ?? 0;
+            const x2 = x1 + ((to.x ?? 0) - x1) * progress;
+            const y2 = y1 + ((to.y ?? 0) - y1) * progress;
+
+            ctx.lineCap = "round";
+            if (lit) {
+              ctx.beginPath();
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x2, y2);
+              ctx.strokeStyle = `rgba(${FILAMENTO}, ${alpha * 0.35})`;
+              ctx.lineWidth = width + 2.4 * s;
+              ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = `rgba(${FILAMENTO}, ${alpha})`;
+            ctx.lineWidth = width;
+            ctx.stroke();
           }}
           // El gas ionizado de los cierres triádicos, debajo de líneas y estrellas
-          onRenderFramePre={(ctx) => {
+          onRenderFramePre={(ctx, globalScale) => {
             if (!showTriads) return;
             const fade = drawInFade();
             for (const [a, b, c] of triangles) {
@@ -434,7 +475,7 @@ export function ConstellationGraph({
               ctx.fillStyle = `rgba(${HALFA}, ${0.085 * fade})`;
               ctx.fill();
               ctx.strokeStyle = `rgba(${HALFA}, ${0.34 * fade})`;
-              ctx.lineWidth = 0.6;
+              ctx.lineWidth = 0.6 / globalScale;
               ctx.stroke();
             }
           }}
@@ -450,52 +491,51 @@ export function ConstellationGraph({
             const spec = isMe
               ? { halo: SOL, core: SOL_CORE }
               : spectrumOf(id);
-            // Magnitud: el brillo y el radio crecen con las conexiones.
-            // El tope ajeno es menor que el del sol: tú brillas más siempre.
+            // La anatomía EXACTA de la constelación del hero: magnitud
+            // 1 + 0.34·conexiones (tope 7), m = mag·0.9. Todo se dibuja en
+            // píxeles de PANTALLA (÷ globalScale): las estrellas del hero
+            // son finas siempre, y aquí el zoom inicial no debe engordarlas.
+            const s = 1 / globalScale;
             const degree = degreeOf.get(id) ?? 0;
-            const mag = Math.min(
-              isMe ? 1.6 : 1.35,
-              1 + Math.log2(1 + degree) * 0.22,
-            );
-            const coreR = (isMe ? 4.6 : 2.4) * mag;
+            const mag = isMe ? 5.4 : 1 + Math.min(degree, 7) * 0.34;
+            const m = mag * 0.9;
 
             // Fuera del filtro: la estrella no desaparece — baja al 14 %
             if (dimmed) ctx.globalAlpha = 0.14;
 
-            // El sol lleva corona respirando y fotosfera cálida
+            // El sol lleva corona respirando y luz interna cálida (el
+            // mismo par de círculos difusos del hero: r=46 y r=22)
             if (isMe) {
               const breath = reducedMotion
                 ? 1
                 : 1 + 0.05 * Math.sin(performance.now() / 1100);
-              const coronaR = coreR * 7 * breath;
+              const coronaR = 46 * s * breath;
               const corona = ctx.createRadialGradient(x, y, 0, x, y, coronaR);
               corona.addColorStop(0, hexA(SOL, 0.16));
+              corona.addColorStop(0.55, hexA(SOL, 0.09));
               corona.addColorStop(1, hexA(SOL, 0));
               ctx.beginPath();
               ctx.arc(x, y, coronaR, 0, 2 * Math.PI);
               ctx.fillStyle = corona;
               ctx.fill();
 
-              const photo = ctx.createRadialGradient(
-                x,
-                y,
-                0,
-                x,
-                y,
-                coreR * 2.6,
-              );
-              photo.addColorStop(0, hexA("#FFE9A8", 0.5));
-              photo.addColorStop(1, hexA("#FFE9A8", 0));
+              const innerR = 22 * s;
+              const inner = ctx.createRadialGradient(x, y, 0, x, y, innerR);
+              inner.addColorStop(0, hexA("#FFE9A8", 0.5));
+              inner.addColorStop(0.6, hexA("#FFE9A8", 0.28));
+              inner.addColorStop(1, hexA("#FFE9A8", 0));
               ctx.beginPath();
-              ctx.arc(x, y, coreR * 2.6, 0, 2 * Math.PI);
-              ctx.fillStyle = photo;
+              ctx.arc(x, y, innerR, 0, 2 * Math.PI);
+              ctx.fillStyle = inner;
               ctx.fill();
             }
 
-            // Corona espectral: luz que se desvanece, nunca un disco plano
-            const glowR = coreR * (hot || isSel ? 5.2 : 4.2);
-            const glow = ctx.createRadialGradient(x, y, coreR * 0.4, x, y, glowR);
+            // Halo exterior difuso (el circle con blur del hero): gradiente
+            // que se desvanece, nunca un disco plano
+            const glowR = m * 4.2 * (hot || isSel ? 1.25 : 1) * s;
+            const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
             glow.addColorStop(0, hexA(spec.halo, isMe ? 0.3 : 0.22));
+            glow.addColorStop(0.5, hexA(spec.halo, (isMe ? 0.3 : 0.22) * 0.55));
             glow.addColorStop(1, hexA(spec.halo, 0));
             ctx.beginPath();
             ctx.arc(x, y, glowR, 0, 2 * Math.PI);
@@ -504,21 +544,22 @@ export function ConstellationGraph({
 
             // Halo cercano: aquí vive el color
             ctx.beginPath();
-            ctx.arc(x, y, coreR * 1.9, 0, 2 * Math.PI);
+            ctx.arc(x, y, m * 1.9 * s, 0, 2 * Math.PI);
             ctx.fillStyle = hexA(spec.halo, isMe ? 0.95 : 0.62);
             ctx.fill();
 
             // Núcleo blanco-caliente
             ctx.beginPath();
-            ctx.arc(x, y, coreR * 0.72, 0, 2 * Math.PI);
+            ctx.arc(x, y, m * (isMe ? 0.62 : 0.72) * s, 0, 2 * Math.PI);
             ctx.fillStyle = "#FFFFFF";
             ctx.fill();
 
-            // Picos de difracción: el sol siempre; el resto, al ganar magnitud
-            if (isMe || degree >= 2) {
-              const spike = coreR * 4.6;
-              ctx.strokeStyle = hexA(isMe ? SOL_CORE : "#FFFFFF", 0.45);
-              ctx.lineWidth = 0.5;
+            // Picos de difracción: el sol siempre; el resto, al ganar
+            // magnitud (mismo umbral 2.1 del hero)
+            if (isMe || mag > 2.1) {
+              const spike = m * 4.6 * s;
+              ctx.strokeStyle = hexA(isMe ? "#FFF4C7" : "#FFFFFF", 0.45);
+              ctx.lineWidth = 0.5 * s;
               ctx.lineCap = "round";
               ctx.beginPath();
               ctx.moveTo(x - spike, y);
@@ -531,9 +572,9 @@ export function ConstellationGraph({
             // Anillo de selección
             if (isSel) {
               ctx.beginPath();
-              ctx.arc(x, y, coreR * 3.4, 0, 2 * Math.PI);
+              ctx.arc(x, y, Math.max(m * 3.2, 8) * s, 0, 2 * Math.PI);
               ctx.strokeStyle = hexA(CELESTE, 0.9);
-              ctx.lineWidth = 1.1 / globalScale;
+              ctx.lineWidth = 1.1 * s;
               ctx.stroke();
             }
 
@@ -545,11 +586,11 @@ export function ConstellationGraph({
               const label = isMe
                 ? "tú"
                 : String(node.name ?? "").split(" ")[0].toLowerCase();
-              const fontSize = Math.max(11 / globalScale, 3.5);
+              const fontSize = 11 * s;
               ctx.font = `500 ${fontSize}px ui-monospace, monospace`;
               ctx.textAlign = "left";
               ctx.textBaseline = "middle";
-              const labelX = x + coreR * 3.6 + 3;
+              const labelX = x + (m * 4.6 + 5) * s;
               ctx.lineWidth = fontSize / 4;
               ctx.strokeStyle = "rgba(2, 3, 10, 0.75)";
               ctx.strokeText(label, labelX, y);

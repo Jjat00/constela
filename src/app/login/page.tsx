@@ -22,7 +22,7 @@ export default async function LoginPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8">
-      <CosmicSky seed={21} stars={140} nebulas="rich" />
+      <CosmicSky />
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-8 sm:max-w-md">
         <div className="flex flex-col gap-3">

@@ -3,8 +3,8 @@ import { Galaxia } from "@/components/cosmos";
 import { createEvent } from "./actions";
 
 /**
- * Crear constelación (diseño 2e): tres campos y ya. Cualquiera puede
- * encender un evento; nace con su propio QR para la entrada.
+ * Crear evento (diseño 2e): tres campos y ya. Cualquiera puede encender
+ * un evento; nace con su propio QR para la entrada.
  */
 
 function Field({
@@ -53,7 +53,7 @@ export default async function NewEventPage({
             <Galaxia size={56} seed={11} active />
             <div>
               <h1 className="text-2xl font-semibold tracking-[-0.025em]">
-                Nueva constelación
+                Nuevo evento
               </h1>
               <p className="mt-1.5 text-[13px] text-muted-foreground">
                 Cualquiera puede crear un evento.
@@ -90,7 +90,7 @@ export default async function NewEventPage({
               type="submit"
               className="btn-cosmic h-13 flex-1 cursor-pointer text-[15px] font-medium"
             >
-              Crear constelación
+              Crear evento
             </button>
             <Link
               href="/eventos"

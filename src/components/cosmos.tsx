@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
  * mismatch y el universo es el mismo en cada visita. Los tamaños de estrella
  * van en px fijos: un cielo nunca escala con el alto del documento.
  *
- * v5: el cielo es casi monocromo — fondo #0A0C12, banda láctea y nebulosas
- * grises, estrellas blancas. El color (espectrales, oro, H-alfa) vive en el
- * grafo y en la identidad, no en el fondo.
+ * v5 (fondo premium del hero, 2026-07-28): el cielo por defecto es silencio —
+ * solo el gradiente #070A12→#0A0D18, sin estrellas ni nebulosas. La única luz
+ * de cada pantalla la ponen el grafo y la identidad (espectrales, oro,
+ * H-alfa). Los props siguen existiendo para encender un cielo rico a
+ * propósito, pero el default ES el estilo de la landing.
  */
 
 /** mulberry32 — PRNG pequeño y estable; suficiente para sembrar un cielo. */
@@ -93,9 +95,9 @@ function makeStars(seed: number, count: number): Star[] {
  */
 export function CosmicSky({
   seed = 7,
-  stars = 150,
-  milkyWay = true,
-  nebulas = "faint",
+  stars = 0,
+  milkyWay = false,
+  nebulas = "none",
   planet = false,
   className,
 }: {

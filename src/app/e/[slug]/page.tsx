@@ -53,9 +53,9 @@ export default async function EventPage({
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 sm:px-8 sm:py-16">
-      {/* La puerta del evento también se proyecta: cielo con más presencia
-          y el horizonte del planeta — entrar es aterrizar en un mundo */}
-      <CosmicSky seed={51} stars={150} nebulas="rich" planet />
+      {/* La puerta del evento comparte el vacío premium de la landing,
+          con el horizonte del planeta — entrar es aterrizar en un mundo */}
+      <CosmicSky planet />
 
       {/* Móvil: una columna centrada. Desktop: ficha a la izquierda, QR grande
           a la derecha — es la pantalla que se proyecta en la entrada. */}
