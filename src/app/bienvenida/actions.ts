@@ -21,11 +21,7 @@ export async function completeOnboarding(formData: FormData) {
   const [roles, tags, intents] = skipped
     ? [[], [], []]
     : await Promise.all([
-        resolveTagChoices(
-          supabase,
-          "rol",
-          parseChoices(formData.get("role")).slice(0, 1),
-        ),
+        resolveTagChoices(supabase, "rol", parseChoices(formData.get("role"))),
         resolveTagChoices(supabase, "interes", parseChoices(formData.get("interests"))),
         resolveTagChoices(supabase, "intencion", parseChoices(formData.get("intents"))),
       ]);
@@ -33,7 +29,7 @@ export async function completeOnboarding(formData: FormData) {
   const { error } = await supabase
     .from("profiles")
     .update({
-      ...(skipped ? {} : { role: roles[0] ?? null, tags, intents }),
+      ...(skipped ? {} : { role: roles, tags, intents }),
       onboarded_at: new Date().toISOString(),
     })
     .eq("id", user.id);

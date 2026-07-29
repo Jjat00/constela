@@ -55,7 +55,6 @@ export function OnboardingFlow({
           options={roleOptions}
           value={role}
           onChange={setRole}
-          mode="single"
           placeholder="busca tu rol o escríbelo"
         />
       </div>

@@ -217,18 +217,14 @@ export default async function HomePage({
   );
   const me = nodeById.get(user.id);
   const mySignals = new Set([
-    ...(me?.role ? [me.role] : []),
+    ...(me?.role ?? []),
     ...(me?.tags ?? []),
     ...(me?.intents ?? []),
   ]);
   const nearby = graph.nodes
     .filter((n) => n.id !== user.id && !connectedIds.has(n.id))
     .map((n) => {
-      const signals = [
-        ...(n.role ? [n.role] : []),
-        ...n.tags,
-        ...n.intents,
-      ];
+      const signals = [...n.role, ...n.tags, ...n.intents];
       const shared = signals.filter((s) => mySignals.has(s));
       return { node: n, shared: shared.length };
     })
@@ -237,7 +233,9 @@ export default async function HomePage({
     .map(({ node }) => ({
       id: node.id,
       name: node.name,
-      role: node.role ? labelFor(catalog, "rol", node.role) : null,
+      role: node.role.length
+        ? node.role.map((r) => labelFor(catalog, "rol", r)).join(" · ")
+        : null,
       why: node.intents[0]
         ? labelFor(catalog, "intencion", node.intents[0])
         : null,

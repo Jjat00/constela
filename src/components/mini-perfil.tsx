@@ -43,7 +43,7 @@ export function MiniPerfil({
   const letter = spectralLetterOf(node.id);
   const label = (slug: string) => tagLabels?.get(slug) ?? slug;
   const meta = [
-    node.role ? label(node.role) : null,
+    ...node.role.map(label),
     node.intents[0] ? label(node.intents[0]) : null,
   ]
     .filter(Boolean)

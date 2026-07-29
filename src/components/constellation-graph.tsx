@@ -9,7 +9,7 @@ export type GraphNode = {
   id: string;
   name: string;
   headline: string | null;
-  role: string | null;
+  role: string[];
   tags: string[];
   intents: string[];
   avatarUrl: string | null;

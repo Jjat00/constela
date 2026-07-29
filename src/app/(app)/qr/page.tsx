@@ -42,8 +42,10 @@ export default async function MyQrPage() {
 
   const event = attendance?.[0]?.events;
   const eventName = (Array.isArray(event) ? event[0] : event)?.name;
-  const roleLabel = profile.role
-    ? labelFor(catalog, "rol", profile.role)
+  const roleLabel = profile.role?.length
+    ? (profile.role as string[])
+        .map((r) => labelFor(catalog, "rol", r))
+        .join(" · ")
     : null;
   const magnitude = (1.1 + (connectionCount ?? 0) * 0.14).toFixed(1);
 

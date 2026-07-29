@@ -90,9 +90,7 @@ export default async function BienvenidaPage({
           next={next}
           roleOptions={catalog.rol}
           intentOptions={catalog.intencion}
-          initialRole={
-            profile.role ? toChoices([profile.role], catalog.rol) : []
-          }
+          initialRole={toChoices(profile.role ?? [], catalog.rol)}
           initialInterests={toChoices(profile.tags ?? [], catalog.interes)}
           initialIntents={toChoices(profile.intents ?? [], catalog.intencion)}
         />

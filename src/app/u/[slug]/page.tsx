@@ -27,9 +27,9 @@ export default async function PublicProfilePage({
 
   // El catálogo es público: esta página también se ve sin sesión
   const catalog = await fetchTagCatalog(supabase);
-  const roleLabel = profile.role
-    ? labelFor(catalog, "rol", profile.role)
-    : null;
+  const roleLabels = ((profile.role ?? []) as string[]).map((slug) =>
+    labelFor(catalog, "rol", slug),
+  );
   const intentLabel = profile.intents?.[0]
     ? labelFor(catalog, "intencion", profile.intents[0])
     : null;
@@ -72,7 +72,8 @@ export default async function PublicProfilePage({
               name: profile.name,
               avatarUrl: profile.avatar_url,
               meta:
-                [roleLabel, intentLabel].filter(Boolean).join(" · ") || null,
+                [...roleLabels, intentLabel].filter(Boolean).join(" · ") ||
+                null,
             }}
             me={{
               name: myProfile?.name ?? "Tú",
@@ -119,16 +120,17 @@ export default async function PublicProfilePage({
           )}
         </div>
 
-        {(roleLabel || tagLabels.length > 0) && (
+        {(roleLabels.length > 0 || tagLabels.length > 0) && (
           <div className="flex flex-wrap justify-center gap-2">
-            {roleLabel && (
+            {roleLabels.map((label) => (
               <span
+                key={label}
                 className="chip-star px-3 py-1.5 text-xs font-medium"
                 data-active="true"
               >
-                {roleLabel}
+                {label}
               </span>
-            )}
+            ))}
             {tagLabels.map((label) => (
               <span key={label} className="chip-star px-3 py-1.5 text-xs">
                 {label}

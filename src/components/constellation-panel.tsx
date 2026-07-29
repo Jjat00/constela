@@ -97,7 +97,10 @@ export function ConstellationPanel({
       // Dentro de una categoría basta con una coincidencia; entre categorías
       // (y con la búsqueda) se exigen todas a la vez.
       if (folded && !foldForSearch(node.name).includes(folded)) return false;
-      if (active.rol.length > 0 && (!node.role || !active.rol.includes(node.role)))
+      if (
+        active.rol.length > 0 &&
+        !node.role.some((r) => active.rol.includes(r))
+      )
         return false;
       if (
         active.interes.length > 0 &&

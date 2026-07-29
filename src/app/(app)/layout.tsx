@@ -45,11 +45,13 @@ export default async function AppLayout({
       .eq("id", user.id)
       .single();
     if (profile) {
-      const subtitle =
-        profile.headline ??
-        (profile.role
-          ? labelFor(await fetchTagCatalog(supabase), "rol", profile.role)
-          : null);
+      let subtitle: string | null = profile.headline;
+      if (!subtitle && profile.role?.length) {
+        const catalog = await fetchTagCatalog(supabase);
+        subtitle = (profile.role as string[])
+          .map((r) => labelFor(catalog, "rol", r))
+          .join(" · ");
+      }
       identity = {
         name: profile.name,
         subtitle,

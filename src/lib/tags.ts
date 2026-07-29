@@ -155,7 +155,7 @@ export type TagFacet = {
  */
 export function buildFacets(
   people: Array<{
-    role?: string | null;
+    role?: string[] | null;
     tags?: string[] | null;
     intents?: string[] | null;
   }>,
@@ -171,7 +171,7 @@ export function buildFacets(
     counters[category].set(slug, (counters[category].get(slug) ?? 0) + 1);
 
   for (const person of people) {
-    if (person.role) bump("rol", person.role);
+    for (const role of person.role ?? []) bump("rol", role);
     for (const tag of person.tags ?? []) bump("interes", tag);
     for (const intent of person.intents ?? []) bump("intencion", intent);
   }
