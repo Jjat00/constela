@@ -62,6 +62,7 @@ export function ConstellationGraph({
   matchedIds = null,
   tagLabels,
   showTriads = true,
+  showNames = true,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -76,6 +77,8 @@ export function ConstellationGraph({
   tagLabels?: Map<string, string>;
   /** Apagar el gas H-alfa de los cierres triádicos (toggle del panel). */
   showTriads?: boolean;
+  /** Mostrar u ocultar nombres de estrellas (toggle del panel). */
+  showNames?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -580,6 +583,7 @@ export function ConstellationGraph({
 
             // Etiqueta: tú siempre; el resto al pasar, seleccionar o filtrar
             const showLabel =
+              showNames &&
               !dimmed &&
               (isMe || hot || isSel || (matchedIds?.has(id) ?? false));
             if (showLabel) {

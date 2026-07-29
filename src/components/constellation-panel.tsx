@@ -67,6 +67,7 @@ export function ConstellationPanel({
   const [active, setActive] = useState<Active>(NOTHING);
   const [query, setQuery] = useState("");
   const [triads, setTriads] = useState(true);
+  const [showNames, setShowNames] = useState(true);
   const [open, setOpen] = useState(false);
   const [showAll, setShowAll] = useState<TagCategory | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -191,6 +192,7 @@ export function ConstellationPanel({
           matchedIds={matchedIds}
           tagLabels={tagLabels}
           showTriads={triads}
+          showNames={showNames}
         />
       </div>
 
@@ -216,6 +218,15 @@ export function ConstellationPanel({
               </div>
             </>
           )}
+          <button
+            type="button"
+            onClick={() => setShowNames(!showNames)}
+            aria-pressed={showNames}
+            className="chip-star flex h-10 shrink-0 items-center gap-2 px-3.5 text-xs font-medium"
+          >
+            <span aria-hidden>𝐀𝐁𝐂</span>
+            Nombres
+          </button>
           <button
             type="button"
             onClick={() => setTriads(!triads)}
@@ -408,6 +419,17 @@ export function ConstellationPanel({
         )}
         <div className="pointer-events-auto glass flex h-14 items-center gap-2.5 rounded-full py-0 pr-2 pl-4">
           {searchInput}
+          <button
+            type="button"
+            onClick={() => setShowNames(!showNames)}
+            aria-pressed={showNames}
+            aria-label={
+              showNames ? "Ocultar nombres" : "Mostrar nombres"
+            }
+            className="chip-star grid size-11 shrink-0 place-items-center text-sm font-bold"
+          >
+            A
+          </button>
           <button
             type="button"
             onClick={() => setTriads(!triads)}
