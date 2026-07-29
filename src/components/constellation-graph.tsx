@@ -85,6 +85,52 @@ export function ConstellationGraph({
   // Tocar una estrella la abre en el MiniPerfil; nunca navega ni conecta: la
   // conexión solo nace de escanear un QR en persona (ADR 0001).
   const [selected, setSelected] = useState<GraphNode | null>(null);
+  const [selectedPos, setSelectedPos] = useState<{ x: number; y: number; placement: "top" | "bottom" | "left" | "right" } | null>(null);
+
+  const calculatePosition = (nodeX: number, nodeY: number) => {
+    const CARD_WIDTH = 360;
+    const CARD_HEIGHT = 400;
+    const PADDING = 16;
+    const OFFSET = 12;
+
+    let placement: "top" | "bottom" | "left" | "right" = "top";
+    let x = nodeX;
+    let y = nodeY;
+
+    // Intentar poner arriba primero
+    if (nodeY > CARD_HEIGHT + OFFSET) {
+      placement = "top";
+      y = nodeY - OFFSET;
+    }
+    // Si no hay espacio arriba, intentar abajo
+    else if (window.innerHeight - nodeY > CARD_HEIGHT + OFFSET) {
+      placement = "bottom";
+      y = nodeY + OFFSET;
+    }
+    // Si tampoco hay espacio abajo, poner a la derecha
+    else if (window.innerWidth - nodeX > CARD_WIDTH + OFFSET) {
+      placement = "right";
+      x = nodeX + OFFSET;
+      y = nodeY;
+    }
+    // Si tampoco hay espacio a la derecha, poner a la izquierda
+    else {
+      placement = "left";
+      x = nodeX - OFFSET;
+      y = nodeY;
+    }
+
+    // Asegurar que no salga por los lados horizontalmente
+    if (placement === "top" || placement === "bottom") {
+      if (x - CARD_WIDTH / 2 < PADDING) {
+        x = CARD_WIDTH / 2 + PADDING;
+      } else if (x + CARD_WIDTH / 2 > window.innerWidth - PADDING) {
+        x = window.innerWidth - CARD_WIDTH / 2 - PADDING;
+      }
+    }
+
+    return { x, y, placement };
+  };
   const [zoomLabel, setZoomLabel] = useState("×1.0");
 
   // Import manual (no next/dynamic): necesitamos pasar ref para zoomToFit
@@ -101,6 +147,7 @@ export function ConstellationGraph({
   // La estrella bajo el cursor: el canvas la lee en cada frame sin re-render
   const hoverRef = useRef<string | null>(null);
   const selectedRef = useRef<string | null>(null);
+  const miniPerfixRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     selectedRef.current = selected?.id ?? null;
   }, [selected]);
@@ -226,10 +273,39 @@ export function ConstellationGraph({
   useEffect(() => {
     if (!selected) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelected(null);
+      if (e.key === "Escape") {
+        setSelected(null);
+        setSelectedPos(null);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [selected]);
+
+  // Click afuera del MiniPerfil lo cierra
+  useEffect(() => {
+    if (!selected) return;
+    const onClickOutside = (e: MouseEvent) => {
+      const ref = miniPerfixRef.current;
+      if (ref && !ref.contains(e.target as Node)) {
+        setSelected(null);
+        setSelectedPos(null);
+      }
+    };
+    document.addEventListener("mousedown", onClickOutside);
+
+    // También en el contenedor del grafo (canvas no propaga eventos normales)
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("mousedown", onClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      if (container) {
+        container.removeEventListener("mousedown", onClickOutside);
+      }
+    };
   }, [selected]);
 
   const { width, height } = size;
@@ -327,8 +403,33 @@ export function ConstellationGraph({
         if (!start || Math.hypot(e.clientX - start.x, e.clientY - start.y) > 8) {
           return;
         }
+
+        // Si hay un MiniPerfil abierto y el click fue en él, no cerrar ni abrir otro
+        if (selected && miniPerfixRef.current) {
+          if (miniPerfixRef.current.contains(e.target as Node)) {
+            return;
+          }
+          // Click fue afuera del MiniPerfil, cerrarlo
+          setSelected(null);
+          setSelectedPos(null);
+          return;
+        }
+
         const node = nodeAt(e.clientX, e.clientY);
-        if (node) setSelected(node);
+        if (node) {
+          const fg = fgRef.current;
+          const el = containerRef.current;
+          if (fg && el && node.x !== undefined && node.y !== undefined) {
+            const rect = el.getBoundingClientRect();
+            const screenCoords = fg.graph2ScreenCoords(node.x, node.y);
+            const pos = calculatePosition(
+              screenCoords.x + rect.left,
+              screenCoords.y + rect.top,
+            );
+            setSelectedPos(pos);
+          }
+          setSelected(node);
+        }
       }}
       onPointerMove={(e) => {
         const el = containerRef.current;
@@ -633,7 +734,33 @@ export function ConstellationGraph({
 
       {/* La ficha de la estrella tocada: card flotante en desktop, sheet en móvil */}
       {selected && (
-        <div className="absolute inset-x-0 bottom-0 z-20 lg:inset-x-auto lg:bottom-6 lg:left-6 lg:w-[344px]">
+        <div
+          ref={miniPerfixRef}
+          className="z-20 max-h-[70vh] overflow-y-auto rounded-t-4xl lg:fixed lg:w-[360px] lg:max-h-[calc(100vh-2rem)] lg:rounded-3xl lg:overflow-y-auto"
+          style={
+            selectedPos
+              ? {
+                  position: "fixed",
+                  left: `${selectedPos.x}px`,
+                  top: selectedPos.placement === "top" ? `${selectedPos.y}px` : selectedPos.placement === "bottom" ? `${selectedPos.y}px` : `${selectedPos.y}px`,
+                  bottom: selectedPos.placement === "bottom" ? "auto" : undefined,
+                  transform:
+                    selectedPos.placement === "top"
+                      ? "translate(-50%, -100%)"
+                      : selectedPos.placement === "bottom"
+                        ? "translate(-50%, 0%)"
+                        : selectedPos.placement === "right"
+                          ? "translate(0%, -50%)"
+                          : "translate(-100%, -50%)",
+                }
+              : {
+                  position: "absolute",
+                  insetInlineStart: "0",
+                  insetInlineEnd: "0",
+                  bottom: "0",
+                }
+          }
+        >
           <MiniPerfil
             node={selected}
             isMe={selected.id === myId}
@@ -641,7 +768,10 @@ export function ConstellationGraph({
             connected={Boolean(sharedEdge)}
             note={sharedEdge?.note ?? null}
             tagLabels={tagLabels}
-            onClose={() => setSelected(null)}
+            onClose={() => {
+              setSelected(null);
+              setSelectedPos(null);
+            }}
           />
         </div>
       )}

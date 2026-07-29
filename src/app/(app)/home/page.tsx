@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, QrCode } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate, timeAgo } from "@/lib/format";
 import { qrSvg } from "@/lib/qr";
 import { Galaxia } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
+import { DesktopRail, RailContent } from "@/components/home-rail";
 import {
   buildFacets,
   fetchTagCatalog,
@@ -243,11 +244,11 @@ export default async function HomePage({
     }));
 
   return (
-    <main className="relative z-10 flex flex-1 flex-col xl:h-svh xl:flex-row xl:overflow-hidden">
+    <main className="relative z-10 flex flex-1 flex-col lg:h-svh lg:flex-row lg:overflow-hidden">
       <h1 className="sr-only">Tu constelación — {activeEvent.name}</h1>
 
-      {/* La constelación: el grafo es la sala. En desktop, dentro de su marco. */}
-      <div className="relative h-[62vh] min-h-80 shrink-0 sm:h-[64vh] lg:h-[70vh] xl:my-5 xl:h-auto xl:min-h-0 xl:flex-1 xl:shrink xl:overflow-hidden xl:rounded-4xl xl:border xl:border-white/5">
+      {/* La constelación: el grafo es la sala. Fullscreen en mobile, con marco en desktop. */}
+      <div className="relative h-[100vh] shrink-0 lg:h-auto lg:my-5 lg:flex-1 lg:overflow-hidden lg:rounded-4xl lg:border lg:border-white/5">
         <ConstellationPanel
           nodes={graph.nodes}
           edges={graph.edges}
@@ -263,145 +264,21 @@ export default async function HomePage({
         />
       </div>
 
-      {/* Rail de observación: datos reales de ESTA constelación */}
-      <aside className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 flex flex-col gap-4 px-4 pt-4 pb-6 sm:px-6 lg:px-8 xl:w-[19.5rem] xl:shrink-0 xl:overflow-y-auto xl:px-0 xl:py-5 xl:pr-5 xl:pl-4">
-        <section className="glass flex flex-col gap-4.5 rounded-4xl p-5">
-          <div className="hidden flex-col gap-2 xl:flex">
-            <RailLabel>[ constelación activa ]</RailLabel>
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">
-                  {activeEvent.name}
-                </p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground">
-                  {graph.nodes.length}{" "}
-                  {graph.nodes.length === 1 ? "estrella" : "estrellas"}
-                  {eventDate(activeEvent.starts_at)
-                    ? ` · ${eventDate(activeEvent.starts_at)}`
-                    : ""}
-                </p>
-              </div>
-              <Link
-                href="/eventos"
-                className="shrink-0 font-mono text-xs text-celeste underline-offset-4 hover:underline"
-              >
-                {myEvents.length > 1 ? "cambiar" : "ver todas"}
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <RailLabel>[ tu red ]</RailLabel>
-            <div className="mt-3 flex gap-2.5">
-              <div className="flex-1 rounded-2xl border border-white/5 bg-white/[0.03] px-2.5 py-3">
-                <p className="text-[22px] leading-none font-semibold">
-                  {connectionCount}
-                </p>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  {connectionCount === 1 ? "conexión" : "conexiones"}
-                </p>
-              </div>
-              <div className="flex-1 rounded-2xl border border-halfa/20 bg-halfa/5 px-2.5 py-3">
-                <p className="text-[22px] leading-none font-semibold text-halfa">
-                  {triangleCount}
-                </p>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  {triangleCount === 1 ? "triángulo" : "triángulos"}
-                </p>
-              </div>
-              <div className="flex-1 rounded-2xl border border-sol/20 bg-sol/5 px-2.5 py-3">
-                <p className="text-[22px] leading-none font-semibold text-sol">
-                  {magnitude}
-                </p>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  magnitud
-                </p>
-                <p className="font-mono text-[9px] text-faint">tu brillo: conexiones × 0.14 + 1.1</p>
-              </div>
-            </div>
-            {connectionCount === 0 && (
-              <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
-                tus líneas nacen al escanear — muestra tu QR o abre el de
-                alguien
-              </p>
-            )}
-          </div>
-        </section>
-
-        <section className="glass rounded-4xl p-5">
-          <RailLabel>[ se acaban de conectar ]</RailLabel>
-          {activity.length > 0 ? (
-            <ul className="mt-2.5 flex flex-col">
-              {activity.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-white/[0.04] -mx-2"
-                >
-                  <span
-                    aria-hidden
-                    className="size-[5px] shrink-0 rounded-full bg-estrella-a"
-                  />
-                  <p className="min-w-0 flex-1 truncate text-[13px]">
-                    {item.a} <span className="text-faint">↔</span> {item.b}
-                  </p>
-                  <span className="shrink-0 font-mono text-[10px] text-faint">
-                    {item.when}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
-              aún no se dibujan líneas en esta galaxia — sé la primera
-            </p>
-          )}
-        </section>
-
-        <section className="glass rounded-4xl p-5">
-          <RailLabel>[ cerca de tu órbita ]</RailLabel>
-          {nearby.length > 0 ? (
-            <ul className="mt-3 flex flex-col gap-2">
-              {nearby.map((person) => (
-                <li
-                  key={person.id}
-                  className="flex items-center gap-2.5 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-2.5"
-                >
-                  <span
-                    aria-hidden
-                    className="size-[7px] shrink-0 rounded-full bg-estrella-b"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium">
-                      {person.name}
-                    </p>
-                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                      {[person.role, person.why].filter(Boolean).join(" · ") ||
-                        "todavía sin señales"}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 font-mono text-xs leading-5 text-muted-foreground">
-              cuando lleguen estrellas afines a tu órbita, aparecen aquí
-            </p>
-          )}
-        </section>
-
-        <Link
-          href="/qr"
-          className="glass flex items-center gap-3.5 rounded-4xl p-4.5 transition-colors hover:border-sol/30"
-        >
-          <QrCode className="size-6.5 shrink-0 text-sol" aria-hidden />
-          <span className="min-w-0">
-            <span className="block text-[13px] font-medium">Tu QR</span>
-            <span className="mt-0.5 block text-[11px] text-muted-foreground">
-              a un tap, siempre
-            </span>
-          </span>
-        </Link>
-      </aside>
+      {/* Rail: solo en desktop, mobile solo muestra grafo */}
+      <DesktopRail>
+        <RailContent
+          activeEvent={activeEvent}
+          myEvents={myEvents}
+          nodeCount={graph.nodes.length}
+          connectionCount={connectionCount}
+          triangleCount={triangleCount}
+          magnitude={magnitude}
+          dateLabel={eventDate(activeEvent.starts_at)}
+          activity={activity}
+          nearby={nearby}
+          galaxySeed={activeEvent.slug.charCodeAt(0)}
+        />
+      </DesktopRail>
     </main>
   );
 }
