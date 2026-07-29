@@ -114,17 +114,21 @@ export function CosmicSky({
     <div
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden bg-[#0A0C12]",
+        "pointer-events-none absolute inset-0 overflow-hidden bg-[#070A12]",
         className,
       )}
+      style={{
+        background: "linear-gradient(135deg, #070A12 0%, #0A0D18 50%, #070A12 100%)",
+      }}
     >
-      {/* Banda láctea: velo diagonal difuso que estructura el vacío */}
+      {/* Gradiente azul sutil superior */}
       {milkyWay && (
         <div
-          className="absolute top-[8%] -left-[20%] h-[52%] w-[150%] -rotate-[19deg]"
+          className="absolute top-0 left-0 right-0 h-1/3"
           style={{
-            background: "rgba(214,218,228,0.045)",
-            filter: "blur(26px)",
+            background: "radial-gradient(ellipse at 50% 0%, rgba(130,184,255,0.04) 0%, transparent 70%)",
+            filter: "blur(40px)",
+            pointerEvents: "none",
           }}
         />
       )}
@@ -205,17 +209,35 @@ export function CosmicSky({
         ))}
       </svg>
 
-      {/* Horizonte de planeta: silueta oscura con rim light superior */}
-{planet && (
-        <div
-          className="absolute left-1/2 w-[500vw] aspect-square rounded-full -translate-x-1/2"
-          style={{
-            top: "75vh",
-            background: "#0C0E13",
-            boxShadow: "inset 0 2px 0 0 rgba(214,218,228,0.28)",
-            clipPath: "circle(50%)",
-          }}
-        />
+      {/* Horizonte de planeta: resplandor cinematográfico */}
+      {planet && (
+        <>
+          {/* Resplandor del planeta: gradiente radial blanco elegante */}
+          <div
+            className="absolute left-1/2 pointer-events-none animate-draw"
+            style={{
+              top: "calc(75vh - 3%)",
+              transform: "translateX(-50%)",
+              width: "1200px",
+              height: "240px",
+              background:
+                "radial-gradient(ellipse, rgba(255,255,255,.95) 0%, rgba(255,255,255,.55) 20%, rgba(255,255,255,.18) 45%, transparent 80%)",
+              filter: "blur(55px)",
+              animationDelay: "0.5s",
+            }}
+          />
+          {/* Planeta: silueta oscura */}
+          <div
+            className="absolute left-1/2 w-[500vw] aspect-square rounded-full -translate-x-1/2"
+            style={{
+              top: "75vh",
+              background: "#0A0D14",
+              clipPath: "circle(50%)",
+              boxShadow: "inset 0 2px 0 0 rgba(214,218,228,0.28)",
+              zIndex: 20,
+            }}
+          />
+        </>
       )}
     </div>
   );

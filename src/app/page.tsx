@@ -224,12 +224,12 @@ export default async function LandingPage() {
 
   return (
     <main className="grain relative flex min-h-svh flex-col overflow-hidden">
-      <CosmicSky seed={9} stars={110} nebulas="rich" planet />
+      <CosmicSky seed={9} stars={0} milkyWay={false} nebulas="none" planet />
 
       {/* La red del evento, dibujándose en el cielo */}
       <div
         aria-hidden
-        className="absolute -top-[6%] right-0 left-0 h-[56%] [-webkit-mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] [mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] lg:-top-[14%] lg:-right-[8%] lg:left-auto lg:h-[124%] lg:w-[66%] lg:[-webkit-mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)] lg:[mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)]"
+        className="absolute z-0 -top-[6%] right-0 left-0 h-[56%] [-webkit-mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] [mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] lg:-top-[14%] lg:-right-[8%] lg:left-auto lg:h-[124%] lg:w-[66%] lg:[-webkit-mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)] lg:[mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)]"
       >
         <ConstelacionDecor />
       </div>
