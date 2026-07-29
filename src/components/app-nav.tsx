@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Orbit, QrCode, SlidersHorizontal } from "lucide-react";
-import { AuraSol } from "@/components/cosmos";
+import { AuraSol, Galaxia } from "@/components/cosmos";
 import { cn } from "@/lib/utils";
 
 // CONTEXT.md: la pantalla principal se llama «Universo»; «constelación» es
 // el dibujo, nunca el evento — por eso /eventos se llama por su nombre.
+// Ajustes (cuenta y preferencias) es distinto de /perfil (quién eres en el
+// cielo): a /perfil se llega por la identidad del sidebar o desde Ajustes.
 // (El tab «Estrellas» volverá cuando exista la lista de conexiones.)
 const TABS = [
   { href: "/home", label: "Universo", icon: Orbit },
   { href: "/qr", label: "Mi QR", icon: QrCode },
   { href: "/eventos", label: "Eventos", icon: Globe },
-  { href: "/perfil", label: "Ajustes", icon: SlidersHorizontal },
+  { href: "/ajustes", label: "Ajustes", icon: SlidersHorizontal },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -67,7 +69,13 @@ function AvatarSol({
  * pulgar en móvil (el evento se vive de pie y a una mano). La identidad
  * llega del layout servidor: tú eres el sol, y el sol vive abajo.
  */
-export function AppNav({ identity }: { identity: Identity | null }) {
+export function AppNav({
+  identity,
+  activeEvent,
+}: {
+  identity: Identity | null;
+  activeEvent: { name: string; slug: string } | null;
+}) {
   const pathname = usePathname();
 
   return (
@@ -78,7 +86,29 @@ export function AppNav({ identity }: { identity: Identity | null }) {
           <Wordmark />
         </div>
 
-        <nav aria-label="Secciones" className="mt-7 flex flex-col gap-1">
+        {/* Dónde estás parado: tu galaxia activa, visible en toda pantalla */}
+        {activeEvent && (
+          <Link
+            href="/eventos"
+            className="mt-5 flex items-center gap-2.5 rounded-2xl border border-white/8 bg-white/[0.03] px-2.5 py-2 transition-colors hover:border-celeste/30"
+          >
+            <Galaxia
+              seed={activeEvent.slug.charCodeAt(0)}
+              size={34}
+              active
+            />
+            <span className="flex min-w-0 flex-col">
+              <span className="font-mono text-[9px] tracking-[0.16em] text-faint uppercase">
+                estás en
+              </span>
+              <span className="truncate text-[12.5px] font-medium">
+                {activeEvent.name}
+              </span>
+            </span>
+          </Link>
+        )}
+
+        <nav aria-label="Secciones" className="mt-5 flex flex-col gap-1">
           {TABS.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
             return (

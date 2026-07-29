@@ -1,14 +1,14 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor, type TagChoice } from "@/lib/tags";
 import { AuraSol } from "@/components/cosmos";
-import { CalmToggle } from "@/components/calm-mode";
 import { ProfileForm } from "./profile-form";
 
 /**
- * Tu estrella — perfil y preferencias (diseño 3a). Lo único editable eres
- * tú: rol, intereses, intención. Las conexiones no se editan: nacen de un
- * escaneo.
+ * Tu estrella — quién eres en el cielo (diseño 3a): nombre, rol, intereses,
+ * intención y contacto. Las conexiones no se editan: nacen de un escaneo.
+ * La cuenta y las preferencias viven en /ajustes.
  */
 export default async function ProfilePage({
   searchParams,
@@ -54,10 +54,9 @@ export default async function ProfilePage({
   const intentChoices = toChoices(profile.intents, "intencion");
 
   const magnitude = (1.1 + (connectionCount ?? 0) * 0.14).toFixed(1);
-  const provider = user.app_metadata?.provider ?? "email";
 
   return (
-    <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8 lg:py-14">
+    <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8 lg:py-14">
       {/* Tu sol, en cabecera: la foto llega de tu cuenta */}
       <header className="flex items-center gap-5 sm:gap-6">
         <div className="relative size-16 shrink-0 sm:size-24">
@@ -100,66 +99,35 @@ export default async function ProfilePage({
         </p>
       )}
 
-      <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[1fr_16rem] lg:items-start lg:gap-6">
-        {/* Quién eres en el cielo: rol, intereses, intención */}
-        <div className="glass rounded-4xl p-6 sm:p-7">
-          <ProfileForm
-            defaultName={profile.name}
-            defaultHeadline={profile.headline ?? ""}
-            roleOptions={catalog.rol}
-            interestOptions={catalog.interes}
-            intentOptions={catalog.intencion}
-            defaultRole={roleChoices}
-            defaultInterests={interestChoices}
-            defaultIntents={intentChoices}
-            defaultWebsite={profile.website ?? ""}
-            defaultInstagram={profile.instagram ?? ""}
-            defaultLinkedin={profile.linkedin ?? ""}
-            defaultGithub={profile.github ?? ""}
-            defaultWhatsappNumber={profile.whatsapp_number ?? ""}
-          />
-        </div>
-
-        {/* Rail: preferencias y cuenta */}
-        <aside className="flex flex-col gap-4">
-          <section className="glass flex flex-col gap-3.5 rounded-4xl p-5">
-            <h2 className="font-mono text-[10px] tracking-[0.16em] text-faint">
-              [ PREFERENCIAS ]
-            </h2>
-            <div className="flex items-start gap-3 rounded-3xl border border-white/5 bg-white/[0.03] p-3.5">
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] leading-snug font-medium">
-                  Movimiento reducido
-                </p>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                  Congela el titileo y la deriva del cielo.
-                </p>
-              </div>
-              <CalmToggle />
-            </div>
-          </section>
-
-          <section className="glass flex flex-col gap-3 rounded-4xl p-5">
-            <h2 className="font-mono text-[10px] tracking-[0.16em] text-faint">
-              [ CUENTA ]
-            </h2>
-            <p className="truncate text-xs text-muted-foreground">
-              {provider === "google"
-                ? "Conectado con Google"
-                : "Acceso por correo"}
-              {user.email ? ` · ${user.email}` : ""}
-            </p>
-            <form action="/auth/signout" method="post">
-              <button
-                type="submit"
-                className="chip-star h-10.5 w-full cursor-pointer text-[13px]"
-              >
-                Cerrar sesión
-              </button>
-            </form>
-          </section>
-        </aside>
+      {/* Quién eres en el cielo: rol, intereses, intención, contacto */}
+      <div className="glass rounded-4xl p-6 sm:p-7">
+        <ProfileForm
+          defaultName={profile.name}
+          defaultHeadline={profile.headline ?? ""}
+          roleOptions={catalog.rol}
+          interestOptions={catalog.interes}
+          intentOptions={catalog.intencion}
+          defaultRole={roleChoices}
+          defaultInterests={interestChoices}
+          defaultIntents={intentChoices}
+          defaultWebsite={profile.website ?? ""}
+          defaultInstagram={profile.instagram ?? ""}
+          defaultLinkedin={profile.linkedin ?? ""}
+          defaultGithub={profile.github ?? ""}
+          defaultWhatsappNumber={profile.whatsapp_number ?? ""}
+        />
       </div>
+
+      <p className="text-xs leading-5 text-muted-foreground">
+        La cuenta con la que entras y las preferencias del cielo viven en{" "}
+        <Link
+          href="/ajustes"
+          className="text-celeste underline-offset-4 hover:underline"
+        >
+          Ajustes
+        </Link>
+        .
+      </p>
     </main>
   );
 }

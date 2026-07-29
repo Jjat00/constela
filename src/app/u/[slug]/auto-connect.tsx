@@ -170,8 +170,10 @@ export function AutoConnect({
         </div>
 
         <div className="flex w-full max-w-xs flex-col items-center gap-2">
+          {/* El escaneo ya te situó en este evento (join_event_via_profile
+              fija tu active_event_id): /home aterriza en esta constelación */}
           <Link
-            href={`/home?e=${result.eventSlug}`}
+            href="/home"
             className="btn-cosmic flex h-14 w-full items-center justify-center text-base font-medium"
           >
             Ver tu constelación

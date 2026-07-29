@@ -35,6 +35,15 @@ export default async function EventPage({
       .insert({ event_id: event.id, user_id: user.id });
     isAttending = !error || error.code === "23505";
 
+    // Cruzar la puerta te sitúa: este pasa a ser tu evento activo — el
+    // universo, tu QR y la nav le pertenecen hasta que cambies en /eventos
+    if (isAttending) {
+      await supabase
+        .from("profiles")
+        .update({ active_event_id: event.id })
+        .eq("id", user.id);
+    }
+
     // Primera vez en Constela: la bienvenida antes de la constelación (ADR
     // 0004). Va después del join para que nadie pierda la entrada al evento
     // si abandona el onboarding a medias.
@@ -87,7 +96,7 @@ export default async function EventPage({
                 [ estás dentro ]
               </p>
               <Link
-                href={`/home?e=${slug}`}
+                href="/home"
                 className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
               >
                 Ir a esta constelación

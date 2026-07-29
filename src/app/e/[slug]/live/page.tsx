@@ -71,7 +71,7 @@ export default async function LivePage({
 
       {/* Botón de vuelta */}
       <Link
-        href={`/home?e=${slug}`}
+        href={`/e/${slug}`}
         className="absolute top-6 left-6 z-20 flex items-center gap-2 rounded-full px-3 py-2 transition-colors hover:bg-white/5 lg:top-8 lg:left-8"
       >
         <ChevronLeft className="size-5" aria-hidden />

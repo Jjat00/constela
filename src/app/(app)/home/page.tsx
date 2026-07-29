@@ -44,12 +44,7 @@ function RailLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ e?: string }>;
-}) {
-  const { e: requestedSlug } = await searchParams;
+export default async function HomePage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -58,15 +53,14 @@ export default async function HomePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, qr_slug, onboarded_at")
+    .select("name, qr_slug, onboarded_at, active_event_id")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
 
   // Primera vez: describe tu estrella antes de ver la constelación (ADR 0004)
   if (!profile.onboarded_at) {
-    const back = requestedSlug ? `/home?e=${requestedSlug}` : "/home";
-    redirect(`/bienvenida?next=${encodeURIComponent(back)}`);
+    redirect("/bienvenida?next=/home");
   }
 
   const { data: attendance } = await supabase
@@ -84,9 +78,10 @@ export default async function HomePage({
     starts_at: string | null;
   }>;
 
-  // ?e=slug elige qué constelación ver; sin él, la del último join
+  // Tu galaxia activa (elegida en /eventos o al entrar por un QR);
+  // fallback: el último join, para quien aún no ha elegido ninguna
   const activeEvent =
-    myEvents.find((ev) => ev.slug === requestedSlug) ?? myEvents[0];
+    myEvents.find((ev) => ev.id === profile.active_event_id) ?? myEvents[0];
 
   let graph: { nodes: GraphNode[]; edges: GraphEdge[] } = {
     nodes: [],

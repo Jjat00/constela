@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AuraSol } from "@/components/cosmos";
+import { resolveActiveEvent } from "@/lib/active-event";
+import { AuraSol, Galaxia } from "@/components/cosmos";
 import { qrSvg } from "@/lib/qr";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
 /**
  * Tu QR (diseño 2b): tu estrella en oro, lista para que la escaneen.
  * La arista solo nace de un encuentro real — por eso esta pantalla es
- * la más importante del evento y vive a un tap.
+ * la más importante del evento y vive a un tap. Todo aquí pertenece a tu
+ * evento activo: quien te escanee entra a ESE evento, y la magnitud que
+ * muestras es tu brillo en ESA galaxia.
  */
 export default async function MyQrPage() {
   const supabase = await createClient();
@@ -19,29 +22,31 @@ export default async function MyQrPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, headline, qr_slug, role, avatar_url")
+    .select("name, headline, qr_slug, role, avatar_url, active_event_id")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
 
-  const [svg, catalog, { count: connectionCount }, { data: attendance }] =
-    await Promise.all([
-      qrSvg(`/u/${profile.qr_slug}`, "sol"),
-      fetchTagCatalog(supabase),
-      supabase
-        .from("connections")
-        .select("id", { count: "exact", head: true })
-        .or(`user_a.eq.${user.id},user_b.eq.${user.id}`),
-      supabase
-        .from("event_attendees")
-        .select("events(name)")
-        .eq("user_id", user.id)
-        .order("joined_at", { ascending: false })
-        .limit(1),
-    ]);
+  const activeEvent = await resolveActiveEvent(
+    supabase,
+    user.id,
+    profile.active_event_id,
+  );
 
-  const event = attendance?.[0]?.events;
-  const eventName = (Array.isArray(event) ? event[0] : event)?.name;
+  // Sin evento, las conexiones son cero por definición: la arista vive
+  // dentro de un evento — el conteo global aquí mentiría sobre esta galaxia
+  const connectionsQuery = supabase
+    .from("connections")
+    .select("id", { count: "exact", head: true })
+    .or(`user_a.eq.${user.id},user_b.eq.${user.id}`);
+  const [svg, catalog, { count: connectionCount }] = await Promise.all([
+    qrSvg(`/u/${profile.qr_slug}`, "sol"),
+    fetchTagCatalog(supabase),
+    activeEvent
+      ? connectionsQuery.eq("event_id", activeEvent.id)
+      : connectionsQuery,
+  ]);
+
   const roleLabel = profile.role?.length
     ? (profile.role as string[])
         .map((r) => labelFor(catalog, "rol", r))
@@ -51,9 +56,34 @@ export default async function MyQrPage() {
 
   return (
     <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-7 px-5 py-8 sm:px-8">
-      <h1 className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-        [ TU ESTRELLA ]
-      </h1>
+      {/* A qué galaxia pertenece este QR — la promesa del escaneo, arriba */}
+      {activeEvent ? (
+        <div className="flex flex-col items-center gap-3">
+          <h1 className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+            [ TU ESTRELLA EN ]
+          </h1>
+          <Link
+            href="/eventos"
+            className="glass flex max-w-[85vw] items-center gap-2.5 rounded-full py-1.5 pr-4 pl-2 transition-colors hover:border-celeste/35"
+          >
+            <Galaxia
+              seed={activeEvent.slug.charCodeAt(0)}
+              size={30}
+              active
+            />
+            <span className="truncate text-sm font-semibold">
+              {activeEvent.name}
+            </span>
+            <span className="shrink-0 font-mono text-[10px] tracking-[0.08em] text-celeste">
+              cambiar
+            </span>
+          </Link>
+        </div>
+      ) : (
+        <h1 className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+          [ TU ESTRELLA ]
+        </h1>
+      )}
 
       {/* El QR dorado: cristal con borde de oro y la luz de tu corona */}
       <div className="relative">
@@ -98,7 +128,9 @@ export default async function MyQrPage() {
           {roleLabel ? `${roleLabel} · ` : ""}MAG {magnitude}
         </p>
         <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground">
-          [ tu brillo en la red: conexiones × 0.14 + 1.1 ]
+          {activeEvent
+            ? "[ tu brillo en esta galaxia: conexiones × 0.14 + 1.1 ]"
+            : "[ tu brillo en la red: conexiones × 0.14 + 1.1 ]"}
         </p>
       </div>
 
@@ -106,10 +138,10 @@ export default async function MyQrPage() {
         <p className="text-sm leading-6 text-muted-foreground">
           Deja que te escaneen. La arista solo nace de un encuentro real.
         </p>
-        {eventName ? (
+        {activeEvent ? (
           <p className="font-mono text-xs leading-5 text-muted-foreground">
             quien lo escanee entra a{" "}
-            <span className="text-celeste">{eventName}</span> y quedan
+            <span className="text-celeste">{activeEvent.name}</span> y quedan
             conectados
           </p>
         ) : (
@@ -121,7 +153,7 @@ export default async function MyQrPage() {
         {/* Dos QRs distintos (CONTEXT.md): este es el tuyo; la puerta de
             cada evento tiene el suyo propio en su página */}
         <p className="font-mono text-xs leading-5 text-muted-foreground">
-          ¿el QR de un evento? cada uno tiene el suyo en{" "}
+          ¿el QR del evento? cada uno tiene el suyo en{" "}
           <Link
             href="/eventos"
             className="text-celeste underline-offset-4 hover:underline"

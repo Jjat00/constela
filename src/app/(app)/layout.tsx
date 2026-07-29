@@ -18,13 +18,15 @@
  */
 import { AppNav } from "@/components/app-nav";
 import { CosmicSky } from "@/components/cosmos";
+import { resolveActiveEvent } from "@/lib/active-event";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
 /**
- * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`).
- * Las páginas públicas — landing, login, `/e/[slug]`, `/u/[slug]` — quedan
- * fuera del grupo: se abren desde un QR y no deben mostrar navegación.
+ * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`,
+ * `/ajustes`). Las páginas públicas — landing, login, `/e/[slug]`,
+ * `/u/[slug]` — quedan fuera del grupo: se abren desde un QR y no deben
+ * mostrar navegación.
  */
 export default async function AppLayout({
   children,
@@ -36,14 +38,21 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // La identidad del sidebar; si no hay sesión, cada página redirige sola.
+  // La identidad del sidebar y tu galaxia activa (la nav la hace visible en
+  // todas las pantallas); si no hay sesión, cada página redirige sola.
   let identity = null;
+  let activeEvent = null;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("name, headline, role, avatar_url")
+      .select("name, headline, role, avatar_url, active_event_id")
       .eq("id", user.id)
       .single();
+    activeEvent = await resolveActiveEvent(
+      supabase,
+      user.id,
+      profile?.active_event_id ?? null,
+    );
     if (profile) {
       let subtitle: string | null = profile.headline;
       if (!subtitle && profile.role?.length) {
@@ -65,7 +74,12 @@ export default async function AppLayout({
       {/* El cosmos es la sala: el mismo vacío premium de la landing */}
       <CosmicSky className="fixed inset-0" />
 
-      <AppNav identity={identity} />
+      <AppNav
+        identity={identity}
+        activeEvent={
+          activeEvent && { name: activeEvent.name, slug: activeEvent.slug }
+        }
+      />
 
       {/* Móvil: aire para las pills de arriba y la barra del pulgar.
           Desktop: el sidebar (w-56 + márgenes) flota a la izquierda. */}

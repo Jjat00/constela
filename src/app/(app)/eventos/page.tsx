@@ -4,6 +4,7 @@ import { Plus, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate } from "@/lib/format";
 import { Galaxia } from "@/components/cosmos";
+import { activateEvent } from "./actions";
 
 type Event = {
   id: string;
@@ -15,7 +16,9 @@ type Event = {
 
 /**
  * Constelaciones (diseño 2d): los eventos a los que perteneces, cada uno
- * una galaxia espiral con su lugar, sus estrellas y su fecha.
+ * una galaxia espiral con su lugar, sus estrellas y su fecha. «Ver
+ * constelación» te sitúa: ese evento pasa a ser tu galaxia activa y todo
+ * (universo, QR) le pertenece hasta que cambies.
  */
 export default async function EventsPage() {
   const supabase = await createClient();
@@ -24,15 +27,32 @@ export default async function EventsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/eventos");
 
-  const { data: attendance } = await supabase
-    .from("event_attendees")
-    .select("joined_at, events(id, name, slug, city, starts_at)")
-    .eq("user_id", user.id)
-    .order("joined_at", { ascending: false });
+  const [{ data: attendance }, { data: me }] = await Promise.all([
+    supabase
+      .from("event_attendees")
+      .select("joined_at, events(id, name, slug, city, starts_at)")
+      .eq("user_id", user.id)
+      .order("joined_at", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("active_event_id")
+      .eq("id", user.id)
+      .single(),
+  ]);
 
-  const myEvents = (attendance ?? [])
+  const joined = (attendance ?? [])
     .map((a) => (Array.isArray(a.events) ? a.events[0] : a.events))
     .filter(Boolean) as Event[];
+
+  const activeEventId = joined.some((ev) => ev.id === me?.active_event_id)
+    ? me!.active_event_id
+    : (joined[0]?.id ?? null);
+
+  // Tu galaxia activa primero; el resto, del join más reciente hacia atrás
+  const myEvents = [
+    ...joined.filter((ev) => ev.id === activeEventId),
+    ...joined.filter((ev) => ev.id !== activeEventId),
+  ];
 
   // Dos consultas para todos los eventos, no dos por evento.
   // RLS: de `event_attendees` solo llegan los eventos donde estoy; de
@@ -102,8 +122,7 @@ export default async function EventsPage() {
         <>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {myEvents.map((event, index) => {
-              // El más reciente es el que abre `/home` sin `?e=`
-              const isActive = index === 0;
+              const isActive = event.id === activeEventId;
               const stars = attendeeCounts.get(event.id) ?? 0;
               const links = connectionCounts.get(event.id) ?? 0;
               const date = eventDate(event.starts_at);
@@ -116,7 +135,7 @@ export default async function EventsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <Galaxia
                       seed={event.slug.charCodeAt(0)}
-                      size={index === 0 ? 96 : 84}
+                      size={88}
                       active={isActive}
                       tilt={-18 - index * 7}
                     />
@@ -134,35 +153,55 @@ export default async function EventsPage() {
                     {event.city ?? date ?? "lugar por definir"}
                   </p>
 
-                  <div className="mt-5 flex items-center gap-4 border-t border-white/5 pt-4">
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
-                      {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"}
-                      {links > 0 ? ` · ${links} ${links === 1 ? "TUYA" : "TUYAS"}` : ""}
-                    </span>
-                    <span className="ml-auto font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
-                      {date ?? ""}
-                    </span>
-                  </div>
+                  {/* Pie anclado abajo: en la grilla las cards comparten
+                      altura, así stats y botones quedan alineados entre cards */}
+                  <div className="mt-auto pt-5">
+                    <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-4">
+                      <span className="truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+                        {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"}
+                        {links > 0
+                          ? ` · ${links} ${links === 1 ? "TUYA" : "TUYAS"}`
+                          : ""}
+                      </span>
+                      {date && (
+                        <span className="shrink-0 font-mono text-[10px] tracking-[0.14em] whitespace-nowrap text-faint uppercase">
+                          {date}
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="mt-4 flex items-center gap-2">
-                    <Link
-                      href={`/home?e=${event.slug}`}
-                      className={`flex h-11 flex-1 items-center justify-center text-sm font-medium ${
-                        isActive
-                          ? "btn-cosmic"
-                          : "chip-star rounded-full hover:text-foreground"
-                      }`}
-                    >
-                      Ver constelación
-                    </Link>
-                    <a
-                      href={`/e/${event.slug}`}
-                      aria-label={`QR de ${event.name}`}
-                      className="chip-star flex h-11 items-center gap-1.5 px-3.5 text-xs font-medium"
-                    >
-                      <QrCode className="size-4" aria-hidden />
-                      QR
-                    </a>
+                    <div className="mt-4 flex items-center gap-2">
+                      {isActive ? (
+                        <Link
+                          href="/home"
+                          className="btn-cosmic flex h-11 flex-1 items-center justify-center text-sm font-medium"
+                        >
+                          Ver constelación
+                        </Link>
+                      ) : (
+                        <form action={activateEvent} className="flex-1">
+                          <input
+                            type="hidden"
+                            name="slug"
+                            value={event.slug}
+                          />
+                          <button
+                            type="submit"
+                            className="chip-star flex h-11 w-full cursor-pointer items-center justify-center rounded-full text-sm font-medium transition-colors hover:text-foreground"
+                          >
+                            Ver constelación
+                          </button>
+                        </form>
+                      )}
+                      <a
+                        href={`/e/${event.slug}`}
+                        aria-label={`QR de ${event.name}`}
+                        className="chip-star flex h-11 items-center gap-1.5 px-3.5 text-xs font-medium"
+                      >
+                        <QrCode className="size-4" aria-hidden />
+                        QR
+                      </a>
+                    </div>
                   </div>
                 </li>
               );
