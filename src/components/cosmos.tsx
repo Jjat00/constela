@@ -212,6 +212,7 @@ export function CosmicSky({
           style={{
             background: "#0C0E15",
             boxShadow: "inset 0 2px 0 0 rgba(214,218,228,0.28)",
+            clipPath: "circle(50%)",
           }}
         />
       )}
