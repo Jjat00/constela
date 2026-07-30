@@ -13,24 +13,24 @@ Un encuentro presencial con nombre, fecha y slug propio. Cualquier persona logue
 _Avoid_: Sala, espacio, comunidad
 
 **Asistente**:
-Una estrella que está dentro de un evento. Se es asistente por abrir el link/QR del evento o por escanear el QR personal de un asistente (membresía contagiosa), nunca por invitación ni aprobación.
+Una estrella que está dentro de un evento. Se es asistente por escanear el QR clavado de alguien que ya está dentro (membresía contagiosa) o por crear el evento — nunca por invitación, aprobación ni por abrir un link. (ADR 0005)
 _Avoid_: Miembro, participante registrado
 
 **Membresía contagiosa**:
-Escanear el QR personal de alguien que ya está en un evento te une a su evento más reciente automáticamente, y así sucesivamente de persona en persona.
+Escanear el QR clavado de alguien que ya está en un evento te une a ESA galaxia (la escrita en su QR) y la deja como tu galaxia activa, y así sucesivamente de persona en persona. El creador es la única estrella que puede estar sola.
 _Avoid_: Invitación implícita, auto-registro
 
 **Conexión**:
-La arista entre dos asistentes, creada automáticamente cuando uno abre el QR personal del otro — sin botón ni confirmación. Puede llevar una nota opcional (editable después). Es simétrica y única por par y por evento.
+La arista entre dos asistentes, creada automáticamente cuando uno abre el QR clavado del otro — sin botón ni confirmación. Puede llevar una nota opcional (editable después). Es simétrica y única por par y por evento.
 _Avoid_: Amistad, follow, match, solicitud
 
-**QR personal**:
-El código propio de cada estrella (`/u/{slug}`); que te lo escaneen crea una conexión.
-_Avoid_: QR a secas (ambiguo con el QR de evento)
+**QR clavado** (o QR personal):
+El único QR que existe (ADR 0005): tu estrella clavada a una galaxia — `/u/{slug}?e={evento}`. Que te lo escaneen une al escaneador a ESA galaxia y crea la conexión entre ustedes, todo en el mismo gesto. No existe un QR que no lleve a ningún evento: `/u/{slug}` pelado es solo ficha pública y no une ni conecta.
+_Avoid_: QR de evento (murió con el ADR 0005), QR a secas en código/docs
 
-**QR de evento**:
-El código del evento (`/e/{slug}`); abrirlo te hace asistente automáticamente (tras login si hace falta).
-_Avoid_: Código de invitación, link de registro
+**Ficha de la galaxia**:
+`/e/{slug}`, solo para asistentes (extraños → 404): creador con avatar, fecha y ciudad, stats y acceso a la proyección en vivo. Ya no es una puerta — a una galaxia se entra por una persona.
+_Avoid_: Página del evento, puerta, link de registro
 
 **Constelación**:
 El grafo completo de un evento: todas las estrellas asistentes (con o sin conexiones) y todas las conexiones entre ellas, sin límite de profundidad, visible para cualquier asistente. Estando tú solo, ya es una constelación de una estrella. Es el **dibujo** que vive dentro de una galaxia.

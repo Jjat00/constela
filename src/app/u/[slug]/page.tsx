@@ -6,16 +6,21 @@ import { CosmicSky, HaloEstelar } from "@/components/cosmos";
 import { AutoConnect } from "./auto-connect";
 
 /**
- * La estrella detrás de un QR. Sin sesión o si eres tú: la ficha pública.
- * Con sesión y siendo otra persona: el encuentro completo (diseño 2c) —
- * <AutoConnect /> traza la arista y celebra con números reales.
+ * La estrella detrás de un QR. Todo QR va clavado a una galaxia (ADR 0005):
+ * `?e=` dice a cuál. Con sesión, siendo otra persona y con galaxia, ocurre el
+ * encuentro completo (diseño 2c) — <AutoConnect /> une, traza la arista y
+ * celebra con números reales. Sin `?e=` esta página es SOLO la ficha pública:
+ * un QR sin galaxia no une ni conecta a nadie.
  */
 export default async function PublicProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ e?: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, { e }] = await Promise.all([params, searchParams]);
+  const eventSlug = typeof e === "string" && e.length > 0 ? e : null;
 
   const supabase = await createClient();
   const { data } = await supabase.rpc("get_profile_by_slug", {
@@ -47,14 +52,14 @@ export default async function PublicProfilePage({
   } = await supabase.auth.getUser();
   const isMe = user?.id === profile.id;
 
-  // Esta página solo pinta la estrella. Unirse al evento y crear la arista
-  // (ADR 0001: sin botón ni confirmación) ocurre en <AutoConnect />, que invoca
-  // una server action desde el cliente — nunca durante el render de un GET.
-  // El guard de la bienvenida (ADR 0004) vive en esa misma acción, después de
-  // crear la conexión: redirigir aquí se llevaría al recién llegado antes de
+  // Esta página solo pinta la estrella. Unirse a la galaxia del QR y crear la
+  // arista (ADR 0001: sin botón ni confirmación) ocurre en <AutoConnect />, que
+  // invoca una server action desde el cliente — nunca durante el render de un
+  // GET. El guard de la bienvenida (ADR 0004) vive en esa misma acción, después
+  // de crear la conexión: redirigir aquí se llevaría al recién llegado antes de
   // que la arista exista, que es justo lo que ese ADR quiere evitar.
 
-  if (user && !isMe) {
+  if (user && !isMe && eventSlug) {
     const { data: myProfile } = await supabase
       .from("profiles")
       .select("name, avatar_url")
@@ -67,6 +72,7 @@ export default async function PublicProfilePage({
         <div className="relative z-10 flex w-full max-w-sm flex-col items-center sm:max-w-md">
           <AutoConnect
             slug={slug}
+            eventSlug={eventSlug}
             peer={{
               id: profile.id,
               name: profile.name,
@@ -146,13 +152,19 @@ export default async function PublicProfilePage({
           >
             Este eres tú — volver a mi QR
           </Link>
-        ) : (
+        ) : !user && eventSlug ? (
           <a
-            href={`/login?next=/u/${slug}`}
+            href={`/login?next=${encodeURIComponent(`/u/${slug}?e=${eventSlug}`)}`}
             className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
           >
             Entrar para conectar
           </a>
+        ) : (
+          // Link pelado, sin galaxia: solo la ficha. Conectar exige escanear
+          // un QR de verdad — uno que siempre lleva a un evento (ADR 0005).
+          <p className="max-w-xs font-mono text-xs leading-5 text-muted-foreground">
+            para conectar con esta estrella, escanea su QR en un evento
+          </p>
         )}
       </div>
     </main>

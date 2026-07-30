@@ -14,7 +14,7 @@ web
 
 ## Product Purpose
 
-Networking de eventos presenciales que por fin **se ve**: conectas escaneando el QR personal del otro y la red del evento se dibuja en vivo como una constelación. Elimina la fricción de la puerta (link/QR → dentro) y convierte la red colectiva del evento en algo observable y navegable.
+Networking de eventos presenciales que por fin **se ve**: conectas escaneando el QR personal del otro — clavado a la galaxia del evento (ADR 0005) — y la red del evento se dibuja en vivo como una constelación. Elimina la fricción de la puerta (un escaneo → dentro y conectado) y convierte la red colectiva del evento en algo observable y navegable.
 
 **Éxito de la v1 en el evento de Bogotá** (confirmado 2026-07-28, los cuatro a la vez):
 
@@ -28,7 +28,7 @@ Networking de eventos presenciales que por fin **se ve**: conectas escaneando el
 Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 
 - **La arista significa un encuentro presencial real.** Solo nace de abrir el QR/link personal del otro (en server action, nunca en render; tocar una estrella en la constelación abre su mini-perfil, jamás conecta). Sin botones de "agregar", sin solicitudes, sin conectar desde el sofá. (ADR 0001)
-- **Membresía contagiosa**: escanear a alguien que ya está en un evento te une a su evento, en cadena. El producto se distribuye persona a persona sin necesitar al organizador. (ADR 0001)
+- **Membresía contagiosa**: escanear a alguien que ya está en un evento te une a la galaxia clavada en su QR, en cadena — entrar a un evento pasa siempre por una persona. El producto se distribuye persona a persona sin necesitar al organizador. (ADR 0001, ADR 0005)
 - **La constelación es el grafo completo del evento**, visible para cualquier asistente: el producto es la visión colectiva de la red, no "mi red hasta 2º grado". (ADR 0003)
 - **El cierre triádico** (triángulos de personas que se conocen entre sí) es el momento visual y social distintivo.
 
@@ -63,7 +63,7 @@ Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 
 ## Product Principles
 
-1. **Cero fricción en la puerta**: abrir un link/QR te deja dentro; lo único obligatorio después es un rol de un tap.
+1. **Cero fricción en la puerta**: escanear a una persona te deja dentro y conectado en el mismo gesto; lo único obligatorio después es un rol de un tap.
 2. **La arista es un encuentro real**: ninguna interacción remota puede fabricar una conexión.
 3. **La visión colectiva es el producto**: todos los asistentes ven la constelación completa del evento.
 4. **Mobile-first de pie, desktop digno**: se diseña para una mano en el evento; cada pantalla escala a desktop con layout propio, nunca un móvil estirado.

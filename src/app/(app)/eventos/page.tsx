@@ -12,6 +12,7 @@ type Event = {
   slug: string;
   city: string | null;
   starts_at: string | null;
+  created_by: string | null;
 };
 
 /**
@@ -30,7 +31,7 @@ export default async function EventsPage() {
   const [{ data: attendance }, { data: me }] = await Promise.all([
     supabase
       .from("event_attendees")
-      .select("joined_at, events(id, name, slug, city, starts_at)")
+      .select("joined_at, events(id, name, slug, city, starts_at, created_by)")
       .eq("user_id", user.id)
       .order("joined_at", { ascending: false }),
     supabase
@@ -73,6 +74,19 @@ export default async function EventsPage() {
       ])
     : [new Map<string, number>(), new Map<string, number>()];
 
+  // Quién encendió cada galaxia (decisión: el creador es visible en la card)
+  const creatorIds = [
+    ...new Set(myEvents.map((ev) => ev.created_by).filter(Boolean)),
+  ] as string[];
+  const creatorNames = new Map<string, string>();
+  if (creatorIds.length) {
+    const { data: creators } = await supabase
+      .from("profiles")
+      .select("id, name")
+      .in("id", creatorIds);
+    for (const c of creators ?? []) creatorNames.set(c.id, c.name);
+  }
+
   return (
     <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-16">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -107,7 +121,7 @@ export default async function EventsPage() {
               Aún no estás en ningún evento
             </p>
             <p className="text-sm leading-6 text-muted-foreground">
-              Escanea el QR de un evento (o el de alguien que ya esté dentro) y
+              Escanea el QR de alguien que ya esté dentro de un evento y
               aparecerás aquí. O enciende el tuyo.
             </p>
           </div>
@@ -132,13 +146,19 @@ export default async function EventsPage() {
                   key={event.id}
                   className="glass group flex flex-col rounded-4xl p-5.5 transition-colors hover:border-celeste/35"
                 >
+                  {/* Galaxia y nombre llevan a la ficha de la galaxia */}
                   <div className="flex items-start justify-between gap-3">
-                    <Galaxia
-                      seed={event.slug.charCodeAt(0)}
-                      size={88}
-                      active={isActive}
-                      tilt={-18 - index * 7}
-                    />
+                    <Link
+                      href={`/e/${event.slug}`}
+                      aria-label={`Ficha de ${event.name}`}
+                    >
+                      <Galaxia
+                        seed={event.slug.charCodeAt(0)}
+                        size={88}
+                        active={isActive}
+                        tilt={-18 - index * 7}
+                      />
+                    </Link>
                     {isActive && (
                       <span className="rounded-full border border-sol/30 bg-sol/[0.08] px-2.5 py-1.5 font-mono text-[10px] tracking-[0.16em] text-sol">
                         ESTÁS AQUÍ
@@ -147,10 +167,23 @@ export default async function EventsPage() {
                   </div>
 
                   <h2 className="mt-5 text-xl leading-tight font-semibold tracking-[-0.02em] text-balance">
-                    {event.name}
+                    <Link
+                      href={`/e/${event.slug}`}
+                      className="transition-colors hover:text-celeste"
+                    >
+                      {event.name}
+                    </Link>
                   </h2>
                   <p className="mt-2 text-[13px] leading-snug text-muted-foreground">
                     {event.city ?? date ?? "lugar por definir"}
+                    {event.created_by && (
+                      <>
+                        {" · "}creada por{" "}
+                        {event.created_by === user.id
+                          ? "ti"
+                          : (creatorNames.get(event.created_by) ?? "alguien")}
+                      </>
+                    )}
                   </p>
 
                   {/* Pie anclado abajo: en la grilla las cards comparten
@@ -193,14 +226,14 @@ export default async function EventsPage() {
                           </button>
                         </form>
                       )}
-                      <a
-                        href={`/e/${event.slug}`}
-                        aria-label={`QR de ${event.name}`}
+                      <Link
+                        href={`/qr?e=${encodeURIComponent(event.slug)}`}
+                        aria-label={`Mi QR de ${event.name}`}
                         className="chip-star flex h-11 items-center gap-1.5 px-3.5 text-xs font-medium"
                       >
                         <QrCode className="size-4" aria-hidden />
-                        QR
-                      </a>
+                        Mi QR
+                      </Link>
                     </div>
                   </div>
                 </li>

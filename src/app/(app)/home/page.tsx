@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate, timeAgo } from "@/lib/format";
-import { Galaxia } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
 import { DesktopRail, RailContent } from "@/components/home-rail";
@@ -33,14 +31,6 @@ function countTriangles(edges: GraphEdge[]) {
     }
   }
   return count;
-}
-
-function RailLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
-      {children}
-    </p>
-  );
 }
 
 export default async function HomePage() {
@@ -82,7 +72,11 @@ export default async function HomePage() {
   const activeEvent =
     myEvents.find((ev) => ev.id === profile.active_event_id) ?? myEvents[0];
 
-  let graph: { nodes: GraphNode[]; edges: GraphEdge[] } = {
+  let graph: {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    createdBy?: string | null;
+  } = {
     nodes: [],
     edges: [],
   };
@@ -94,15 +88,9 @@ export default async function HomePage() {
   const catalog = await fetchTagCatalog(supabase);
 
   if (!activeEvent) {
-    // Sin evento todavía: descubrir o crear, nunca pantalla muerta. Y sin
-    // QR personal: igual que en /qr, no existe hasta tu primera galaxia.
-    const { data: events } = await supabase
-      .from("events")
-      .select("id, name, slug, starts_at")
-      .order("starts_at", { ascending: true, nullsFirst: false })
-      .limit(12);
-    const availableEvents = events ?? [];
-
+    // Sin evento todavía: a una galaxia se entra por una persona (ADR 0005)
+    // — que te escaneen, o enciende la tuya. Sin QR personal aquí: igual que
+    // en /qr, no existe hasta tu primera galaxia.
     return (
       <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-5 py-8 sm:px-0">
         <div className="flex flex-col gap-3.5">
@@ -111,46 +99,13 @@ export default async function HomePage() {
           </p>
           <h1 className="text-4xl leading-[1.05] font-bold tracking-[-0.035em] text-balance sm:text-5xl">
             Tu universo empieza{" "}
-            <span className="text-celeste">en un evento.</span>
+            <span className="text-celeste">con una persona.</span>
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            Escanea el QR de alguien que ya esté dentro, entra a un evento
-            activo o enciende el tuyo.
+            Escanea el QR de alguien que ya esté dentro de un evento — o
+            enciende tu propia galaxia.
           </p>
         </div>
-
-        <section className="flex flex-col gap-2">
-          <RailLabel>[ eventos activos ]</RailLabel>
-          {availableEvents.length > 0 ? (
-            availableEvents.map((event) => (
-              <a
-                key={event.id}
-                href={`/e/${event.slug}`}
-                className="glass group flex min-h-16 items-center gap-3 rounded-3xl px-4 py-3 transition-colors hover:border-celeste/35"
-              >
-                <Galaxia seed={event.slug.charCodeAt(0)} size={40} />
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-base font-semibold">
-                    {event.name}
-                  </span>
-                  {eventDate(event.starts_at) && (
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {eventDate(event.starts_at)}
-                    </span>
-                  )}
-                </span>
-                <ChevronRight
-                  className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-celeste"
-                  aria-hidden
-                />
-              </a>
-            ))
-          ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              Aún no hay eventos. Crea el primero y comparte su QR.
-            </p>
-          )}
-        </section>
 
         <Link
           href="/eventos/nuevo"
@@ -235,6 +190,7 @@ export default async function HomePage() {
           nodes={graph.nodes}
           edges={graph.edges}
           myId={user.id}
+          creatorId={graph.createdBy ?? null}
           facets={facets}
           event={{
             name: activeEvent.name,

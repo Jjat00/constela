@@ -24,9 +24,9 @@ import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
 /**
  * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`,
- * `/ajustes`). Las páginas públicas — landing, login, `/e/[slug]`,
- * `/u/[slug]` — quedan fuera del grupo: se abren desde un QR y no deben
- * mostrar navegación.
+ * `/ajustes`). Fuera del grupo quedan la landing, el login, `/u/[slug]`
+ * (se abre desde un QR: es una primera impresión, sin navegación) y
+ * `/e/[slug]` (ficha gated con su propia vuelta a `/eventos`).
  */
 export default async function AppLayout({
   children,

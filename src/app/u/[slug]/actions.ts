@@ -14,7 +14,8 @@ export type ConnectResult =
       /** Nombre del tercer vértice si este escaneo cerró un triángulo. */
       closedWith: string | null;
     }
-  | { status: "sin-evento" }
+  | { status: "dueno-fuera" }
+  | { status: "galaxia-no-existe" }
   | { status: "sin-sesion" }
   | { status: "error" };
 
@@ -25,10 +26,15 @@ export type ConnectResult =
  * arista es una mutación, y en un Server Component se dispararía con cualquier
  * GET — un prefetch de Next o una recarga bastarían para "conocer" a alguien.
  *
- * El único dato que llega del cliente es el slug, que es justo lo que revela un
- * QR escaneado; la identidad y el evento se derivan siempre de la sesión.
+ * Del cliente llegan el slug del dueño y el de la galaxia — exactamente lo que
+ * el QR escaneado revela (ADR 0005: todo QR va clavado a un evento); la
+ * identidad del escaneador se deriva siempre de la sesión, y la RPC valida en
+ * el servidor que el dueño realmente pertenezca a esa galaxia.
  */
-export async function connectOnScan(slug: string): Promise<ConnectResult> {
+export async function connectOnScan(
+  slug: string,
+  eventSlug: string,
+): Promise<ConnectResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -41,19 +47,24 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
   const target = profiles?.[0];
   if (!target || target.id === user.id) return { status: "error" };
 
-  // Membresía contagiosa: entrar al evento del otro es parte del mismo gesto
+  // Une a la galaxia del QR y valida que su dueño siga dentro — la promesa
+  // del QR se cumple entera o no se cumple (join_event_via_profile v3)
   const { data: joined } = await supabase.rpc("join_event_via_profile", {
     p_slug: slug,
+    p_event_slug: eventSlug,
   });
-  const event = joined?.[0];
-  if (!event) return { status: "sin-evento" };
+  if (joined?.status === "dueno-fuera") return { status: "dueno-fuera" };
+  if (joined?.status === "galaxia-no-existe" || joined?.status === "estrella-no-existe") {
+    return { status: "galaxia-no-existe" };
+  }
+  if (joined?.status !== "ok") return { status: "error" };
 
   // Par canónico: el orden hex textual de los uuid coincide con el binario de PG
   const [a, b] =
     user.id < target.id ? [user.id, target.id] : [target.id, user.id];
 
   const { error } = await supabase.from("connections").insert({
-    event_id: event.event_id,
+    event_id: joined.event_id,
     user_a: a,
     user_b: b,
     created_by: user.id,
@@ -72,7 +83,9 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
     .eq("id", user.id)
     .single();
   if (me && !me.onboarded_at) {
-    redirect(`/bienvenida?next=${encodeURIComponent(`/u/${slug}`)}`);
+    redirect(
+      `/bienvenida?next=${encodeURIComponent(`/u/${slug}?e=${eventSlug}`)}`,
+    );
   }
 
   // Los números del momento (diseño 2c): cuántas líneas tienes ya en este
@@ -81,7 +94,7 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
   let triangles = 0;
   let closedWith: string | null = null;
   const { data: graph } = await supabase.rpc("get_event_graph", {
-    p_event_id: event.event_id,
+    p_event_id: joined.event_id,
   });
   if (graph?.edges) {
     const edges = graph.edges as Array<{ source: string; target: string }>;
@@ -110,8 +123,8 @@ export async function connectOnScan(slug: string): Promise<ConnectResult> {
 
   return {
     status: "conectados",
-    eventName: event.event_name,
-    eventSlug: event.event_slug,
+    eventName: joined.event_name,
+    eventSlug: joined.event_slug,
     connections,
     triangles,
     closedWith,

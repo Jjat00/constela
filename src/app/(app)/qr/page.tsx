@@ -1,21 +1,26 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { resolveActiveEvent } from "@/lib/active-event";
+import { resolveActiveEvent, type ActiveEvent } from "@/lib/active-event";
 import { AuraSol, Galaxia } from "@/components/cosmos";
-import { qrSvg } from "@/lib/qr";
+import { qrSvg, starQrPath } from "@/lib/qr";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
 /**
- * Tu QR (diseño 2b): tu estrella en oro, lista para que la escaneen.
- * La arista solo nace de un encuentro real — por eso esta pantalla es
- * la más importante del evento y vive a un tap. Todo aquí pertenece a tu
- * evento activo: quien te escanee entra a ESE evento, y la magnitud que
- * muestras es tu brillo en ESA galaxia. Sin evento no hay QR: escanearlo
- * solo diría «esta estrella aún no está en ningún evento» — una promesa
- * rota; el QR nace junto con tu primera galaxia.
+ * Tu QR (diseño 2b): tu estrella en oro, lista para que la escaneen. La
+ * arista solo nace de un encuentro real — por eso esta pantalla es la más
+ * importante del evento y vive a un tap. Todo QR va clavado a una galaxia
+ * (ADR 0005): por defecto la activa, o la que pida `?e=` (visitada desde
+ * «Mi QR» de una card — mostrarla NO te muda de galaxia). Quien lo escanee
+ * entra a ESA galaxia y quedan conectados. Sin evento no hay QR: no existe
+ * un QR que no lleve a ningún evento — nace junto con tu primera galaxia.
  */
-export default async function MyQrPage() {
+export default async function MyQrPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ e?: string }>;
+}) {
+  const { e } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,11 +34,29 @@ export default async function MyQrPage() {
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
 
-  const activeEvent = await resolveActiveEvent(
-    supabase,
-    user.id,
-    profile.active_event_id,
-  );
+  // `?e=` pide el QR de una galaxia concreta: solo si perteneces a ella —
+  // un QR tuyo de una galaxia ajena sería una promesa que no puedes cumplir
+  let pinnedEvent: ActiveEvent | null = null;
+  if (e) {
+    const { data: requested } = await supabase
+      .from("events")
+      .select("id, name, slug, city, starts_at")
+      .eq("slug", e)
+      .single();
+    if (requested) {
+      const { count } = await supabase
+        .from("event_attendees")
+        .select("event_id", { count: "exact", head: true })
+        .eq("event_id", requested.id)
+        .eq("user_id", user.id);
+      if (count) pinnedEvent = requested as ActiveEvent;
+    }
+    if (!pinnedEvent) redirect("/qr");
+  }
+
+  const activeEvent =
+    pinnedEvent ??
+    (await resolveActiveEvent(supabase, user.id, profile.active_event_id));
 
   // Sin evento no se renderiza QR: quien lo escaneara caería en un callejón
   // sin salida. Esta pantalla, en cambio, te lleva a encender tu galaxia.
@@ -82,7 +105,7 @@ export default async function MyQrPage() {
   }
 
   const [svg, catalog, { count: connectionCount }] = await Promise.all([
-    qrSvg(`/u/${profile.qr_slug}`, "sol"),
+    qrSvg(starQrPath(profile.qr_slug, activeEvent.slug), "sol"),
     fetchTagCatalog(supabase),
     supabase
       .from("connections")
@@ -174,17 +197,6 @@ export default async function MyQrPage() {
           quien lo escanee entra a{" "}
           <span className="text-celeste">{activeEvent.name}</span> y quedan
           conectados
-        </p>
-        {/* Dos QRs distintos (CONTEXT.md): este es el tuyo; la puerta de
-            cada evento tiene el suyo propio en su página */}
-        <p className="font-mono text-xs leading-5 text-muted-foreground">
-          ¿el QR del evento? cada uno tiene el suyo en{" "}
-          <Link
-            href="/eventos"
-            className="text-celeste underline-offset-4 hover:underline"
-          >
-            tus eventos
-          </Link>
         </p>
         <p className="mt-1 font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
           [ sube el brillo de la pantalla ]

@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDateLong } from "@/lib/format";
-import { qrSvg } from "@/lib/qr";
 import { CosmicSky, Galaxia } from "@/components/cosmos";
 
 /**
- * La puerta del evento: cualquiera escanea este QR y entra. Para asistentes,
- * también es el acceso a la proyección en vivo (diseño 2f).
+ * La ficha de la galaxia (ADR 0005): solo para quienes ya están dentro —
+ * para extraños esta página no existe (la RPC no les devuelve fila → 404).
+ * Ya no es una puerta: a un evento se entra escaneando el QR clavado de
+ * alguien que pertenece a él, nunca abriendo un link. Se llega aquí tocando
+ * la galaxia en tu lista de eventos.
  */
 export default async function EventPage({
   params,
@@ -17,119 +20,91 @@ export default async function EventPage({
   const { slug } = await params;
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/login?next=${encodeURIComponent(`/e/${slug}`)}`);
+
+  // Gated en la base: si no eres asistente ni creador, cero filas
   const { data } = await supabase.rpc("get_event_by_slug", { p_slug: slug });
   const event = data?.[0];
   if (!event) notFound();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Auto-join: abrir el QR/link del evento te hace asistente (ADR 0001).
-  // 23505 = ya estabas dentro; cualquier otro error se ignora y la página
-  // simplemente no confirma la entrada.
-  let isAttending = false;
-  if (user) {
-    const { error } = await supabase
-      .from("event_attendees")
-      .insert({ event_id: event.id, user_id: user.id });
-    isAttending = !error || error.code === "23505";
-
-    // Cruzar la puerta te sitúa: este pasa a ser tu evento activo — el
-    // universo, tu QR y la nav le pertenecen hasta que cambies en /eventos
-    if (isAttending) {
-      await supabase
-        .from("profiles")
-        .update({ active_event_id: event.id })
-        .eq("id", user.id);
-    }
-
-    // Primera vez en Constela: la bienvenida antes de la constelación (ADR
-    // 0004). Va después del join para que nadie pierda la entrada al evento
-    // si abandona el onboarding a medias.
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarded_at")
-      .eq("id", user.id)
-      .single();
-    if (profile && !profile.onboarded_at) {
-      redirect(`/bienvenida?next=${encodeURIComponent(`/e/${slug}`)}`);
-    }
-  }
-
-  const eventQr = await qrSvg(`/e/${slug}`);
   const dateLabel = eventDateLong(event.starts_at);
+  const stars = Number(event.attendee_count ?? 0);
+  const links = Number(event.connection_count ?? 0);
 
   return (
     <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 pb-32 sm:px-8 sm:py-16 sm:pb-40 lg:pb-48">
-      {/* La puerta del evento comparte el vacío premium de la landing,
-          con el horizonte del planeta — entrar es aterrizar en un mundo */}
+      {/* La ficha comparte el vacío premium de la landing, con el horizonte
+          del planeta — mirar tu galaxia es asomarse a un mundo tuyo */}
       <CosmicSky planet />
 
-      {/* Móvil: una columna centrada. Desktop: ficha a la izquierda, QR grande
-          a la derecha — es la pantalla que se proyecta en la entrada. */}
-      <div
-        className={`relative z-10 grid w-full items-center gap-8 ${
-          isAttending
-            ? "max-w-md lg:max-w-4xl lg:grid-cols-2 lg:gap-14"
-            : "max-w-md"
-        }`}
-      >
-        <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">
-          {/* El evento es una galaxia */}
-          <Galaxia seed={event.name.length} size={80} active={isAttending} />
-          <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
-            [ evento ]
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-5 text-center">
+        <Galaxia seed={event.name.length} size={80} active />
+        <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
+          [ galaxia ]
+        </p>
+        <h1 className="text-3xl font-bold tracking-[-0.035em] text-balance sm:text-4xl">
+          {event.name}
+        </h1>
+        {(event.city || dateLabel) && (
+          <p className="font-mono text-xs leading-5 text-muted-foreground sm:text-sm">
+            {[event.city, dateLabel].filter(Boolean).join(" · ")}
           </p>
-          <h1 className="text-3xl font-bold tracking-[-0.035em] text-balance sm:text-4xl lg:text-5xl">
-            {event.name}
-          </h1>
-          {(event.city || dateLabel) && (
-            <p className="font-mono text-xs leading-5 text-muted-foreground sm:text-sm">
-              {[event.city, dateLabel].filter(Boolean).join(" · ")}
-            </p>
-          )}
-
-          {isAttending ? (
-            <>
-              <p className="font-mono text-sm tracking-[0.14em] text-aurora">
-                [ estás dentro ]
-              </p>
-              <Link
-                href="/home"
-                className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
-              >
-                Ir a esta constelación
-              </Link>
-              <Link
-                href={`/e/${slug}/live`}
-                className="font-mono text-xs text-celeste underline-offset-4 hover:underline"
-              >
-                proyección en vivo ↗
-              </Link>
-            </>
-          ) : (
-            <a
-              href={`/login?next=/e/${slug}`}
-              className="btn-cosmic flex h-13 w-full items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
-            >
-              Entrar al evento
-            </a>
-          )}
-        </div>
-
-        {/* La puerta se comparte: cualquiera escanea esto y entra */}
-        {isAttending && (
-          <section className="glass mx-auto flex w-full max-w-xs flex-col items-center gap-4 rounded-4xl p-6 lg:max-w-sm lg:p-8">
-            <div
-              className="w-full max-w-44 [&_svg]:h-auto [&_svg]:w-full lg:max-w-full"
-              dangerouslySetInnerHTML={{ __html: eventQr }}
-            />
-            <p className="text-center font-mono text-xs text-muted-foreground">
-              el QR del evento — compártelo y crece la constelación
-            </p>
-          </section>
         )}
+
+        {/* Quién la encendió: el creador es la única estrella que pudo
+            nacer sola — todos los demás entraron persona a persona */}
+        {event.creator_name && (
+          <div className="flex items-center gap-2.5">
+            {event.creator_avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={event.creator_avatar}
+                alt=""
+                className="size-7 rounded-full border border-white/15 object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="flex size-7 items-center justify-center rounded-full border border-white/15 bg-card text-xs font-semibold text-estrella-a">
+                {event.creator_name.charAt(0).toUpperCase()}
+              </span>
+            )}
+            <p className="text-sm text-muted-foreground">
+              creada por{" "}
+              <span className="font-medium text-foreground">
+                {event.created_by === user.id ? "ti" : event.creator_name}
+              </span>
+            </p>
+          </div>
+        )}
+
+        <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
+          {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"} · {links}{" "}
+          {links === 1 ? "CONEXIÓN" : "CONEXIONES"}
+        </p>
+
+        {/* La galaxia crece persona a persona: tu QR clavado ES su puerta */}
+        <Link
+          href={`/qr?e=${encodeURIComponent(event.slug)}`}
+          className="btn-cosmic mt-2 flex h-13 w-full items-center justify-center gap-2.5 px-7 text-[15px] font-medium sm:w-auto"
+        >
+          <QrCode className="size-4.5" aria-hidden />
+          Mi QR de esta galaxia
+        </Link>
+        <Link
+          href={`/e/${slug}/live`}
+          className="font-mono text-xs text-celeste underline-offset-4 hover:underline"
+        >
+          proyección en vivo ↗
+        </Link>
+        <Link
+          href="/eventos"
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          volver a tus eventos
+        </Link>
       </div>
     </main>
   );

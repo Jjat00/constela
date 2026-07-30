@@ -5,7 +5,16 @@ export function siteUrl() {
 }
 
 /**
- * SVG del QR para una ruta de la app (`/u/abc`, `/e/mi-evento`…).
+ * La ruta de un QR personal: tu estrella clavada a una galaxia (ADR 0005).
+ * No existe un QR que no lleve a ningún evento — quien lo escanea entra a
+ * ESA galaxia y queda conectado contigo.
+ */
+export function starQrPath(qrSlug: string, eventSlug: string) {
+  return `/u/${qrSlug}?e=${encodeURIComponent(eventSlug)}`;
+}
+
+/**
+ * SVG del QR para una ruta de la app (`/u/abc?e=mi-evento`…).
  * Por defecto se dibuja claro sobre transparente, para el fondo nocturno.
  * `sol` es tu QR personal (diseño 2b): módulos dorados — el oro es identidad.
  * `paper` invierte: oscuro sobre claro, para superficies iluminadas.

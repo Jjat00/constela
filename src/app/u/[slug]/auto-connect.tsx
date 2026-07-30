@@ -70,15 +70,18 @@ function StarAvatar({
 /**
  * El encuentro (diseño 2c): dispara la conexión al montar — el usuario abrió
  * el QR, ese ES el gesto (ADR 0001) — y celebra el filamento nuevo con los
- * números reales del evento. Al ser una acción invocada desde el cliente,
- * ningún prefetch puede crearla.
+ * números reales del evento. El QR trae su galaxia (ADR 0005): la acción une
+ * a ESA y falla claro si su dueño ya no está dentro. Al ser una acción
+ * invocada desde el cliente, ningún prefetch puede crearla.
  */
 export function AutoConnect({
   slug,
+  eventSlug,
   peer,
   me,
 }: {
   slug: string;
+  eventSlug: string;
   peer: ScanPeer;
   me: ScanMe;
 }) {
@@ -89,9 +92,9 @@ export function AutoConnect({
     if (fired.current) return; // StrictMode monta dos veces en desarrollo
     fired.current = true;
     startTransition(async () => {
-      setResult(await connectOnScan(slug));
+      setResult(await connectOnScan(slug, eventSlug));
     });
-  }, [slug]);
+  }, [slug, eventSlug]);
 
   const peerHalo = spectrumOf(peer.id).halo;
 
@@ -189,11 +192,28 @@ export function AutoConnect({
     );
   }
 
-  if (result.status === "sin-evento") {
+  if (result.status === "dueno-fuera") {
+    return (
+      <div className="flex flex-col items-center gap-6 text-center">
+        <StarAvatar
+          name={peer.name}
+          avatarUrl={peer.avatarUrl}
+          halo={peerHalo}
+        />
+        <p className="max-w-xs text-sm leading-6 text-muted-foreground">
+          {peer.name} ya no está en la galaxia que prometía este QR, así que
+          no puede llevarte a ella. Pídele que te muestre su QR de ahora y
+          escanéalo de nuevo.
+        </p>
+      </div>
+    );
+  }
+
+  if (result.status === "galaxia-no-existe") {
     return (
       <p className="max-w-xs text-center text-sm leading-6 text-muted-foreground">
-        Esta estrella aún no está en ningún evento. Cuando entre a uno, abrir
-        su QR los conectará.
+        La galaxia de este QR ya no existe. Pídele a {peer.name} que te
+        muestre su QR de ahora.
       </p>
     );
   }
@@ -201,7 +221,7 @@ export function AutoConnect({
   if (result.status === "sin-sesion") {
     return (
       <a
-        href={`/login?next=/u/${slug}`}
+        href={`/login?next=${encodeURIComponent(`/u/${slug}?e=${eventSlug}`)}`}
         className="btn-cosmic flex h-13 items-center px-7 text-[15px] font-medium"
       >
         Entrar para conectar

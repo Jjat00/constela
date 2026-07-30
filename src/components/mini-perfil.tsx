@@ -20,6 +20,7 @@ const SPECTRAL_TYPES = [
 export function MiniPerfil({
   node,
   isMe,
+  isCreator = false,
   degree,
   connected,
   note,
@@ -29,6 +30,8 @@ export function MiniPerfil({
 }: {
   node: GraphNode;
   isMe: boolean;
+  /** Encendió esta galaxia: se dice aquí, nunca como marca en el mapa. */
+  isCreator?: boolean;
   degree: number;
   connected: boolean;
   note: string | null;
@@ -98,6 +101,11 @@ export function MiniPerfil({
           <p className="mt-1.5 truncate font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
             {meta || node.headline || "sin señales todavía"}
           </p>
+          {isCreator && (
+            <p className="mt-1.5 font-mono text-[10px] tracking-[0.16em] text-celeste uppercase">
+              ✦ creó esta galaxia
+            </p>
+          )}
         </div>
         <button
           type="button"

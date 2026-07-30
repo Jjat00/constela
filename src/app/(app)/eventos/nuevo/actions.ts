@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,15 +30,21 @@ export async function createEvent(formData: FormData) {
   const suffix = Math.random().toString(16).slice(2, 6);
   const slug = `${slugify(name) || "evento"}-${suffix}`;
 
-  const { error } = await supabase.from("events").insert({
-    slug,
-    name,
-    city: city || null,
-    starts_at: date ? new Date(`${date}T09:00:00-05:00`).toISOString() : null,
-    created_by: user.id,
+  // RPC atómica (ADR 0005): evento + creador dentro + galaxia activa en un
+  // solo gesto. La puerta /e/slug murió, así que nacer dentro ya no puede
+  // depender de un auto-join posterior — y sin estar dentro, el QR clavado
+  // del creador no tendría galaxia que prometer.
+  const { error } = await supabase.rpc("create_event", {
+    p_slug: slug,
+    p_name: name,
+    p_city: city || null,
+    p_starts_at: date
+      ? new Date(`${date}T09:00:00-05:00`).toISOString()
+      : null,
   });
   if (error) redirect("/eventos/nuevo?error=no-creado");
 
-  // El creador queda dentro de su propio evento de una vez
-  redirect(`/e/${slug}`);
+  // La galaxia activa cambió: el chrome del layout debe enterarse
+  revalidatePath("/", "layout");
+  redirect("/home");
 }

@@ -59,6 +59,7 @@ export function ConstellationGraph({
   nodes,
   edges,
   myId,
+  creatorId = null,
   matchedIds = null,
   tagLabels,
   showTriads = true,
@@ -67,6 +68,9 @@ export function ConstellationGraph({
   nodes: GraphNode[];
   edges: GraphEdge[];
   myId: string;
+  /** Quién encendió esta galaxia: solo lo dice el MiniPerfil — la estrella
+   *  del creador no lleva marca en el mapa (el oro es solo para «tú»). */
+  creatorId?: string | null;
   /**
    * Filtro activo: las estrellas fuera del conjunto no desaparecen — se
    * apagan al 14 %. El mapa sigue siendo el mismo (los nodos no saltan de
@@ -782,6 +786,7 @@ export function ConstellationGraph({
           <MiniPerfil
             node={selected}
             isMe={selected.id === myId}
+            isCreator={creatorId != null && selected.id === creatorId}
             degree={degreeOf.get(selected.id) ?? 0}
             connected={Boolean(sharedEdge)}
             note={sharedEdge?.note ?? null}

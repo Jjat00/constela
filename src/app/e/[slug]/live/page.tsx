@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate } from "@/lib/format";
-import { CosmicSky } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
 import {
@@ -28,38 +27,21 @@ export default async function LivePage({
   const { slug } = await params;
 
   const supabase = await createClient();
-  const { data } = await supabase.rpc("get_event_by_slug", { p_slug: slug });
-  const event = data?.[0];
-  if (!event) notFound();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=${encodeURIComponent(`/e/${slug}/live`)}`);
+
+  // Solo-asistentes igual que la ficha: para extraños, cero filas → 404
+  const { data } = await supabase.rpc("get_event_by_slug", { p_slug: slug });
+  const event = data?.[0];
+  if (!event) notFound();
 
   const { data: graph } = await supabase.rpc("get_event_graph", {
     p_event_id: event.id,
   });
   const nodes: GraphNode[] = graph?.nodes ?? [];
   const edges: GraphEdge[] = graph?.edges ?? [];
-
-  // El grafo llega vacío si no eres asistente (RLS)
-  if (nodes.length === 0) {
-    return (
-      <main className="grain relative flex min-h-svh flex-col items-center justify-center gap-5 px-6 text-center">
-        <CosmicSky />
-        <p className="relative z-10 max-w-sm text-sm leading-6 text-muted-foreground">
-          La proyección es para quienes están dentro del evento.
-        </p>
-        <Link
-          href={`/e/${slug}`}
-          className="btn-cosmic relative z-10 flex h-12 items-center px-6 text-sm font-medium"
-        >
-          Entrar a {event.name}
-        </Link>
-      </main>
-    );
-  }
 
   const catalog = await fetchTagCatalog(supabase);
   const facets: Record<TagCategory, TagFacet[]> = buildFacets(nodes, catalog);
@@ -84,6 +66,7 @@ export default async function LivePage({
           nodes={nodes}
           edges={edges}
           myId={user.id}
+          creatorId={graph?.createdBy ?? null}
           facets={facets}
           event={{
             name: event.name,

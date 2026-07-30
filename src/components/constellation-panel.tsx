@@ -53,12 +53,15 @@ export function ConstellationPanel({
   nodes,
   edges,
   myId,
+  creatorId = null,
   facets,
   event,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
   myId: string;
+  /** Quién encendió esta galaxia — lo cuenta el MiniPerfil de su estrella. */
+  creatorId?: string | null;
   facets: Record<TagCategory, TagFacet[]>;
   /** La galaxia activa: se pasa como datos (no JSX) — el JSX que cruza la
    *  frontera server→client pierde la validación de keys de React. */
@@ -188,6 +191,7 @@ export function ConstellationPanel({
           nodes={nodes}
           edges={edges}
           myId={myId}
+          creatorId={creatorId}
           matchedIds={matchedIds}
           tagLabels={tagLabels}
           showTriads={triads}
