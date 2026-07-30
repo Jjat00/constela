@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmicSky, Sol } from "@/components/cosmos";
@@ -46,6 +47,25 @@ export default async function LoginPage({
         )}
 
         <GoogleButton next={safeNext} />
+
+        {/* La aceptación va donde ocurre el acto, no escondida en un pie */}
+        <p className="-mt-3 text-center text-xs leading-5 text-faint">
+          Al entrar aceptas los{" "}
+          <Link
+            href="/terminos"
+            className="underline underline-offset-3 transition-colors hover:text-celeste"
+          >
+            términos
+          </Link>{" "}
+          y la{" "}
+          <Link
+            href="/privacidad"
+            className="underline underline-offset-3 transition-colors hover:text-celeste"
+          >
+            política de privacidad
+          </Link>
+          .
+        </p>
 
         {process.env.NODE_ENV === "development" && (
           <DevLoginForm next={safeNext} />

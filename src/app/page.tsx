@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CosmicSky } from "@/components/cosmos";
 import { GoogleButton } from "@/app/login/google-button";
 import { LogoutButton } from "@/app/login/logout-button";
+import { SiteFooter } from "@/components/site-footer";
 import { createClient } from "@/lib/supabase/server";
 
 /*
@@ -235,7 +236,7 @@ export default async function LandingPage() {
         <ConstelacionDecor />
       </div>
 
-      {/* Chrome mínimo: wordmark + coordenadas del evento */}
+      {/* Chrome mínimo: wordmark + coordenadas del evento + la puerta */}
       <header className="relative z-10 flex items-center justify-between px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:px-14 lg:pt-8">
         <p className="text-[17px] font-semibold tracking-tight lg:text-[19px]">
           constela<span className="text-sol">✦</span>
@@ -243,11 +244,23 @@ export default async function LandingPage() {
         <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground lg:block">
           [ PARA CUALQUIER EVENTO ]
         </p>
-        {user && <LogoutButton />}
+        {/* La puerta de servicio: quien ya sabe qué es esto no debería tener
+            que leer el titular otra vez. Píldora sutil, nunca cosmic blue —
+            el CTA de la pantalla sigue siendo uno solo. */}
+        {user ? (
+          <LogoutButton />
+        ) : (
+          <Link
+            href="/login"
+            className="chip-star flex h-9.5 items-center px-5 text-[13px] font-medium"
+          >
+            Entrar
+          </Link>
+        )}
       </header>
 
       {/* El titular y la puerta */}
-      <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:justify-center lg:px-22 lg:pb-24">
+      <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-9 lg:justify-center lg:px-22 lg:pb-20">
         <div className="animate-rise max-w-[41rem]">
           <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance lg:leading-[0.94]">
             Tu red es
@@ -278,10 +291,10 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      {/* La tesis, como coordenada de observatorio */}
-      <p className="absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.2em] whitespace-nowrap text-faint lg:bottom-10 lg:left-22 lg:translate-x-0 lg:text-[11px]">
-        CADA PERSONA ES UNA ESTRELLA
-      </p>
+      {/* El borde del universo: la tesis a un lado, lo legal al otro. Ya no
+          es absolute — el pie ocupa su sitio en el flujo para que en móvil
+          nunca se monte sobre el CTA. */}
+      <SiteFooter tagline="CADA PERSONA ES UNA ESTRELLA" className="lg:px-22" />
     </main>
   );
 }

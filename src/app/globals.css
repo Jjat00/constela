@@ -267,6 +267,58 @@
   .drop-shadow-glow {
     filter: drop-shadow(0 0 8px rgb(157 200 255 / 60%));
   }
+  /* Prosa legal: el único texto denso de Constela. El cielo nunca va detrás
+     de un párrafo largo (DESIGN §4), así que vive sobre cristal y se lee como
+     documento — medida corta, interlínea amplia, jerarquía por tinta. */
+  .prosa-legal h2 {
+    margin-top: 2.25rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--foreground);
+  }
+  .prosa-legal h2:first-child {
+    margin-top: 0;
+  }
+  .prosa-legal h3 {
+    margin-top: 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--celeste);
+  }
+  .prosa-legal p,
+  .prosa-legal li {
+    margin-top: 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+  .prosa-legal ul {
+    margin-top: 0.5rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+  .prosa-legal li {
+    margin-top: 0.5rem;
+    padding-left: 0.25rem;
+  }
+  .prosa-legal li::marker {
+    color: var(--faint);
+  }
+  .prosa-legal strong {
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  .prosa-legal a {
+    color: var(--celeste);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgb(157 200 255 / 40%);
+    transition: text-decoration-color 0.2s ease;
+  }
+  .prosa-legal a:hover {
+    text-decoration-color: var(--celeste);
+  }
 }
 
 @keyframes twinkle {
