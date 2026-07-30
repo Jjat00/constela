@@ -15,7 +15,7 @@ const INPUT =
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-mono text-[10px] tracking-[0.16em] text-faint">
+    <p className="font-mono text-[10px] tracking-wider text-faint">
       {children}
     </p>
   );

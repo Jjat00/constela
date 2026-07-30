@@ -64,7 +64,7 @@ export default async function MyQrPage({
     return (
       <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-5 py-8 sm:px-8">
         <section className="glass flex w-full max-w-sm flex-col items-center gap-6 rounded-4xl px-6 py-12 text-center">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+          <p className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
             [ TU ESTRELLA ]
           </p>
           <div className="relative size-18">
@@ -84,7 +84,7 @@ export default async function MyQrPage({
             )}
           </div>
           <div className="flex flex-col gap-2.5">
-            <h1 className="text-[22px] leading-tight font-semibold tracking-tight text-balance">
+            <h1 className="text-[22px] leading-tight font-semibold tracking-snug text-balance">
               Tu QR nace con tu primer evento
             </h1>
             <p className="text-sm leading-6 text-muted-foreground">
@@ -125,7 +125,7 @@ export default async function MyQrPage({
     <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-7 px-5 py-8 sm:px-8">
       {/* A qué galaxia pertenece este QR — la promesa del escaneo, arriba */}
       <div className="flex flex-col items-center gap-3">
-        <h1 className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+        <h1 className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
           [ TU ESTRELLA EN ]
         </h1>
         <Link
@@ -178,13 +178,13 @@ export default async function MyQrPage({
             </div>
           )}
         </div>
-        <p className="text-[22px] font-semibold tracking-tight">
+        <p className="text-[22px] font-semibold tracking-snug">
           {profile.name}
         </p>
-        <p className="font-mono text-[10px] tracking-[0.18em] text-sol uppercase">
+        <p className="font-mono text-[10px] tracking-wider text-sol uppercase">
           {roleLabel ? `${roleLabel} · ` : ""}MAG {magnitude}
         </p>
-        <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground">
+        <p className="font-mono text-[9px] tracking-wider text-muted-foreground">
           [ tu brillo en esta galaxia: conexiones × 0.14 + 1.1 ]
         </p>
       </div>
@@ -198,7 +198,7 @@ export default async function MyQrPage({
           <span className="text-celeste">{activeEvent.name}</span> y quedan
           conectados
         </p>
-        <p className="mt-1 font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
+        <p className="mt-1 font-mono text-[10px] tracking-widest text-faint uppercase">
           [ sube el brillo de la pantalla ]
         </p>
       </div>

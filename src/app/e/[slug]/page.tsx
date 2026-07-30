@@ -42,10 +42,10 @@ export default async function EventPage({
 
       <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-5 text-center">
         <Galaxia seed={event.name.length} size={80} active />
-        <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
+        <p className="font-mono text-[10px] tracking-widest text-faint uppercase">
           [ galaxia ]
         </p>
-        <h1 className="text-3xl font-bold tracking-[-0.035em] text-balance sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
           {event.name}
         </h1>
         {(event.city || dateLabel) && (
@@ -80,7 +80,7 @@ export default async function EventPage({
           </div>
         )}
 
-        <p className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
+        <p className="font-mono text-[11px] tracking-wide text-muted-foreground">
           {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"} · {links}{" "}
           {links === 1 ? "CONEXIÓN" : "CONEXIONES"}
         </p>

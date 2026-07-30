@@ -98,10 +98,10 @@ export default async function HomePage() {
     return (
       <main className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-5 py-8 sm:px-0">
         <div className="flex flex-col gap-3.5">
-          <p className="font-mono text-[11px] tracking-[0.18em] text-faint uppercase">
+          <p className="font-mono text-[11px] tracking-wider text-faint uppercase">
             [ tu universo ]
           </p>
-          <h1 className="text-4xl leading-[1.05] font-bold tracking-[-0.035em] text-balance sm:text-5xl">
+          <h1 className="text-4xl leading-[1.05] font-bold tracking-tight text-balance sm:text-5xl">
             Tu universo empieza{" "}
             <span className="text-celeste">con una persona.</span>
           </h1>

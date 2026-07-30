@@ -770,7 +770,7 @@ export function ConstellationGraph({
         >
           −
         </button>
-        <span className="min-w-8.5 text-center font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+        <span className="min-w-8.5 text-center font-mono text-[10px] tracking-wide text-muted-foreground">
           {zoomLabel}
         </span>
         <button

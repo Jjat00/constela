@@ -7,7 +7,7 @@
  * #070A12 en silencio, sin estrellas ni nebulosas: la única luz es el grafo —
  * + cristal (blur 26, borde blanco 8%) + chrome cosmic blue #4EA8FF /
  * celeste #9DC8FF; el oro #FFD97A existe solo para "tú"; H-alfa #F0699F solo
- * para cierres triádicos. Geist-led.
+ * para cierres triádicos. DM Sans-led.
  * STORY: quien entra ve su constelación real respirando y entiende que su red
  * ES este universo; la única forma de crecerlo es encontrarse en persona.
  * FIRST VIEWPORT: sidebar de cristal izquierda, grafo protagonista al centro

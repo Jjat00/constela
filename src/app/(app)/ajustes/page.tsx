@@ -29,7 +29,7 @@ export default async function SettingsPage() {
   return (
     <main className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-5 py-8 sm:px-8 lg:py-16">
       <header className="flex flex-col gap-2.5">
-        <h1 className="text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           Ajustes
         </h1>
         <p className="text-sm leading-6 text-muted-foreground">
@@ -71,7 +71,7 @@ export default async function SettingsPage() {
       </Link>
 
       <section className="glass flex flex-col gap-4 rounded-4xl p-5 sm:p-6">
-        <h2 className="font-mono text-[10px] tracking-[0.16em] text-faint">
+        <h2 className="font-mono text-[10px] tracking-wider text-faint">
           [ CUENTA ]
         </h2>
         <div className="flex flex-col gap-1">
@@ -95,7 +95,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="glass flex flex-col gap-3.5 rounded-4xl p-5 sm:p-6">
-        <h2 className="font-mono text-[10px] tracking-[0.16em] text-faint">
+        <h2 className="font-mono text-[10px] tracking-wider text-faint">
           [ PREFERENCIAS ]
         </h2>
         <div className="flex items-start gap-3 rounded-3xl border border-white/5 bg-white/[0.03] p-3.5">

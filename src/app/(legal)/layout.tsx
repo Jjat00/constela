@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CosmicSky } from "@/components/cosmos";
+import { Logo } from "@/components/logo";
 import { SiteFooter } from "@/components/site-footer";
 
 /*
@@ -20,11 +21,8 @@ export default function LegalLayout({
       <CosmicSky className="fixed" nebulas="faint" />
 
       <header className="relative z-10 flex items-center justify-between px-5 pt-[calc(1.75rem+env(safe-area-inset-top))] sm:px-8 lg:px-14 lg:pt-8">
-        <Link
-          href="/"
-          className="text-[17px] font-semibold tracking-tight transition-opacity hover:opacity-80 lg:text-[19px]"
-        >
-          constela<span className="text-sol">✦</span>
+        <Link href="/" className="transition-opacity hover:opacity-80">
+          <Logo className="h-8 lg:h-9" priority />
         </Link>
         <Link
           href="/login"

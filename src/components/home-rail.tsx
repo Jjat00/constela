@@ -36,7 +36,7 @@ interface RailContentProps {
 
 function RailLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
+    <p className="font-mono text-[10px] tracking-wider text-faint uppercase">
       {children}
     </p>
   );
@@ -61,7 +61,7 @@ export function RailContent({
         <div className="flex items-center gap-3">
           <Galaxia seed={galaxySeed} size={48} active />
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+            <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               Constelación
             </p>
             <p className="mt-1 text-lg font-bold leading-tight">
@@ -283,7 +283,7 @@ export function MobileRailDrawer({
             className="animate-rise fixed inset-x-0 bottom-0 z-50 max-h-[85svh] overflow-y-auto rounded-t-4xl border border-white/10 bg-background lg:hidden"
           >
             <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/5 bg-background px-4 py-3">
-              <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+              <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
                 [ tu constelación ]
               </p>
               <button

@@ -91,7 +91,7 @@ export default async function EventsPage() {
     <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-16">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-2.5">
-          <h1 className="text-4xl font-bold tracking-[-0.04em] sm:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Tus eventos
           </h1>
           {myEvents.length > 0 && (
@@ -160,13 +160,13 @@ export default async function EventsPage() {
                       />
                     </Link>
                     {isActive && (
-                      <span className="rounded-full border border-sol/30 bg-sol/[0.08] px-2.5 py-1.5 font-mono text-[10px] tracking-[0.16em] text-sol">
+                      <span className="rounded-full border border-sol/30 bg-sol/[0.08] px-2.5 py-1.5 font-mono text-[10px] tracking-wider text-sol">
                         ESTÁS AQUÍ
                       </span>
                     )}
                   </div>
 
-                  <h2 className="mt-5 text-xl leading-tight font-semibold tracking-[-0.02em] text-balance">
+                  <h2 className="mt-5 text-xl leading-tight font-semibold tracking-snug text-balance">
                     <Link
                       href={`/e/${event.slug}`}
                       className="transition-colors hover:text-celeste"
@@ -190,14 +190,14 @@ export default async function EventsPage() {
                       altura, así stats y botones quedan alineados entre cards */}
                   <div className="mt-auto pt-5">
                     <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-4">
-                      <span className="truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+                      <span className="truncate font-mono text-[10px] tracking-wide text-muted-foreground">
                         {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"}
                         {links > 0
                           ? ` · ${links} ${links === 1 ? "TUYA" : "TUYAS"}`
                           : ""}
                       </span>
                       {date && (
-                        <span className="shrink-0 font-mono text-[10px] tracking-[0.14em] whitespace-nowrap text-faint uppercase">
+                        <span className="shrink-0 font-mono text-[10px] tracking-wide whitespace-nowrap text-faint uppercase">
                           {date}
                         </span>
                       )}

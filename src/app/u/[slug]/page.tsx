@@ -115,10 +115,10 @@ export default async function PublicProfilePage({
         </HaloEstelar>
 
         <div className="flex flex-col gap-1.5">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-faint uppercase">
+          <p className="font-mono text-[10px] tracking-widest text-faint uppercase">
             [ una estrella de la constelación ]
           </p>
-          <h1 className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-snug text-balance sm:text-4xl">
             {profile.name}
           </h1>
           {profile.headline && (

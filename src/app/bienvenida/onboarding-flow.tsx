@@ -51,7 +51,7 @@ export function OnboardingFlow({
       <input type="hidden" name="intents" value={serializeChoices(intents)} />
 
       <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-[0.16em] text-faint">
+        <p className="font-mono text-[10px] tracking-wider text-faint">
           [ TU ROL ]
         </p>
         <TagPicker
@@ -63,7 +63,7 @@ export function OnboardingFlow({
       </div>
 
       <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-[0.16em] text-faint">
+        <p className="font-mono text-[10px] tracking-wider text-faint">
           [ INTERESES · OPCIONAL ]
         </p>
         <TagPicker
@@ -75,7 +75,7 @@ export function OnboardingFlow({
       </div>
 
       <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-[0.16em] text-faint">
+        <p className="font-mono text-[10px] tracking-wider text-faint">
           [ INTENCIÓN · OPCIONAL ]
         </p>
         <TagPicker

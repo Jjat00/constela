@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CosmicSky } from "@/components/cosmos";
+import { Logo } from "@/components/logo";
 import { GoogleButton } from "@/app/login/google-button";
 import { LogoutButton } from "@/app/login/logout-button";
 import { SiteFooter } from "@/components/site-footer";
@@ -12,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
  * universo detrás. Toda la promesa cabe en un viewport; rechazo del hero
  * SaaS con secciones, marquee y features.
  * OWN-WORLD: cielo #0A0C12 casi monocromo con horizonte de planeta; la red
- * del evento dibujándose arriba a la derecha; titular gigante Geist con
+ * del evento dibujándose arriba a la derecha; titular gigante DM Sans con
  * «tu universo.» en celeste #9DC8FF; CTA de cristal cosmic blue; mono de
  * observatorio para las coordenadas.
  * STORY: ver la red dibujarse → «tu red es tu universo» → entrar con Google
@@ -238,10 +239,8 @@ export default async function LandingPage() {
 
       {/* Chrome mínimo: wordmark + coordenadas del evento + la puerta */}
       <header className="relative z-10 flex items-center justify-between px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:px-14 lg:pt-8">
-        <p className="text-[17px] font-semibold tracking-tight lg:text-[19px]">
-          constela<span className="text-sol">✦</span>
-        </p>
-        <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground lg:block">
+        <Logo className="h-8 lg:h-9" priority />
+        <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-wider text-muted-foreground lg:block">
           [ PARA CUALQUIER EVENTO ]
         </p>
         {/* La puerta de servicio: quien ya sabe qué es esto no debería tener
@@ -262,7 +261,7 @@ export default async function LandingPage() {
       {/* El titular y la puerta */}
       <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-9 lg:justify-center lg:px-22 lg:pb-20">
         <div className="animate-rise max-w-[41rem]">
-          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance lg:leading-[0.94]">
+          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-bold tracking-tighter text-balance lg:leading-[0.94]">
             Tu red es
             <br />
             <span className="text-celeste">tu universo.</span>
@@ -284,7 +283,7 @@ export default async function LandingPage() {
                 <GoogleButton next="/home" />
               </div>
             )}
-            <p className="text-center font-mono text-[11px] tracking-[0.16em] text-faint lg:text-left">
+            <p className="text-center font-mono text-[11px] tracking-wider text-faint lg:text-left">
               [ 8 SEGUNDOS ]
             </p>
           </div>
@@ -294,7 +293,10 @@ export default async function LandingPage() {
       {/* El borde del universo: la tesis a un lado, lo legal al otro. Ya no
           es absolute — el pie ocupa su sitio en el flujo para que en móvil
           nunca se monte sobre el CTA. */}
-      <SiteFooter tagline="CADA PERSONA ES UNA ESTRELLA" className="lg:px-22" />
+      <SiteFooter
+        tagline="CADA PERSONA ES UNA ESTRELLA, CADA CONEXIÓN, UNA CONSTELACIÓN"
+        className="lg:px-22"
+      />
     </main>
   );
 }

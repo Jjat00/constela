@@ -76,10 +76,10 @@ export default async function ProfilePage({
           )}
         </div>
         <div className="min-w-0">
-          <h1 className="truncate text-3xl font-bold tracking-[-0.04em] sm:text-5xl">
+          <h1 className="truncate text-3xl font-bold tracking-tight sm:text-5xl">
             {profile.name.split(" ")[0]}
           </h1>
-          <p className="mt-2.5 font-mono text-[10px] tracking-[0.16em] text-sol sm:text-[11px]">
+          <p className="mt-2.5 font-mono text-[10px] tracking-wider text-sol sm:text-[11px]">
             MAG {magnitude} · {connectionCount ?? 0}{" "}
             {connectionCount === 1 ? "CONEXIÓN" : "CONEXIONES"}
           </p>
@@ -94,7 +94,7 @@ export default async function ProfilePage({
         </p>
       )}
       {ok && (
-        <p className="rounded-2xl border border-aurora/30 bg-aurora/[0.08] px-4 py-3 font-mono text-xs tracking-[0.14em] text-aurora">
+        <p className="rounded-2xl border border-aurora/30 bg-aurora/[0.08] px-4 py-3 font-mono text-xs tracking-wide text-aurora">
           [ GUARDADO ]
         </p>
       )}

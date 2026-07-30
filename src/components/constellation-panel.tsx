@@ -222,7 +222,7 @@ export function ConstellationPanel({
       const list = showAll === category ? all : all.slice(0, TOP);
       return (
         <div key={category} className="flex flex-col gap-2">
-          <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
+          <p className="font-mono text-[10px] tracking-wider text-faint uppercase">
             [ {GROUP_TITLE[category]} ]
           </p>
           <div className="flex flex-wrap gap-2">
@@ -381,7 +381,7 @@ export function ConstellationPanel({
         {open && hasFacets && (
           <div className="glass animate-rise pointer-events-auto flex max-h-[52svh] flex-col gap-4 overflow-y-auto rounded-3xl p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+              <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
                 [ filtrar estrellas ]
               </p>
               <button

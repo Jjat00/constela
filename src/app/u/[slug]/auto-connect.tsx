@@ -116,7 +116,7 @@ export function AutoConnect({
   if (result.status === "conectados") {
     return (
       <div className="animate-rise flex w-full flex-col items-center gap-7">
-        <p className="rounded-full border border-aurora/30 bg-aurora/[0.08] px-3.5 py-2 font-mono text-[10px] tracking-[0.18em] text-aurora">
+        <p className="rounded-full border border-aurora/30 bg-aurora/[0.08] px-3.5 py-2 font-mono text-[10px] tracking-wider text-aurora">
           [ NUEVA CONEXIÓN ]
         </p>
 
@@ -137,11 +137,11 @@ export function AutoConnect({
         </div>
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <h2 className="text-[28px] leading-tight font-semibold tracking-[-0.03em] text-balance sm:text-[32px]">
+          <h2 className="text-[28px] leading-tight font-semibold tracking-snug text-balance sm:text-[32px]">
             {peer.name}
           </h2>
           {peer.meta && (
-            <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+            <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
               {peer.meta}
             </p>
           )}

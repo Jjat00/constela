@@ -67,10 +67,10 @@ export default async function BienvenidaPage({
 
       <div className="relative z-10 mx-auto grid w-full max-w-md gap-8 lg:max-w-5xl lg:grid-cols-[1fr_30rem] lg:items-center lg:gap-16">
         <header className="flex flex-col gap-5">
-          <p className="font-mono text-[11px] tracking-[0.18em] text-faint">
+          <p className="font-mono text-[11px] tracking-wider text-faint">
             [ PASO 1 DE 1 ]
           </p>
-          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98] font-bold tracking-[-0.045em] text-balance">
+          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.98] font-bold tracking-tighter text-balance">
             Ya estás <span className="text-celeste">dentro.</span>
           </h1>
           <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground lg:text-lg">

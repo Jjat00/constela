@@ -16,7 +16,7 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-2.5">
-      <span className="font-mono text-[10px] tracking-[0.16em] text-faint">
+      <span className="font-mono text-[10px] tracking-wider text-faint">
         {label}
       </span>
       {children}
@@ -52,7 +52,7 @@ export default async function NewEventPage({
           <div className="flex items-center gap-4">
             <Galaxia size={56} seed={11} active />
             <div>
-              <h1 className="text-2xl font-semibold tracking-[-0.025em]">
+              <h1 className="text-2xl font-semibold tracking-snug">
                 Nuevo evento
               </h1>
               <p className="mt-1.5 text-[13px] text-muted-foreground">

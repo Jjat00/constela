@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Orbit, QrCode, SlidersHorizontal } from "lucide-react";
 import { AuraSol, Galaxia } from "@/components/cosmos";
+import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 // CONTEXT.md: la pantalla principal se llama «Universo»; «constelación» es
@@ -30,8 +31,8 @@ export type Identity = {
 
 function Wordmark() {
   return (
-    <Link href="/home" className="text-lg font-semibold tracking-tight">
-      constela<span className="text-sol">✦</span>
+    <Link href="/home" className="inline-flex transition-opacity hover:opacity-80">
+      <Logo className="h-7 lg:h-8" />
     </Link>
   );
 }
@@ -98,7 +99,7 @@ export function AppNav({
               active
             />
             <span className="flex min-w-0 flex-col">
-              <span className="font-mono text-[9px] tracking-[0.16em] text-faint uppercase">
+              <span className="font-mono text-[9px] tracking-wider text-faint uppercase">
                 estás en
               </span>
               <span className="truncate text-[12.5px] font-medium">
@@ -144,7 +145,7 @@ export function AppNav({
               <span className="truncate text-[13px] font-medium">
                 {identity.name}
               </span>
-              <span className="mt-0.5 truncate font-mono text-[10px] tracking-[0.14em] text-sol uppercase">
+              <span className="mt-0.5 truncate font-mono text-[10px] tracking-wide text-sol uppercase">
                 {identity.subtitle ?? "completa tu perfil"}
               </span>
             </span>
@@ -154,7 +155,7 @@ export function AppNav({
 
       {/* Móvil y tablet: wordmark arriba, tabs abajo */}
       <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 lg:hidden">
-        <span className="glass rounded-full px-4 py-2">
+        <span className="glass inline-flex rounded-full px-3.5 py-1.5">
           <Wordmark />
         </span>
       </header>

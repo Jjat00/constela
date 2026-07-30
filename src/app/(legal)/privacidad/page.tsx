@@ -12,13 +12,13 @@ const CONTACTO = "userjjat00@gmail.com";
 export default function PrivacidadPage() {
   return (
     <article>
-      <p className="font-mono text-[11px] tracking-[0.18em] text-faint uppercase">
+      <p className="font-mono text-[11px] tracking-wider text-faint uppercase">
         [ privacidad ]
       </p>
-      <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-balance sm:text-4xl">
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
         Tus datos, <span className="text-celeste">en claro</span>
       </h1>
-      <p className="mt-3.5 font-mono text-[11px] tracking-[0.14em] text-faint">
+      <p className="mt-3.5 font-mono text-[11px] tracking-wide text-faint">
         VIGENTE DESDE EL 30 DE JULIO DE 2026
       </p>
 

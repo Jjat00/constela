@@ -99,11 +99,11 @@ export function MiniPerfil({
           <p className="text-[19px] leading-tight font-semibold">
             {isMe ? "Tú" : node.name}
           </p>
-          <p className="mt-1.5 truncate font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          <p className="mt-1.5 truncate font-mono text-[11px] tracking-wide text-muted-foreground uppercase">
             {meta || node.headline || "sin señales todavía"}
           </p>
           {isCreator && (
-            <p className="mt-1.5 font-mono text-[10px] tracking-[0.16em] text-celeste uppercase">
+            <p className="mt-1.5 font-mono text-[10px] tracking-wider text-celeste uppercase">
               ✦ creó esta galaxia
             </p>
           )}
@@ -133,14 +133,14 @@ export function MiniPerfil({
 
       <div className="mt-4.5 grid grid-cols-3 gap-3 border-t border-white/5 pt-3.5">
         <div>
-          <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground whitespace-nowrap">
+          <p className="font-mono text-[9px] tracking-wider text-muted-foreground whitespace-nowrap">
             CONEXIONES
           </p>
           <p className="mt-2 text-[15px] font-semibold">{degree}</p>
         </div>
         <div>
           <div className="flex items-center gap-1">
-            <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground whitespace-nowrap">
+            <p className="font-mono text-[9px] tracking-wider text-muted-foreground whitespace-nowrap">
               MAGNITUD
             </p>
             <button
@@ -156,7 +156,7 @@ export function MiniPerfil({
         </div>
         <div>
           <div className="flex items-center gap-1">
-            <p className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground whitespace-nowrap">
+            <p className="font-mono text-[9px] tracking-wider text-muted-foreground whitespace-nowrap">
               CLASE
             </p>
             <button
@@ -187,7 +187,7 @@ export function MiniPerfil({
           </Link>
         ) : connected ? (
           <div className="flex flex-col gap-1">
-            <p className="font-mono text-xs tracking-[0.14em] text-aurora">
+            <p className="font-mono text-xs tracking-wide text-aurora">
               [ CONECTADOS ]
             </p>
             {note && (
