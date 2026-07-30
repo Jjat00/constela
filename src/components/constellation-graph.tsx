@@ -315,8 +315,26 @@ export function ConstellationGraph({
   // cada nodo. Por eso se memorizan: si se recrearan en cada render, la
   // simulación se reiniciaría — y además son la única fuente de posiciones
   // actuales para saber qué estrella hay bajo el dedo.
+  //
+  // Las demás estrellas nacen en un anillo alrededor de tu sol, en un ángulo
+  // estable por id: sin esto d3 las siembra en una espiral que empieza a ~7px
+  // del origen, y si la simulación corre poco (móvil, pestaña oculta) quedan
+  // pegadas a ti con los nombres encimados.
   const graphNodes = useMemo<SimNode[]>(
-    () => nodes.map((n) => (n.id === myId ? { ...n, fx: 0, fy: 0 } : { ...n })),
+    () =>
+      nodes.map((n) => {
+        if (n.id === myId) return { ...n, fx: 0, fy: 0 };
+        let h = 0;
+        for (let i = 0; i < n.id.length; i++)
+          h = (h * 31 + n.id.charCodeAt(i)) | 0;
+        const angle = ((h >>> 0) % 360) * (Math.PI / 180);
+        const radius = 110 + ((h >>> 8) % 70);
+        return {
+          ...n,
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+        };
+      }),
     [nodes, myId],
   );
   const graphLinks = useMemo(() => edges.map((e) => ({ ...e })), [edges]);
