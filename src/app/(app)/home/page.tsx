@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate, timeAgo } from "@/lib/format";
-import { qrSvg } from "@/lib/qr";
 import { Galaxia } from "@/components/cosmos";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
@@ -53,7 +52,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, qr_slug, onboarded_at, active_event_id")
+    .select("name, onboarded_at, active_event_id")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login?error=sin-perfil");
@@ -95,15 +94,13 @@ export default async function HomePage() {
   const catalog = await fetchTagCatalog(supabase);
 
   if (!activeEvent) {
-    // Sin evento todavía: descubrir o crear, nunca pantalla muerta
-    const [{ data: events }, qr] = await Promise.all([
-      supabase
-        .from("events")
-        .select("id, name, slug, starts_at")
-        .order("starts_at", { ascending: true, nullsFirst: false })
-        .limit(12),
-      qrSvg(`/u/${profile.qr_slug}`, "sol"),
-    ]);
+    // Sin evento todavía: descubrir o crear, nunca pantalla muerta. Y sin
+    // QR personal: igual que en /qr, no existe hasta tu primera galaxia.
+    const { data: events } = await supabase
+      .from("events")
+      .select("id, name, slug, starts_at")
+      .order("starts_at", { ascending: true, nullsFirst: false })
+      .limit(12);
     const availableEvents = events ?? [];
 
     return (
@@ -161,17 +158,6 @@ export default async function HomePage() {
         >
           Crear un evento
         </Link>
-
-        {/* El QR personal existe desde ya, pero conecta dentro de un evento */}
-        <section className="glass flex flex-col items-center gap-4 rounded-4xl p-6">
-          <div
-            className="w-full max-w-40 opacity-80 [&_svg]:h-auto [&_svg]:w-full"
-            dangerouslySetInnerHTML={{ __html: qr }}
-          />
-          <p className="text-center font-mono text-xs text-muted-foreground">
-            tu QR personal — cobra vida dentro de un evento
-          </p>
-        </section>
       </main>
     );
   }
