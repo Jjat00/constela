@@ -4,7 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { eventDate, timeAgo } from "@/lib/format";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
-import { DesktopRail, RailContent } from "@/components/home-rail";
+import {
+  DesktopRail,
+  MobileRailDrawer,
+  RailContent,
+} from "@/components/home-rail";
 import {
   buildFacets,
   fetchTagCatalog,
@@ -177,6 +181,23 @@ export default async function HomePage() {
         : null,
     }));
 
+  // Los mismos datos en las dos formas del observatorio: rail fijo en desktop,
+  // hoja bajo el pulgar en móvil. Se arma una vez y se coloca dos veces.
+  const rail = (
+    <RailContent
+      activeEvent={activeEvent}
+      myEvents={myEvents}
+      nodeCount={graph.nodes.length}
+      connectionCount={connectionCount}
+      triangleCount={triangleCount}
+      magnitude={magnitude}
+      dateLabel={eventDate(activeEvent.starts_at)}
+      activity={activity}
+      nearby={nearby}
+      galaxySeed={activeEvent.slug.charCodeAt(0)}
+    />
+  );
+
   return (
     <main className="relative z-10 flex flex-1 flex-col lg:h-svh lg:flex-row lg:overflow-hidden">
       <h1 className="sr-only">Tu constelación — {activeEvent.name}</h1>
@@ -202,21 +223,9 @@ export default async function HomePage() {
         />
       </div>
 
-      {/* Rail: solo en desktop, mobile solo muestra grafo */}
-      <DesktopRail>
-        <RailContent
-          activeEvent={activeEvent}
-          myEvents={myEvents}
-          nodeCount={graph.nodes.length}
-          connectionCount={connectionCount}
-          triangleCount={triangleCount}
-          magnitude={magnitude}
-          dateLabel={eventDate(activeEvent.starts_at)}
-          activity={activity}
-          nearby={nearby}
-          galaxySeed={activeEvent.slug.charCodeAt(0)}
-        />
-      </DesktopRail>
+      {/* Rail fijo en desktop; en móvil los mismos datos viven en una hoja */}
+      <DesktopRail>{rail}</DesktopRail>
+      <MobileRailDrawer>{rail}</MobileRailDrawer>
     </main>
   );
 }

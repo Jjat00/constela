@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Info, X } from "lucide-react";
 import { spectralLetterOf, spectrumOf } from "@/components/cosmos";
@@ -200,76 +201,96 @@ export function MiniPerfil({
         )}
       </div>
 
-      {infoOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40 z-40"
-            onClick={() => setInfoOpen(null)}
-            aria-hidden
-          />
-          <div className="fixed inset-x-4 bottom-20 z-50 bg-background border border-white/10 rounded-xl p-3 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 sm:w-80">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="font-semibold text-sm">
-                {infoOpen === "magnitud" ? "Magnitud" : "Clase Estelar"}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setInfoOpen(null)}
-                className="text-muted-foreground hover:text-foreground flex-shrink-0"
-                aria-label="Cerrar"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
+      {/* Lo explicado va a `body` por portal: esta card puede llevar un
+          `transform` (la ficha flotante de desktop), y un `transform` vuelve
+          a la card el marco de referencia de sus hijos `fixed` — el diálogo
+          se anclaba a la estrella y en móvil salía de la pantalla. Ahora
+          cuelga del viewport: abajo en móvil, centrado en desktop. */}
+      {infoOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div data-star-dialog onMouseDown={(e) => e.stopPropagation()}>
+            <div
+              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+              onClick={() => setInfoOpen(null)}
+              aria-hidden
+            />
+            <div
+              role="dialog"
+              aria-label={infoOpen === "magnitud" ? "Magnitud" : "Clase estelar"}
+              className="animate-rise fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 rounded-3xl border border-white/10 bg-background p-4 lg:inset-x-auto lg:top-1/2 lg:bottom-auto lg:left-1/2 lg:w-80 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-2xl"
+            >
+              <div className="mb-2.5 flex items-start justify-between gap-2">
+                <h3 className="text-sm font-semibold">
+                  {infoOpen === "magnitud" ? "Magnitud" : "Clase estelar"}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setInfoOpen(null)}
+                  className="grid size-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+                  aria-label="Cerrar"
+                >
+                  <X className="size-3.5" aria-hidden />
+                </button>
+              </div>
 
-            {infoOpen === "magnitud" ? (
-              <div className="space-y-1.5 text-xs">
-                <p className="text-muted-foreground">
-                  Tu brillo determina el tamaño de tu estrella.
-                </p>
-                <p className="text-muted-foreground">
-                  Se calcula por tus conexiones:
-                </p>
-                <p className="font-mono bg-white/5 rounded p-1.5">
-                  (Conexiones × 0.34) + 1.0
-                </p>
-                <p className="text-muted-foreground">
-                  Actual: <span className="text-foreground font-semibold">{magnitud}</span>
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2 text-xs">
-                <p className="text-muted-foreground">
-                  Color visual asignado al azar. No está relacionado con tus conexiones.
-                </p>
-                <p className="text-muted-foreground">
-                  La escala de Harvard clasifica estrellas por temperatura:
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {SPECTRAL_TYPES.map((type) => (
-                    <div
-                      key={type.letter}
-                      className="flex items-center gap-1 bg-white/5 rounded px-1.5 py-0.5"
-                      title={`${type.label}: ${type.temp}`}
-                    >
-                      <div
-                        className="w-4 h-4 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: type.color }}
-                      />
-                      <span className="font-semibold">{type.letter}</span>
-                    </div>
-                  ))}
+              {infoOpen === "magnitud" ? (
+                <div className="space-y-1.5 text-xs">
+                  <p className="text-muted-foreground">
+                    Tu brillo determina el tamaño de tu estrella.
+                  </p>
+                  <p className="text-muted-foreground">
+                    Se calcula por tus conexiones:
+                  </p>
+                  <p className="rounded-lg bg-white/5 p-1.5 font-mono">
+                    (Conexiones × 0.14) + 1.1
+                  </p>
+                  <p className="text-muted-foreground">
+                    Actual:{" "}
+                    <span className="font-semibold text-foreground">
+                      {magnitud}
+                    </span>
+                  </p>
                 </div>
-                <p className="text-muted-foreground">
-                  Tu tipo: <span className="font-semibold" style={{ color: spec.halo }}>
-                    {isMe ? "Sol" : letter}
-                  </span>
-                </p>
-              </div>
-            )}
-          </div>
-        </>
-      )}
+              ) : (
+                <div className="space-y-2 text-xs">
+                  <p className="text-muted-foreground">
+                    Color visual asignado al azar. No está relacionado con tus
+                    conexiones.
+                  </p>
+                  <p className="text-muted-foreground">
+                    La escala de Harvard clasifica estrellas por temperatura:
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {SPECTRAL_TYPES.map((type) => (
+                      <div
+                        key={type.letter}
+                        className="flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5"
+                        title={`${type.label}: ${type.temp}`}
+                      >
+                        <div
+                          className="size-4 shrink-0 rounded-full"
+                          style={{ backgroundColor: type.color }}
+                        />
+                        <span className="font-semibold">{type.letter}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground">
+                    Tu tipo:{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: spec.halo }}
+                    >
+                      {isMe ? "Sol" : letter}
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

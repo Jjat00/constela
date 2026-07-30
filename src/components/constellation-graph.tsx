@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type ForceGraph2DComponent from "react-force-graph-2d";
 import { spectrumOf } from "@/components/cosmos";
 import { MiniPerfil } from "@/components/mini-perfil";
+import { cn } from "@/lib/utils";
 
 export type GraphNode = {
   id: string;
@@ -90,6 +91,22 @@ export function ConstellationGraph({
   // conexión solo nace de escanear un QR en persona (ADR 0001).
   const [selected, setSelected] = useState<GraphNode | null>(null);
   const [selectedPos, setSelectedPos] = useState<{ x: number; y: number; placement: "top" | "bottom" | "left" | "right" } | null>(null);
+
+  // La ficha flota junto a la estrella SOLO en desktop: en un teléfono no hay
+  // sitio a los lados de un nodo y la card acababa medio fuera de la pantalla.
+  // En móvil se ancla abajo, donde vive el resto del chrome del pulgar.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const sync = () => {
+      setIsDesktop(query.matches);
+      // Al encogerse a móvil, la posición calculada deja de valer
+      if (!query.matches) setSelectedPos(null);
+    };
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   const calculatePosition = (nodeX: number, nodeY: number) => {
     const CARD_WIDTH = 360;
@@ -290,6 +307,10 @@ export function ConstellationGraph({
   useEffect(() => {
     if (!selected) return;
     const onClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      // Lo que el MiniPerfil abre por portal (magnitud, clase) cuelga de
+      // `body`: es suyo aunque no esté dentro de su DOM.
+      if (target?.closest?.("[data-star-dialog]")) return;
       const ref = miniPerfixRef.current;
       if (ref && !ref.contains(e.target as Node)) {
         setSelected(null);
@@ -441,7 +462,13 @@ export function ConstellationGraph({
         if (node) {
           const fg = fgRef.current;
           const el = containerRef.current;
-          if (fg && el && node.x !== undefined && node.y !== undefined) {
+          if (
+            isDesktop &&
+            fg &&
+            el &&
+            node.x !== undefined &&
+            node.y !== undefined
+          ) {
             const rect = el.getBoundingClientRect();
             const screenCoords = fg.graph2ScreenCoords(node.x, node.y);
             const pos = calculatePosition(
@@ -449,6 +476,8 @@ export function ConstellationGraph({
               screenCoords.y + rect.top,
             );
             setSelectedPos(pos);
+          } else {
+            setSelectedPos(null);
           }
           setSelected(node);
         }
@@ -754,18 +783,23 @@ export function ConstellationGraph({
         </button>
       </div>
 
-      {/* La ficha de la estrella tocada: card flotante en desktop, sheet en móvil */}
+      {/* La ficha de la estrella tocada: card junto al nodo en desktop; en
+          móvil, hoja anclada al fondo del mapa — siempre entera en pantalla. */}
       {selected && (
         <div
           ref={miniPerfixRef}
-          className="z-20 max-h-[70vh] overflow-y-auto rounded-t-4xl lg:fixed lg:w-[360px] lg:max-h-[calc(100vh-2rem)] lg:rounded-3xl lg:overflow-y-auto"
+          className={cn(
+            "z-20 overflow-y-auto",
+            selectedPos
+              ? "max-h-[calc(100svh-2rem)] w-[360px] rounded-3xl"
+              : "max-h-[80%] rounded-t-4xl",
+          )}
           style={
             selectedPos
               ? {
                   position: "fixed",
                   left: `${selectedPos.x}px`,
-                  top: selectedPos.placement === "top" ? `${selectedPos.y}px` : selectedPos.placement === "bottom" ? `${selectedPos.y}px` : `${selectedPos.y}px`,
-                  bottom: selectedPos.placement === "bottom" ? "auto" : undefined,
+                  top: `${selectedPos.y}px`,
                   transform:
                     selectedPos.placement === "top"
                       ? "translate(-50%, -100%)"

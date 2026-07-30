@@ -158,29 +158,101 @@ export function ConstellationPanel({
     setQuery("");
   }
 
-  const searchInput = (
+  /** En móvil la barra lleva un control más, así que el campo cede ancho:
+   *  sin mínimo propio (`min-w-0`) nunca empuja los botones fuera del pill. */
+  const searchField = (compact: boolean) => (
     <>
       <Search className="size-4 shrink-0 text-faint" aria-hidden />
       <input
-        ref={searchRef}
+        ref={compact ? undefined : searchRef}
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Buscar estrellas…"
+        placeholder={compact ? "Buscar…" : "Buscar estrellas…"}
         aria-label={`Buscar estrellas de ${event.name} por nombre`}
-        className="min-w-28 flex-1 bg-transparent text-[15px] outline-none placeholder:text-faint"
+        className={cn(
+          "flex-1 bg-transparent text-[15px] outline-none placeholder:text-faint",
+          compact ? "min-w-0" : "min-w-28",
+        )}
       />
       {query ? (
         <button
           type="button"
           onClick={() => setQuery("")}
           aria-label="Limpiar búsqueda"
-          className="text-muted-foreground transition-colors hover:text-foreground"
+          className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="size-3.5" aria-hidden />
         </button>
       ) : null}
     </>
+  );
+
+  /** La lectura del filtro: cuántas estrellas siguen encendidas. */
+  const filterReading = (short: boolean) => (
+    <>
+      {shown === 0 ? (
+        <span className="text-muted-foreground">
+          ninguna estrella coincide
+        </span>
+      ) : (
+        <span>
+          <span className="text-celeste">{shown}</span>{" "}
+          <span className="text-muted-foreground">
+            de {nodes.length}
+            {short ? "" : " estrellas"}
+          </span>
+        </span>
+      )}
+      <button
+        type="button"
+        onClick={clearAll}
+        className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+      >
+        limpiar
+      </button>
+    </>
+  );
+
+  /** Los grupos de facetas del evento: mismo contenido arriba en desktop y
+   *  en la hoja del pulgar en móvil. */
+  const filterGroups = TAG_CATEGORIES.filter((c) => facets[c].length > 0).map(
+    (category) => {
+      const all = facets[category];
+      const list = showAll === category ? all : all.slice(0, TOP);
+      return (
+        <div key={category} className="flex flex-col gap-2">
+          <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
+            [ {GROUP_TITLE[category]} ]
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {list.map((facet) => (
+              <button
+                key={facet.slug}
+                type="button"
+                onClick={() => toggle(category, facet.slug)}
+                aria-pressed={active[category].includes(facet.slug)}
+                className="chip-star inline-flex min-h-10 items-center gap-1.5 px-3 py-1.5 text-sm"
+              >
+                {facet.label}
+                <span className="font-mono text-[0.7rem] opacity-70">
+                  {facet.count}
+                </span>
+              </button>
+            ))}
+            {all.length > TOP && (
+              <button
+                type="button"
+                onClick={() => setShowAll(showAll === category ? null : category)}
+                className="inline-flex min-h-10 items-center px-2 font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                {showAll === category ? "menos" : `+${all.length - TOP}`}
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    },
   );
 
   return (
@@ -202,7 +274,7 @@ export function ConstellationPanel({
       {/* Desktop: la barra de mando sobre el mapa (búsqueda + chips + triádicos) */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 hidden justify-center p-4 lg:flex">
         <div className="pointer-events-auto glass flex h-[54px] w-full max-w-3xl items-center gap-3.5 rounded-full py-0 pr-2 pl-4.5">
-          {searchInput}
+          {searchField(false)}
           {quickChips.length > 0 && (
             <>
               <div className="h-5.5 w-px shrink-0 bg-white/10" aria-hidden />
@@ -281,68 +353,13 @@ export function ConstellationPanel({
         </div>
       </div>
 
-      {/* Panel de filtros completo: una hoja de cristal bajo la barra */}
+      {/* Desktop: el panel de filtros cuelga de la barra de mando */}
       {open && hasFacets && (
-        <div className="glass absolute top-16 left-1/2 z-10 flex max-h-[min(24rem,60%)] w-[min(24rem,calc(100%-1.5rem))] -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-3xl p-4 lg:top-[4.75rem]">
-          {TAG_CATEGORIES.filter((c) => facets[c].length > 0).map((category) => {
-            const all = facets[category];
-            const list = showAll === category ? all : all.slice(0, TOP);
-            return (
-              <div key={category} className="flex flex-col gap-2">
-                <p className="font-mono text-[10px] tracking-[0.16em] text-faint uppercase">
-                  [ {GROUP_TITLE[category]} ]
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {list.map((facet) => (
-                    <button
-                      key={facet.slug}
-                      type="button"
-                      onClick={() => toggle(category, facet.slug)}
-                      aria-pressed={active[category].includes(facet.slug)}
-                      className="chip-star inline-flex min-h-10 items-center gap-1.5 px-3 py-1.5 text-sm"
-                    >
-                      {facet.label}
-                      <span className="font-mono text-[0.7rem] opacity-70">
-                        {facet.count}
-                      </span>
-                    </button>
-                  ))}
-                  {all.length > TOP && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowAll(showAll === category ? null : category)
-                      }
-                      className="inline-flex min-h-10 items-center px-2 font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                    >
-                      {showAll === category ? "menos" : `+${all.length - TOP}`}
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        <div className="glass absolute top-[4.75rem] left-1/2 z-10 hidden max-h-[min(24rem,60%)] w-96 -translate-x-1/2 flex-col gap-4 overflow-y-auto rounded-3xl p-4 lg:flex">
+          {filterGroups}
           {filtering && (
             <p className="flex items-center gap-2 font-mono text-xs">
-              {shown === 0 ? (
-                <span className="text-muted-foreground">
-                  ninguna estrella coincide
-                </span>
-              ) : (
-                <span>
-                  <span className="text-celeste">{shown}</span>{" "}
-                  <span className="text-muted-foreground">
-                    de {nodes.length} estrellas
-                  </span>
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={clearAll}
-                className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                limpiar
-              </button>
+              {filterReading(false)}
             </p>
           )}
         </div>
@@ -352,53 +369,42 @@ export function ConstellationPanel({
       {filtering && !open && (
         <div className="pointer-events-none absolute inset-x-0 top-[4.75rem] z-10 hidden justify-center lg:flex">
           <p className="pointer-events-auto glass flex items-center gap-2 rounded-full px-3.5 py-1.5 font-mono text-xs">
-            {shown === 0 ? (
-              <span className="text-muted-foreground">
-                ninguna estrella coincide
-              </span>
-            ) : (
-              <span>
-                <span className="text-celeste">{shown}</span>{" "}
-                <span className="text-muted-foreground">
-                  de {nodes.length} estrellas
-                </span>
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={clearAll}
-              className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-            >
-              limpiar
-            </button>
+            {filterReading(false)}
           </p>
         </div>
       )}
 
-      {/* Móvil: chips + búsqueda + tu QR, al alcance del pulgar */}
+      {/* Móvil: filtros + chips + búsqueda + tu QR, al alcance del pulgar.
+          Todo lo que se abre en móvil crece hacia arriba desde esta columna:
+          nada aparece flotando sobre una estrella, donde no hay sitio. */}
       <div className="pointer-events-none absolute inset-x-3 bottom-2 z-10 flex flex-col gap-2.5 lg:hidden">
-        {filtering && (
-          <div className="flex justify-center">
-            <p className="pointer-events-auto glass flex items-center gap-2 rounded-full px-3.5 py-1.5 font-mono text-xs">
-              {shown === 0 ? (
-                <span className="text-muted-foreground">
-                  ninguna estrella coincide
-                </span>
-              ) : (
-                <span>
-                  <span className="text-celeste">{shown}</span>{" "}
-                  <span className="text-muted-foreground">
-                    de {nodes.length}
-                  </span>
-                </span>
-              )}
+        {open && hasFacets && (
+          <div className="glass animate-rise pointer-events-auto flex max-h-[52svh] flex-col gap-4 overflow-y-auto rounded-3xl p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                [ filtrar estrellas ]
+              </p>
               <button
                 type="button"
-                onClick={clearAll}
-                className="text-muted-foreground underline-offset-4 hover:text-foreground"
+                onClick={() => setOpen(false)}
+                aria-label="Cerrar filtros"
+                className="grid size-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
               >
-                limpiar
+                <X className="size-3.5" aria-hidden />
               </button>
+            </div>
+            {filterGroups}
+            {filtering && (
+              <p className="flex items-center gap-2 font-mono text-xs">
+                {filterReading(false)}
+              </p>
+            )}
+          </div>
+        )}
+        {filtering && !open && (
+          <div className="flex justify-center">
+            <p className="pointer-events-auto glass flex items-center gap-2 rounded-full px-3.5 py-1.5 font-mono text-xs">
+              {filterReading(true)}
             </p>
           </div>
         )}
@@ -423,8 +429,8 @@ export function ConstellationPanel({
             ))}
           </div>
         )}
-        <div className="pointer-events-auto glass flex h-14 items-center gap-2.5 rounded-full py-0 pr-2 pl-4">
-          {searchInput}
+        <div className="pointer-events-auto glass flex h-14 items-center gap-2 rounded-full py-0 pr-1.5 pl-3.5">
+          {searchField(true)}
           <button
             type="button"
             onClick={() => setShowNames(!showNames)}
@@ -432,7 +438,7 @@ export function ConstellationPanel({
             aria-label={
               showNames ? "Ocultar nombres" : "Mostrar nombres"
             }
-            className="chip-star grid size-11 shrink-0 place-items-center text-sm font-bold"
+            className="chip-star grid size-10 shrink-0 place-items-center text-sm font-bold"
           >
             A
           </button>
@@ -443,16 +449,31 @@ export function ConstellationPanel({
             aria-label={
               triads ? "Ocultar cierres triádicos" : "Mostrar cierres triádicos"
             }
-            className="chip-triad grid size-11 shrink-0 place-items-center"
+            className="chip-triad grid size-10 shrink-0 place-items-center"
           >
             <Triangle className="size-4" aria-hidden />
           </button>
+          {hasFacets && (
+            <button
+              type="button"
+              onClick={() => setOpen(!open)}
+              aria-expanded={open}
+              aria-label={open ? "Ocultar filtros" : "Filtrar estrellas"}
+              className={cn(
+                "chip-star grid size-10 shrink-0 place-items-center",
+                activeCount > 0 && "text-celeste",
+              )}
+              data-active={activeCount > 0}
+            >
+              <SlidersHorizontal className="size-4" aria-hidden />
+            </button>
+          )}
           <Link
             href="/qr"
-            className="btn-sol grid size-11 shrink-0 place-items-center"
+            className="btn-sol grid size-10 shrink-0 place-items-center"
             aria-label="Mostrar mi QR"
           >
-            <QrCode className="size-5" aria-hidden />
+            <QrCode className="size-4.5" aria-hidden />
           </Link>
         </div>
       </div>

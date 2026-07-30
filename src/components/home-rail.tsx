@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronUp, QrCode, X } from "lucide-react";
+import { ChartNoAxesColumn, QrCode, X } from "lucide-react";
 import { Galaxia } from "@/components/cosmos";
 
 interface RailContentProps {
@@ -234,6 +234,11 @@ export function DesktopRail({
   );
 }
 
+/**
+ * Los mismos datos del rail, en móvil: un botón de cristal arriba a la derecha
+ * (a la altura del pill de la galaxia, la otra esquina libre del mapa) que
+ * abre una hoja desde abajo — al alcance del pulgar, como todo el chrome móvil.
+ */
 export function MobileRailDrawer({
   children,
 }: {
@@ -241,45 +246,56 @@ export function MobileRailDrawer({
 }) {
   const [open, setOpen] = useState(false);
 
+  // Escape cierra la hoja: el ✕ existe, pero un teclado bluetooth también
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <>
-      {/* Trigger flotante en mobile */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="lg:hidden fixed bottom-6 right-6 z-20 glass flex items-center gap-2 rounded-full px-4 py-3 transition-all hover:border-celeste/35 active:scale-95"
-          aria-label="Abrir información de constelación"
-        >
-          <ChevronUp className="size-4" aria-hidden />
-          <span className="text-sm font-medium">Info</span>
-        </button>
-      )}
+      {/* Trigger: alineado con el pill de la galaxia, bajo el header fijo */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-expanded={open}
+        aria-label="Ver los datos de tu constelación"
+        className="glass fixed top-[calc(4.75rem+env(safe-area-inset-top))] right-3 z-30 grid size-11 place-items-center rounded-full transition-colors hover:border-celeste/35 active:scale-95 lg:hidden"
+      >
+        <ChartNoAxesColumn className="size-4.5" aria-hidden />
+      </button>
 
-      {/* Drawer modal */}
       {open && (
         <>
-          {/* Backdrop */}
           <div
-            className="lg:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
             onClick={() => setOpen(false)}
             aria-hidden
           />
 
-          {/* Panel deslizante */}
-          <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 max-h-[85vh] overflow-y-auto rounded-t-4xl border border-white/5 bg-gradient-to-b from-background via-background to-background/95 backdrop-blur-xl">
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/5 px-4 py-3 bg-gradient-to-b from-background to-transparent">
-              <p className="font-mono text-xs tracking-[0.16em] text-muted-foreground uppercase">
-                Tu Constelación
+          <div
+            role="dialog"
+            aria-label="Datos de tu constelación"
+            className="animate-rise fixed inset-x-0 bottom-0 z-50 max-h-[85svh] overflow-y-auto rounded-t-4xl border border-white/10 bg-background lg:hidden"
+          >
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/5 bg-background px-4 py-3">
+              <p className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+                [ tu constelación ]
               </p>
               <button
+                type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Cerrar información"
-                className="glass rounded-full p-2 transition-colors hover:border-celeste/35"
+                aria-label="Cerrar"
+                className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
               >
                 <X className="size-4" aria-hidden />
               </button>
             </div>
-            <div className="flex flex-col gap-4 px-4 pt-4 pb-8">
+            <div className="flex flex-col gap-4 px-4 pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))]">
               {children}
             </div>
           </div>
