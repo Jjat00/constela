@@ -7,14 +7,16 @@ import { serializeChoices, type CatalogTag, type TagChoice } from "@/lib/tags";
 import { completeOnboarding } from "./actions";
 
 /**
- * Bienvenida en una pantalla, un tap (diseño 2a): el rol es lo único que se
- * pide de verdad; la intención es opcional y los intereses se afinan luego
- * en Ajustes. Lo ya elegido (si vuelves) llega precargado.
+ * Bienvenida en una pantalla, un tap (ADR 0004): el rol es lo único que se
+ * pide de verdad; intereses e intención son opcionales pero se preguntan aquí
+ * — sin ellos la constelación es un mapa de nombres que no se puede filtrar,
+ * y casi nadie vuelve a /perfil a ponerlos. Lo ya elegido llega precargado.
  */
 export function OnboardingFlow({
   eventName,
   next,
   roleOptions,
+  interestOptions,
   intentOptions,
   initialRole,
   initialInterests,
@@ -23,13 +25,14 @@ export function OnboardingFlow({
   eventName: string | null;
   next: string;
   roleOptions: CatalogTag[];
+  interestOptions: CatalogTag[];
   intentOptions: CatalogTag[];
   initialRole: TagChoice[];
-  /** Se conservan y reenvían tal cual: los intereses se editan en /perfil. */
   initialInterests: TagChoice[];
   initialIntents: TagChoice[];
 }) {
   const [role, setRole] = useState<TagChoice[]>(initialRole);
+  const [interests, setInterests] = useState<TagChoice[]>(initialInterests);
   const [intents, setIntents] = useState<TagChoice[]>(initialIntents);
   const ready = role.length > 0;
 
@@ -43,7 +46,7 @@ export function OnboardingFlow({
       <input
         type="hidden"
         name="interests"
-        value={serializeChoices(initialInterests)}
+        value={serializeChoices(interests)}
       />
       <input type="hidden" name="intents" value={serializeChoices(intents)} />
 
@@ -56,6 +59,18 @@ export function OnboardingFlow({
           value={role}
           onChange={setRole}
           placeholder="busca tu rol o escríbelo"
+        />
+      </div>
+
+      <div className="flex flex-col gap-3.5">
+        <p className="font-mono text-[10px] tracking-[0.16em] text-faint">
+          [ INTERESES · OPCIONAL ]
+        </p>
+        <TagPicker
+          options={interestOptions}
+          value={interests}
+          onChange={setInterests}
+          placeholder="¿de qué quieres hablar?"
         />
       </div>
 

@@ -89,6 +89,7 @@ export default async function BienvenidaPage({
           eventName={eventName}
           next={next}
           roleOptions={catalog.rol}
+          interestOptions={catalog.interes}
           intentOptions={catalog.intencion}
           initialRole={toChoices(profile.role ?? [], catalog.rol)}
           initialInterests={toChoices(profile.tags ?? [], catalog.interes)}
