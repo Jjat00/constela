@@ -46,7 +46,8 @@ function universoDecor(seed = 11, n = 36) {
   const rand = prng(seed);
   // Mismo consumo de rand() que buildUniverse: los descartes mantienen la
   // secuencia y con ella las posiciones exactas del render del diseño.
-  const stars: Array<{ x: number; y: number; halo: string; sun: boolean }> = [];
+  const stars: Array<{ x: number; y: number; halo: string; sun: boolean }> =
+    [];
   for (let i = 0; i < n; i++) {
     const a = i * 2.39996 + (rand() - 0.5) * 0.5;
     const r =
@@ -153,10 +154,7 @@ function ConstelacionDecor() {
         const mag = mags[i];
         const m = mag * 0.9; // decor: apenas más discreto que el mapa real
         return (
-          <g
-            key={i}
-            transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`}
-          >
+          <g key={i} transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`}>
             {s.sun && (
               <>
                 <circle
@@ -312,16 +310,6 @@ export default async function LandingPage() {
           nunca se monte sobre el CTA. */}
       <SiteFooter
         tagline="CADA PERSONA ES UNA ESTRELLA, CADA CONEXIÓN, UNA CONSTELACIÓN"
-        // Qué datos pide la app y para qué. Google lo exige de la página
-        // principal —«explain with transparency the purpose for which your app
-        // requests user data», support.google.com/cloud/answer/13807376— y es
-        // un requisito distinto de describir la funcionalidad y de enlazar la
-        // política: los tres están listados por separado. Va al pie y no junto
-        // al botón para no cargar el hero (decisión del usuario). Los tres
-        // campos son los reales: el trigger de `profiles` toma `full_name` y
-        // `avatar_url` de `raw_user_meta_data`, el correo se queda en
-        // `auth.users` y ninguna RPC pública del grafo lo devuelve.
-        notice="Entrar con Google nos da tu nombre, tu foto y tu correo. Nombre y foto son tu estrella; el correo solo identifica tu cuenta y ningún otro asistente lo ve."
         className="lg:px-22"
       />
     </main>
