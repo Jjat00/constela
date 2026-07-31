@@ -30,5 +30,9 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // `video/` es un proyecto aparte (Remotion) con su propio tsconfig y sus
+  // propias dependencias. Sin excluirlo, el chequeo de tipos de `next build`
+  // intenta resolver `remotion` desde la raíz — en local cuela porque encuentra
+  // `video/node_modules`, y en Vercel, que solo instala la raíz, rompe el build.
+  "exclude": ["node_modules", "video"]
 }
