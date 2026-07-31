@@ -266,9 +266,15 @@ export default async function LandingPage() {
             <br />
             <span className="text-celeste">tu universo.</span>
           </h1>
+          {/* La frase nombra el producto y dice qué hace, y no por gusto: la
+              verificación de marca de Google exige que la página principal
+              explique el propósito de la app y que el nombre aparezca en ella.
+              Desde que el wordmark es un PNG, «Constela» solo vivía en el
+              <title> y en un alt — invisible para quien revisa. Sigue siendo
+              una sola frase: el contrato de la pantalla única no se toca. */}
           <p className="mt-5 max-w-100 text-[15px] leading-relaxed text-muted-foreground lg:mt-6.5 lg:text-lg">
-            El networking que por fin se ve. Escaneas, y la red del evento se
-            dibuja.
+            Constela es el networking que por fin se ve: escaneas el QR de quien
+            acabas de conocer en un evento y la red se dibuja sola.
           </p>
           <div className="mt-8 flex flex-col gap-3.5 lg:mt-10 lg:flex-row lg:items-center lg:gap-4.5">
             {user ? (

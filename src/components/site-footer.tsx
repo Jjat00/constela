@@ -42,8 +42,11 @@ export function SiteFooter({
         className="flex items-center gap-2.5 font-mono text-[10px] tracking-wide text-faint lg:text-[11px]"
       >
         {/* El año es fijo a propósito: no hay nada que actualizar cada enero
-            en un texto legal que sí lleva su propia fecha de vigencia. */}
-        <span>© 2026 constela</span>
+            en un texto legal que sí lleva su propia fecha de vigencia. Y el
+            nombre va con mayúscula aunque el wordmark sea minúsculo: aquí es
+            texto corrido, y es el nombre que Google contrasta con el de la
+            pantalla de consentimiento. */}
+        <span>© 2026 Constela</span>
         <span aria-hidden>·</span>
         <Link
           href="/privacidad"
