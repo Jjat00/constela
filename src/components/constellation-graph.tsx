@@ -44,6 +44,13 @@ const HALFA = "240, 105, 159"; // rgb de --halfa, para armar alphas
 const FILAMENTO = "205, 216, 255"; // rgb de estrella A
 const CELESTE = "#9DC8FF"; // anillo de selección
 
+// Límites del zoom, compartidos por el encuadre inicial y los botones ±.
+// El techo era 3 y con 4 estrellas dejaba la constelación en un quinto de la
+// pantalla: el encuadre pedía ~×15 y el tope lo recortaba. Sube a 8 ahora que
+// las etiquetas no se degradan al acercarse.
+const ZOOM_MIN = 0.4;
+const ZOOM_MAX = 8;
+
 function hexA(hex: string, alpha: number) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -416,7 +423,10 @@ export function ConstellationGraph({
   function zoomBy(factor: number) {
     const fg = fgRef.current;
     if (!fg) return;
-    const next = Math.max(0.4, Math.min(6, (fg.zoom() || 1) * factor));
+    const next = Math.max(
+      ZOOM_MIN,
+      Math.min(ZOOM_MAX, (fg.zoom() || 1) * factor),
+    );
     fg.zoom(next, 200);
     setZoomLabel(`×${next.toFixed(1)}`);
   }
@@ -538,9 +548,11 @@ export function ConstellationGraph({
           onEngineStop={() => {
             if (didFit.current || nodes.length < 2) return;
             didFit.current = true;
-            fgRef.current?.zoomToFit(0, 48);
+            fgRef.current?.zoomToFit(0, 72);
             // Con pocos nodos zoomToFit acerca demasiado: tope de zoom
-            if ((fgRef.current?.zoom() ?? 1) > 3) fgRef.current?.zoom(3, 0);
+            if ((fgRef.current?.zoom() ?? 1) > ZOOM_MAX) {
+              fgRef.current?.zoom(ZOOM_MAX, 0);
+            }
             setZoomLabel(`×${(fgRef.current?.zoom() ?? 1).toFixed(1)}`);
           }}
           // Filamentos con el trazo del hero: se dibujan escalonados al
@@ -743,16 +755,32 @@ export function ConstellationGraph({
               const label = isMe
                 ? "tú"
                 : String(node.name ?? "").split(" ")[0].toLowerCase();
-              const fontSize = 11 * s;
+              // El nombre es lo ÚNICO que no se dibuja en coordenadas de
+              // mundo. Pedirle al canvas una fuente de 11/globalScale px
+              // funciona hasta que el zoom la baja de 1px: ahí el navegador
+              // redondea los avances de cada glifo al grid de píxeles, dejan
+              // de corresponder al tamaño con el que rasteriza la letra y el
+              // nombre sale con las letras sueltas y desordenadas. Así que se
+              // sale de la transformación, se sitúa el punto a mano y se
+              // escribe a 11px reales — de paso el texto queda nítido a
+              // cualquier zoom en vez de rasterizado en subpíxeles.
+              const labelX = x + (m * 4.6 + 5) * s;
+              const t = ctx.getTransform();
+              const dpr = globalScale ? t.a / globalScale : 1;
+              const fontSize = 11 * dpr;
+              ctx.save();
+              ctx.setTransform(1, 0, 0, 1, 0, 0);
               ctx.font = `500 ${fontSize}px ui-monospace, monospace`;
               ctx.textAlign = "left";
               ctx.textBaseline = "middle";
-              const labelX = x + (m * 4.6 + 5) * s;
               ctx.lineWidth = fontSize / 4;
               ctx.strokeStyle = "rgba(2, 3, 10, 0.75)";
-              ctx.strokeText(label, labelX, y);
+              const sx = t.a * labelX + t.c * y + t.e;
+              const sy = t.b * labelX + t.d * y + t.f;
+              ctx.strokeText(label, sx, sy);
               ctx.fillStyle = isMe ? SOL : "#F8FAFF";
-              ctx.fillText(label, labelX, y);
+              ctx.fillText(label, sx, sy);
+              ctx.restore();
             }
 
             if (dimmed) ctx.globalAlpha = 1;
