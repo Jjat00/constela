@@ -5,6 +5,7 @@ import { Logo } from "@/components/logo";
 import { GoogleButton } from "@/app/login/google-button";
 import { LogoutButton } from "@/app/login/logout-button";
 import { SiteFooter } from "@/components/site-footer";
+import { VideoPresentacion } from "@/components/video-presentacion";
 import { CARRIL } from "@/lib/layout";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -351,6 +352,26 @@ export default async function LandingPage() {
           aria-hidden
           className="absolute inset-x-0 top-0 z-0 h-40 bg-gradient-to-b from-[#0A0D14] to-transparent"
         />
+        {/* El video antes de las dos secciones jugables: quien no quiere tocar
+            nada se lleva la historia entera en 35 segundos, y quien sí, baja. */}
+        <section
+          aria-labelledby="titulo-video"
+          className={cn(CARRIL, "relative z-10 w-full pt-24 lg:pt-36")}
+        >
+          <p className="font-mono text-[11px] tracking-wider text-faint">
+            [ EN MOVIMIENTO ]
+          </p>
+          <h2
+            id="titulo-video"
+            className="mt-5 text-[clamp(2rem,4.6vw,3.5rem)] leading-[1.02] font-medium tracking-tight text-balance"
+          >
+            Constela, <span className="text-celeste">en 35 segundos.</span>
+          </h2>
+          <div className="mt-8 lg:mt-11">
+            <VideoPresentacion />
+          </div>
+        </section>
+
         <LandingDemo conSesion={Boolean(user)} />
       </div>
 
