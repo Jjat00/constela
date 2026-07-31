@@ -893,6 +893,9 @@ export function ConstellationGraph({
             connected={Boolean(sharedEdge)}
             note={sharedEdge?.note ?? null}
             tagLabels={tagLabels}
+            // Incrustado en la landing el universo es de ejemplo: sus
+            // estrellas no tienen tarjeta que abrir.
+            cardHref={embedded ? null : `/tarjeta/${selected.qrSlug}`}
             onClose={() => {
               setSelected(null);
               setSelectedPos(null);

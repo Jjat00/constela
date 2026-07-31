@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/eventos",
   "/qr",
   "/me",
+  "/tarjeta",
 ];
 
 export async function updateSession(request: NextRequest) {

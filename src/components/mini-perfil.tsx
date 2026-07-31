@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Info, X } from "lucide-react";
+import { IdCard, Info, X } from "lucide-react";
 import { spectralLetterOf, spectrumOf } from "@/components/cosmos";
 import type { GraphNode } from "@/components/constellation-graph";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,7 @@ export function MiniPerfil({
   connected,
   note,
   tagLabels,
+  cardHref,
   onClose,
   className,
 }: {
@@ -37,6 +38,9 @@ export function MiniPerfil({
   connected: boolean;
   note: string | null;
   tagLabels?: Map<string, string>;
+  /** A dónde lleva «ver tarjeta». Sin él no hay botón: en la demo de la
+   *  landing estas estrellas no existen en la base de datos. */
+  cardHref?: string | null;
   onClose: () => void;
   className?: string;
 }) {
@@ -177,15 +181,35 @@ export function MiniPerfil({
         </div>
       </div>
 
-      <div className="mt-4">
-        {isMe ? (
-          <Link
-            href="/perfil"
-            className="btn-cosmic inline-flex h-10 items-center px-5 text-[13px] font-medium"
-          >
-            Editar tu estrella
-          </Link>
-        ) : connected ? (
+      <div className="mt-4 flex flex-col gap-3">
+        {/* La ficha dice quién es; la tarjeta es lo que esa persona te
+            entregaría en la mano — vista propia, no un panel más aquí. */}
+        {(cardHref || isMe) && (
+          <div className="flex flex-wrap gap-2">
+            {cardHref && (
+              <Link
+                href={cardHref}
+                className={cn(
+                  "inline-flex h-10 items-center gap-2 px-5 text-[13px] font-medium",
+                  isMe ? "chip-star" : "btn-cosmic",
+                )}
+              >
+                <IdCard className="size-4" aria-hidden />
+                {isMe ? "Ver tu tarjeta" : "Ver su tarjeta"}
+              </Link>
+            )}
+            {isMe && (
+              <Link
+                href="/perfil"
+                className="btn-cosmic inline-flex h-10 items-center px-5 text-[13px] font-medium"
+              >
+                Editar tu estrella
+              </Link>
+            )}
+          </div>
+        )}
+
+        {isMe ? null : connected ? (
           <div className="flex flex-col gap-1">
             <p className="font-mono text-xs tracking-wide text-aurora">
               [ CONECTADOS ]
