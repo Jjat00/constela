@@ -1,24 +1,36 @@
 import Link from "next/link";
 import { CosmicSky } from "@/components/cosmos";
+import { LandingDemo } from "@/components/landing-demo";
 import { Logo } from "@/components/logo";
 import { GoogleButton } from "@/app/login/google-button";
 import { LogoutButton } from "@/app/login/logout-button";
 import { SiteFooter } from "@/components/site-footer";
+import { CARRIL } from "@/lib/layout";
 import { createClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 
 /*
  * CONTRATO DE DIRECCIÓN — v5 «Observatorio» (diseño 1a, Constela.dc.html)
  *
  * THESIS: la landing es la puerta, no un folleto: un titular, un botón y el
- * universo detrás. Toda la promesa cabe en un viewport; rechazo del hero
- * SaaS con secciones, marquee y features.
+ * universo detrás. El hero sigue cabiendo EXACTO en un viewport y nada entra
+ * en él; lo que se añadió debajo (2026-07-31, a pedido del usuario) no son
+ * secciones de folleto — son la app misma corriendo sobre un evento de
+ * ejemplo: la bienvenida real y el mapa real, con sus componentes, no una
+ * ilustración. Siguen rechazados el marquee, las cards de features y los
+ * testimonios.
  * OWN-WORLD: cielo #0A0C12 casi monocromo con horizonte de planeta; la red
  * del evento dibujándose arriba a la derecha; titular gigante DM Sans con
  * «tu universo.» en celeste #9DC8FF; CTA de cristal cosmic blue; mono de
- * observatorio para las coordenadas.
- * STORY: ver la red dibujarse → «tu red es tu universo» → entrar con Google
- * en 8 segundos.
- * FORM: dirección pineada por el usuario (claude.ai/design, 2026-07-28).
+ * observatorio para las coordenadas. Bajo el hero, el cielo silencioso del
+ * shell con sesión: quien scrollea ya está dentro de la sala. Un solo carril
+ * lateral (`CARRIL`, `src/lib/layout.ts`) para header, hero y secciones: el
+ * margen izquierdo es la misma línea vertical de arriba abajo.
+ * STORY: ver la red dibujarse → «tu red es tu universo» → entender en dos
+ * gestos qué se pide y qué se recibe → entrar con Google en 8 segundos.
+ * FORM: hero pineado por el usuario (claude.ai/design, 2026-07-28); las dos
+ * secciones de abajo son extensión de esa superficie — heredan la
+ * composición de `/bienvenida` (dos columnas) y de `/home` (mapa enmarcado).
  */
 
 /** mulberry32 — misma familia de PRNG que el resto del cosmos. */
@@ -226,92 +238,125 @@ export default async function LandingPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <main className="grain relative flex min-h-svh flex-col overflow-hidden">
-      <CosmicSky planet />
+    <main className="grain relative flex min-h-svh flex-col">
+      {/* EL HERO — un viewport exacto: aquí no entra nada nuevo */}
+      <section className="relative flex min-h-svh flex-col overflow-hidden">
+        <CosmicSky planet />
 
-      {/* La red del evento, dibujándose en el cielo */}
-      <div
-        aria-hidden
-        className="absolute z-0 -top-[6%] right-0 left-0 h-[56%] [-webkit-mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] [mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] lg:-top-[14%] lg:-right-[8%] lg:left-auto lg:h-[124%] lg:w-[66%] lg:[-webkit-mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)] lg:[mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)]"
-      >
-        <ConstelacionDecor />
-      </div>
+        {/* La red del evento, dibujándose en el cielo */}
+        <div
+          aria-hidden
+          className="absolute z-0 -top-[6%] right-0 left-0 h-[56%] [-webkit-mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] [mask-image:radial-gradient(66%_66%_at_50%_42%,#000_25%,transparent_100%)] lg:-top-[14%] lg:-right-[8%] lg:left-auto lg:h-[124%] lg:w-[66%] lg:[-webkit-mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)] lg:[mask-image:radial-gradient(70%_70%_at_62%_45%,#000_30%,transparent_100%)]"
+        >
+          <ConstelacionDecor />
+        </div>
 
-      {/* Chrome mínimo: wordmark + coordenadas del evento + la puerta */}
-      <header className="relative z-10 flex items-center justify-between px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:px-14 lg:pt-8">
-        <Logo className="h-8 lg:h-9" priority />
-        {/* La anotación nombra la marca antes que nada: el lockup del logo es
-            un PNG, así que esta es la primera vez que «Constela» aparece como
-            texto en la página. */}
-        <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-wider text-muted-foreground lg:block">
-          [ CONSTELA · PARA CUALQUIER EVENTO ]
-        </p>
-        {/* La puerta de servicio: quien ya sabe qué es esto no debería tener
-            que leer el titular otra vez. Píldora sutil, nunca cosmic blue —
-            el CTA de la pantalla sigue siendo uno solo. */}
-        {user ? (
-          <LogoutButton />
-        ) : (
-          <Link
-            href="/login"
-            className="chip-star flex h-9.5 items-center px-5 text-[13px] font-medium"
-          >
-            Entrar
-          </Link>
-        )}
-      </header>
-
-      {/* El titular y la puerta */}
-      <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-9 lg:justify-center lg:px-22 lg:pb-20">
-        <div className="animate-rise max-w-[41rem]">
-          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-medium tracking-tighter text-balance lg:leading-[0.94]">
-            Tu red es
-            <br />
-            <span className="text-celeste">tu universo.</span>
-          </h1>
-          {/* El titular es poesía; esta es la definición, y va primero en
-              tinta plena porque quien llega aquí acaba de ser escaneado por un
-              desconocido y no sabe qué es esto (PRODUCT.md: cada pantalla es
-              una primera impresión). Es también lo que pide la verificación de
-              marca de Google —el nombre como texto legible y el propósito
-              explicado—, imposible desde que el wordmark es un PNG: «Constela»
-              solo vivía en el <title> y en un alt, y el alt no cuenta. Un
-              párrafo con lede, no una sección: el contrato de la pantalla
-              única no se toca. */}
-          <p className="mt-5 max-w-100 text-[15px] leading-relaxed text-muted-foreground lg:mt-6.5 lg:text-lg">
-            <span className="font-medium text-foreground">
-              Constela es el networking que por fin se ve.
-            </span>{" "}
-            Escaneas el QR de quien acabas de conocer en un evento y la red se
-            dibuja en vivo, a la vista de todo el evento.
+        {/* Chrome mínimo: wordmark + coordenadas del evento + la puerta */}
+        <header
+          className={cn(
+            CARRIL,
+            "relative z-10 flex items-center justify-between pt-[calc(2rem+env(safe-area-inset-top))] lg:pt-8",
+          )}
+        >
+          <Logo className="h-8 lg:h-9" priority />
+          {/* La anotación nombra la marca antes que nada: el lockup del logo es
+              un PNG, así que esta es la primera vez que «Constela» aparece como
+              texto en la página. */}
+          <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-wider text-muted-foreground lg:block">
+            [ CONSTELA · PARA CUALQUIER EVENTO ]
           </p>
-          <div className="mt-8 flex flex-col gap-3.5 lg:mt-10 lg:flex-row lg:items-center lg:gap-4.5">
-            {user ? (
-              <Link
-                href="/home"
-                className="btn-cosmic flex h-14 items-center justify-center px-7 text-base font-medium lg:h-[54px]"
-              >
-                Entrar a tu constelación
-              </Link>
-            ) : (
-              <div className="w-full lg:w-72">
-                <GoogleButton next="/home" />
-              </div>
-            )}
-            <p className="text-center font-mono text-[11px] tracking-wider text-faint lg:text-left">
-              [ 8 SEGUNDOS ]
+          {/* La puerta de servicio: quien ya sabe qué es esto no debería tener
+              que leer el titular otra vez. Píldora sutil, nunca cosmic blue —
+              el CTA de la pantalla sigue siendo uno solo. */}
+          {user ? (
+            <LogoutButton />
+          ) : (
+            <Link
+              href="/login"
+              className="chip-star flex h-9.5 items-center px-5 text-[13px] font-medium"
+            >
+              Entrar
+            </Link>
+          )}
+        </header>
+
+        {/* El titular y la puerta */}
+        <div
+          className={cn(
+            CARRIL,
+            "relative z-10 flex flex-1 flex-col justify-end pb-9 lg:justify-center lg:pb-20",
+          )}
+        >
+          <div className="animate-rise max-w-[41rem]">
+            <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-medium tracking-tighter text-balance lg:leading-[0.94]">
+              Tu red es
+              <br />
+              <span className="text-celeste">tu universo.</span>
+            </h1>
+            {/* El titular es poesía; esta es la definición, y va primero en
+                tinta plena porque quien llega aquí acaba de ser escaneado por un
+                desconocido y no sabe qué es esto (PRODUCT.md: cada pantalla es
+                una primera impresión). Es también lo que pide la verificación de
+                marca de Google —el nombre como texto legible y el propósito
+                explicado—, imposible desde que el wordmark es un PNG: «Constela»
+                solo vivía en el <title> y en un alt, y el alt no cuenta. */}
+            <p className="mt-5 max-w-100 text-[15px] leading-relaxed text-muted-foreground lg:mt-6.5 lg:text-lg">
+              <span className="font-medium text-foreground">
+                Constela es el networking que por fin se ve.
+              </span>{" "}
+              Escaneas el QR de quien acabas de conocer en un evento y la red se
+              dibuja en vivo, a la vista de todo el evento.
             </p>
+            <div className="mt-8 flex flex-col gap-3.5 lg:mt-10 lg:flex-row lg:items-center lg:gap-4.5">
+              {user ? (
+                <Link
+                  href="/home"
+                  className="btn-cosmic flex h-14 items-center justify-center px-7 text-base font-medium lg:h-[54px]"
+                >
+                  Entrar a tu constelación
+                </Link>
+              ) : (
+                <div className="w-full lg:w-72">
+                  <GoogleButton next="/home" />
+                </div>
+              )}
+              <p className="text-center font-mono text-[11px] tracking-wider text-faint lg:text-left">
+                [ 8 SEGUNDOS ]
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* La tesis cierra el viewport donde antes cerraba el pie: ahora que
+            la página sigue hacia abajo, lo legal baja con ella y esta línea se
+            queda — es la última lectura del hero y la invitación a scrollear.
+            Misma tinta, mismo mono y mismo sitio que tenía en el pie. */}
+        <p
+          className={cn(
+            CARRIL,
+            "relative z-10 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-center font-mono text-[10px] tracking-wider text-balance text-faint lg:pb-10 lg:text-left lg:text-[10.5px]",
+          )}
+        >
+          CADA PERSONA ES UNA ESTRELLA, CADA CONEXIÓN, UNA CONSTELACIÓN
+        </p>
+      </section>
+
+      {/* LA SALA — el cielo silencioso del shell con sesión: quien scrollea
+          deja de mirar la puerta y entra. Aquí viven las dos secciones con la
+          app real corriendo sobre un evento de ejemplo. */}
+      <div className="relative">
+        <CosmicSky />
+        {/* Sutura con el horizonte del planeta, que cierra el hero en #0A0D14 */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 z-0 h-40 bg-gradient-to-b from-[#0A0D14] to-transparent"
+        />
+        <LandingDemo conSesion={Boolean(user)} />
       </div>
 
-      {/* El borde del universo: la tesis a un lado, lo legal al otro. Ya no
-          es absolute — el pie ocupa su sitio en el flujo para que en móvil
-          nunca se monte sobre el CTA. */}
-      <SiteFooter
-        tagline="CADA PERSONA ES UNA ESTRELLA, CADA CONEXIÓN, UNA CONSTELACIÓN"
-        className="lg:px-22"
-      />
+      {/* El borde del universo: la firma centrada bajo la línea de horizonte
+          — la tesis se quedó cerrando el hero, donde siempre se leyó. */}
+      <SiteFooter className="relative z-10" />
     </main>
   );
 }

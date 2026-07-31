@@ -20,6 +20,7 @@ export function TagPicker({
   mode = "multiple",
   placeholder = "busca o escribe el tuyo",
   emptyHint,
+  preview = PREVIEW,
 }: {
   options: CatalogTag[];
   value: TagChoice[];
@@ -27,6 +28,9 @@ export function TagPicker({
   mode?: "single" | "multiple";
   placeholder?: string;
   emptyHint?: string;
+  /** Cuántas sugerencias se ven antes de «ver los N restantes». En columnas
+   *  estrechas (la bienvenida de la landing) caben menos sin desbordar. */
+  preview?: number;
 }) {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -57,7 +61,7 @@ export function TagPicker({
   }, [options, selectedSlugs, folded]);
 
   const visible =
-    folded || expanded ? matches.slice(0, MAX_RESULTS) : matches.slice(0, PREVIEW);
+    folded || expanded ? matches.slice(0, MAX_RESULTS) : matches.slice(0, preview);
 
   const trimmed = query.trim();
   const newSlug = slugifyTag(trimmed);
@@ -154,13 +158,13 @@ export function TagPicker({
           </button>
         ))}
 
-        {!folded && !expanded && matches.length > PREVIEW && (
+        {!folded && !expanded && matches.length > preview && (
           <button
             type="button"
             onClick={() => setExpanded(true)}
             className="inline-flex min-h-11 items-center px-2 font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            ver los {matches.length - PREVIEW} restantes
+            ver los {matches.length - preview} restantes
           </button>
         )}
 

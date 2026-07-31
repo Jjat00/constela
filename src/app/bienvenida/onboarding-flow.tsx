@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import { TagPicker } from "@/components/tag-picker";
+import { OnboardingFields } from "@/components/onboarding-fields";
 import { serializeChoices, type CatalogTag, type TagChoice } from "@/lib/tags";
 import { completeOnboarding } from "./actions";
 
@@ -50,41 +50,17 @@ export function OnboardingFlow({
       />
       <input type="hidden" name="intents" value={serializeChoices(intents)} />
 
-      <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-wider text-faint">
-          [ TU ROL ]
-        </p>
-        <TagPicker
-          options={roleOptions}
-          value={role}
-          onChange={setRole}
-          placeholder="busca tu rol o escríbelo"
-        />
-      </div>
-
-      <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-wider text-faint">
-          [ INTERESES · OPCIONAL ]
-        </p>
-        <TagPicker
-          options={interestOptions}
-          value={interests}
-          onChange={setInterests}
-          placeholder="¿de qué quieres hablar?"
-        />
-      </div>
-
-      <div className="flex flex-col gap-3.5">
-        <p className="font-mono text-[10px] tracking-wider text-faint">
-          [ INTENCIÓN · OPCIONAL ]
-        </p>
-        <TagPicker
-          options={intentOptions}
-          value={intents}
-          onChange={setIntents}
-          placeholder="¿a qué viniste?"
-        />
-      </div>
+      <OnboardingFields
+        roleOptions={roleOptions}
+        interestOptions={interestOptions}
+        intentOptions={intentOptions}
+        role={role}
+        interests={interests}
+        intents={intents}
+        onRoleChange={setRole}
+        onInterestsChange={setInterests}
+        onIntentsChange={setIntents}
+      />
 
       <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4.5">
         <SubmitButton

@@ -72,6 +72,7 @@ export function ConstellationGraph({
   tagLabels,
   showTriads = true,
   showNames = true,
+  embedded = false,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -91,6 +92,14 @@ export function ConstellationGraph({
   showTriads?: boolean;
   /** Mostrar u ocultar nombres de estrellas (toggle del panel). */
   showNames?: boolean;
+  /**
+   * El mapa vive dentro de una página que scrollea (la demo de la landing),
+   * no ocupando la pantalla entera como en `/home`. Entonces el canvas
+   * devuelve los gestos de navegación: la rueda baja la página en vez de
+   * hacer zoom, y el dedo la arrastra en vez de pasear el universo. Tocar,
+   * arrastrar una estrella y los botones ± siguen funcionando.
+   */
+  embedded?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -160,6 +169,18 @@ export function ConstellationGraph({
     return { x, y, placement };
   };
   const [zoomLabel, setZoomLabel] = useState("×1.0");
+
+  /**
+   * El único sitio donde se escribe la lectura del zoom, y se escribe SIEMPRE
+   * aplazada un tick. `react-force-graph` aplica sus props mientras React
+   * renderiza `ForceGraph2D` —al cambiar el tamaño del contenedor, por
+   * ejemplo— y en ese momento el motor puede emitir `onZoomEnd`: poner estado
+   * ahí es «Cannot update a component while rendering a different one». La
+   * microtarea corre con la pila vacía, es decir, ya fuera del render.
+   */
+  const anunciarZoom = (k: number) => {
+    queueMicrotask(() => setZoomLabel(`×${k.toFixed(1)}`));
+  };
 
   // Import manual (no next/dynamic): necesitamos pasar ref para zoomToFit
   const [ForceGraph2D, setForceGraph2D] = useState<
@@ -310,6 +331,20 @@ export function ConstellationGraph({
     return () => window.removeEventListener("keydown", onKey);
   }, [selected]);
 
+  // La ficha flotante de desktop se sitúa en coordenadas de viewport
+  // (`position: fixed`). En `/home` la página no scrollea, pero donde el mapa
+  // vive dentro de una página que sí lo hace (la demo de la landing) la card
+  // se quedaría clavada a la pantalla, lejos de su estrella: se cierra.
+  useEffect(() => {
+    if (!selectedPos) return;
+    const close = () => {
+      setSelected(null);
+      setSelectedPos(null);
+    };
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [selectedPos]);
+
   // Click afuera del MiniPerfil lo cierra
   useEffect(() => {
     if (!selected) return;
@@ -414,8 +449,10 @@ export function ConstellationGraph({
   }
 
   /** El mismo test, para el filtro de d3: dice si el gesto empieza sobre una
-   *  estrella (entonces es arrastre) o sobre el vacío (entonces es paneo). */
+   *  estrella (entonces es arrastre) o sobre el vacío (entonces es paneo).
+   *  Incrustado, el dedo nunca panea: es de la página. */
   function nodeUnderEvent(ev: MouseEvent) {
+    if (embedded && String(ev.type).startsWith("touch")) return true;
     const touch = (ev as MouseEvent & { touches?: TouchList }).touches?.[0];
     return nodeAt(touch?.clientX ?? ev.clientX, touch?.clientY ?? ev.clientY);
   }
@@ -428,7 +465,7 @@ export function ConstellationGraph({
       Math.min(ZOOM_MAX, (fg.zoom() || 1) * factor),
     );
     fg.zoom(next, 200);
-    setZoomLabel(`×${next.toFixed(1)}`);
+    anunciarZoom(next);
   }
 
   // La altura la decide el contenedor (columna completa en desktop)
@@ -544,7 +581,10 @@ export function ConstellationGraph({
           // Y para que el mapa no se desplace a la vez que la estrella, el
           // paneo se desactiva cuando el gesto empieza sobre una.
           enablePanInteraction={(ev) => !nodeUnderEvent(ev)}
-          onZoomEnd={({ k }) => setZoomLabel(`×${k.toFixed(1)}`)}
+          // Incrustado, la rueda es de la página: si el mapa se la quedara,
+          // quien scrollea sobre él se queda atrapado haciendo zoom.
+          enableZoomInteraction={!embedded}
+          onZoomEnd={({ k }) => anunciarZoom(k)}
           onEngineStop={() => {
             if (didFit.current || nodes.length < 2) return;
             didFit.current = true;
@@ -553,7 +593,7 @@ export function ConstellationGraph({
             if ((fgRef.current?.zoom() ?? 1) > ZOOM_MAX) {
               fgRef.current?.zoom(ZOOM_MAX, 0);
             }
-            setZoomLabel(`×${(fgRef.current?.zoom() ?? 1).toFixed(1)}`);
+            anunciarZoom(fgRef.current?.zoom() ?? 1);
           }}
           // Filamentos con el trazo del hero: se dibujan escalonados al
           // entrar y llevan un glow tenue (el drop-shadow de la landing,

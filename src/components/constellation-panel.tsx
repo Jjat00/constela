@@ -29,9 +29,10 @@ const TOP = 6;
 /** Chips rápidos en la barra: los tags más poblados del evento. */
 const QUICK = 4;
 
-type Active = Record<TagCategory, string[]>;
+/** Qué tags están encendidos ahora mismo, por categoría. */
+export type ActiveFilters = Record<TagCategory, string[]>;
 
-const NOTHING: Active = { rol: [], interes: [], intencion: [] };
+const NO_FILTERS: ActiveFilters = { rol: [], interes: [], intencion: [] };
 
 /**
  * El universo del evento (diseño 1b): el grafo a sangre completa y, flotando
@@ -56,6 +57,9 @@ export function ConstellationPanel({
   creatorId = null,
   facets,
   event,
+  active: controlledActive,
+  onActiveChange,
+  embedded = false,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -66,8 +70,16 @@ export function ConstellationPanel({
   /** La galaxia activa: se pasa como datos (no JSX) — el JSX que cruza la
    *  frontera server→client pierde la validación de keys de React. */
   event: ActiveGalaxy;
+  /** Filtro gobernado desde fuera (la demo de la landing lo empuja con lo que
+   *  elegiste arriba). Sin él, el panel es dueño de su filtro, como en `/home`. */
+  active?: ActiveFilters;
+  onActiveChange?: (next: ActiveFilters) => void;
+  /** El mapa vive dentro de una página que scrollea: devuelve los gestos de
+   *  navegación al documento (ver `ConstellationGraph`). */
+  embedded?: boolean;
 }) {
-  const [active, setActive] = useState<Active>(NOTHING);
+  const [ownActive, setOwnActive] = useState<ActiveFilters>(NO_FILTERS);
+  const active = controlledActive ?? ownActive;
   const [query, setQuery] = useState("");
   const [triads, setTriads] = useState(true);
   const [showNames, setShowNames] = useState(true);
@@ -144,17 +156,22 @@ export function ConstellationPanel({
     return map;
   }, [facets]);
 
+  function applyActive(next: ActiveFilters) {
+    if (controlledActive === undefined) setOwnActive(next);
+    onActiveChange?.(next);
+  }
+
   function toggle(category: TagCategory, slug: string) {
-    setActive((prev) => ({
-      ...prev,
-      [category]: prev[category].includes(slug)
-        ? prev[category].filter((s) => s !== slug)
-        : [...prev[category], slug],
-    }));
+    applyActive({
+      ...active,
+      [category]: active[category].includes(slug)
+        ? active[category].filter((s) => s !== slug)
+        : [...active[category], slug],
+    });
   }
 
   function clearAll() {
-    setActive(NOTHING);
+    applyActive(NO_FILTERS);
     setQuery("");
   }
 
@@ -268,6 +285,7 @@ export function ConstellationPanel({
           tagLabels={tagLabels}
           showTriads={triads}
           showNames={showNames}
+          embedded={embedded}
         />
       </div>
 
