@@ -302,6 +302,29 @@ export default async function LandingPage() {
               [ 8 SEGUNDOS ]
             </p>
           </div>
+          {/* Qué datos pedimos y para qué, junto al botón que los pide — que es
+              donde de verdad se decide, no enterrado en el pie. Google lo exige
+              literalmente para la página principal («explain with transparency
+              the purpose for which your app requests user data»,
+              support.google.com/cloud/answer/13807376) y era la mitad del
+              requisito que nos faltaba: describir la funcionalidad no es
+              explicar el uso de los datos. Los tres campos son los reales del
+              trigger de `profiles` (nombre y avatar de `raw_user_meta_data`) y
+              el correo vive solo en `auth.users`; el enlace repite el del pie a
+              propósito, porque tiene que coincidir con el de la pantalla de
+              consentimiento. */}
+          <p className="mt-6 max-w-100 text-[12.5px] leading-relaxed text-faint lg:mt-7 lg:text-[13px]">
+            Entrar con Google nos da tu nombre, tu foto y tu correo. El nombre y
+            la foto son tu estrella en la constelación; el correo solo identifica
+            tu cuenta y ningún otro asistente lo ve. Todo el detalle en{" "}
+            <Link
+              href="/privacidad"
+              className="text-celeste underline decoration-celeste/40 underline-offset-3 transition-colors hover:decoration-celeste"
+            >
+              Privacidad
+            </Link>
+            .
+          </p>
         </div>
       </div>
 
