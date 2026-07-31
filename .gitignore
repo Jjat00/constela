@@ -46,3 +46,8 @@ next-env.d.ts
 
 # plantilla de envs sin secretos
 !.env.example
+
+# remotion (video/): dependencias y salidas de render
+/video/node_modules
+/video/out
+/video/.remotion
