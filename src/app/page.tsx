@@ -261,7 +261,7 @@ export default async function LandingPage() {
       {/* El titular y la puerta */}
       <div className="relative z-10 flex flex-1 flex-col justify-end px-7 pb-9 lg:justify-center lg:px-22 lg:pb-20">
         <div className="animate-rise max-w-[41rem]">
-          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-bold tracking-tighter text-balance lg:leading-[0.94]">
+          <h1 className="text-[clamp(2.75rem,10vw,5.875rem)] leading-[0.98] font-medium tracking-tighter text-balance lg:leading-[0.94]">
             Tu red es
             <br />
             <span className="text-celeste">tu universo.</span>
