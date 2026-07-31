@@ -240,8 +240,11 @@ export default async function LandingPage() {
       {/* Chrome mínimo: wordmark + coordenadas del evento + la puerta */}
       <header className="relative z-10 flex items-center justify-between px-7 pt-[calc(2rem+env(safe-area-inset-top))] lg:px-14 lg:pt-8">
         <Logo className="h-8 lg:h-9" priority />
+        {/* La anotación nombra la marca antes que nada: el lockup del logo es
+            un PNG, así que esta es la primera vez que «Constela» aparece como
+            texto en la página. */}
         <p className="glass hidden rounded-full px-3.5 py-2 font-mono text-[11px] tracking-wider text-muted-foreground lg:block">
-          [ PARA CUALQUIER EVENTO ]
+          [ CONSTELA · PARA CUALQUIER EVENTO ]
         </p>
         {/* La puerta de servicio: quien ya sabe qué es esto no debería tener
             que leer el titular otra vez. Píldora sutil, nunca cosmic blue —
@@ -266,15 +269,21 @@ export default async function LandingPage() {
             <br />
             <span className="text-celeste">tu universo.</span>
           </h1>
-          {/* La frase nombra el producto y dice qué hace, y no por gusto: la
-              verificación de marca de Google exige que la página principal
-              explique el propósito de la app y que el nombre aparezca en ella.
-              Desde que el wordmark es un PNG, «Constela» solo vivía en el
-              <title> y en un alt — invisible para quien revisa. Sigue siendo
-              una sola frase: el contrato de la pantalla única no se toca. */}
+          {/* El titular es poesía; esta es la definición, y va primero en
+              tinta plena porque quien llega aquí acaba de ser escaneado por un
+              desconocido y no sabe qué es esto (PRODUCT.md: cada pantalla es
+              una primera impresión). Es también lo que pide la verificación de
+              marca de Google —el nombre como texto legible y el propósito
+              explicado—, imposible desde que el wordmark es un PNG: «Constela»
+              solo vivía en el <title> y en un alt, y el alt no cuenta. Un
+              párrafo con lede, no una sección: el contrato de la pantalla
+              única no se toca. */}
           <p className="mt-5 max-w-100 text-[15px] leading-relaxed text-muted-foreground lg:mt-6.5 lg:text-lg">
-            Constela es el networking que por fin se ve: escaneas el QR de quien
-            acabas de conocer en un evento y la red se dibuja sola.
+            <span className="font-medium text-foreground">
+              Constela es el networking que por fin se ve.
+            </span>{" "}
+            Escaneas el QR de quien acabas de conocer en un evento y la red se
+            dibuja en vivo, a la vista de todo el evento.
           </p>
           <div className="mt-8 flex flex-col gap-3.5 lg:mt-10 lg:flex-row lg:items-center lg:gap-4.5">
             {user ? (

@@ -45,8 +45,10 @@ export function SiteFooter({
             en un texto legal que sí lleva su propia fecha de vigencia. Y el
             nombre va con mayúscula aunque el wordmark sea minúsculo: aquí es
             texto corrido, y es el nombre que Google contrasta con el de la
-            pantalla de consentimiento. */}
-        <span>© 2026 Constela</span>
+            pantalla de consentimiento. Sube a `muted-foreground` mientras lo
+            legal se queda en `faint`: el nombre de la marca no puede ser lo
+            más tenue de la página. */}
+        <span className="text-muted-foreground">© 2026 Constela</span>
         <span aria-hidden>·</span>
         <Link
           href="/privacidad"
