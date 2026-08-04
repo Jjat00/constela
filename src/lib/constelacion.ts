@@ -2,7 +2,8 @@
  * El grafo del evento, como dato reutilizable.
  *
  * Es el mismo universo determinista que dibuja el hero de la portada
- * (`src/app/page.tsx`): ángulo áureo para repartir las estrellas, vecino más
+ * (hoy `src/components/vista-portada.tsx`): ángulo áureo para repartir las
+ * estrellas, vecino más
  * cercano para las aristas y cierre triádico explícito. Vive extraído porque
  * la forma de la red es la marca: nació para que diez propuestas de rediseño
  * compartieran los MISMOS datos y solo cambiaran de lenguaje visual, y sigue

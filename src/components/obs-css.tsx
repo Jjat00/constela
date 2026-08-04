@@ -1,7 +1,7 @@
 /*
  * La hoja de estilo de v6 «Observatorio».
  *
- * DE DÓNDE SALE: vivía como una constante dentro de `src/app/page.tsx`, donde
+ * DE DÓNDE SALE: vivía como una constante dentro de la portada, donde
  * bastaba mientras la portada era la única página que hablaba este idioma. Al
  * añadir las páginas de contenido (`/app-de-networking-para-eventos`,
  * `/networking-en-eventos`) había dos salidas: duplicar el bloque —y que las

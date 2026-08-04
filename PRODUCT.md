@@ -37,7 +37,7 @@ Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 - De pie, a una mano, pantalla del teléfono, luz y conectividad variables. Acciones clave alcanzables en el tercio inferior; el QR personal a un tap desde cualquier pantalla, a pantalla completa y brillo alto.
 - Onboarding de una sola pantalla (`/bienvenida`), menos de 60 segundos, siempre con "lo hago después" — nadie queda atrapado en medio de un evento. (ADR 0004)
 - Sin apoyo del organizador (modo guerrilla): cada pantalla debe funcionar como primera impresión ante alguien que acaba de ser escaneado y no sabe qué es esto.
-- Público hispanohablante; toda la UI y el copy en español.
+- **La aplicación con sesión está en español y solo en español.** El sitio público sí es bilingüe desde 2026-08-04 —español en la raíz, inglés bajo `/en`, con la landing adaptándose al idioma del navegador— y esa asimetría se declara en voz alta: en la portada inglesa, en `llms.txt` y en el `inLanguage` del JSON-LD. Prometer un producto traducido en la landing y entregar otra cosa detrás del login sería peor que no tener landing inglesa.
 
 ## Capabilities and Constraints
 
@@ -51,9 +51,9 @@ Lo que un producto vecino no podría copiar sin cambiar de naturaleza:
 
 ## Brand Commitments
 
-- Nombre **Constela** (de "constelación", usado como verbo); wordmark siempre en minúscula: `constela✦`; el nombre nunca se traduce.
-- **DESIGN.md (v4 «Cinematic Universe»)** es la autoridad visual vigente: command center sobre un cosmos vivo a pantalla completa, glassmorphism, chrome violeta nebulosa con el oro reservado para «tú», tipografía Geist-led, física estelar y semántica cósmica intactas (evento = galaxia, tú = sol, magnitud = conexiones); el grafo ES la marca; dark-only. (Reemplazó a la v3 «universo real» el 2026-07-28, fijado por el usuario con imagen de referencia y master prompt propios.)
-- Tagline: **"El networking que por fin se ve"**. Voz cálida y editorial, siempre en español.
+- Nombre **Constela** (de "constelación", usado como verbo); wordmark siempre en minúscula: `constela` — el ✦ dorado se retiró con el oro de v4. El lockup real es un PNG y nunca se recompone con tipografía.
+- **DESIGN.md (v6 «Observatorio»)** es la autoridad visual vigente: papel liso `#0B0C0F`, hairlines de 1px que cruzan a sangre, esquina de 2px, Inter Tight + IBM Plex Mono y **un solo azul** `#6E9BFF`. Sin cajas, sin cristal, sin sombras, sin glows: la jerarquía la hacen el tamaño del tipo y el aire. La semántica cósmica sigue intacta (evento = galaxia, magnitud = conexiones, cierre triádico) y el grafo ES la marca; dark-only. (Reemplazó a la v4 «Cinematic Universe» el 2026-08-04, tras diez propuestas de portada que el usuario revisó una a una; el cambio entró por los tokens y no por las pantallas. Lo que se apagó fue el énfasis —el oro de «tú», el rosa H-alfa, el cielo de fondo—, nunca la información.)
+- Tagline: **"El networking que por fin se ve"** / *"Networking you can finally see"*. Voz sobria y editorial. Español de América en segunda persona del singular (nunca «vosotros»); el inglés, americano. El nombre nunca se traduce.
 
 ## Evidence on Hand
 

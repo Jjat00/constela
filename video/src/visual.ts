@@ -18,6 +18,14 @@ export const { fontFamily: PLEX_MONO } = cargarPlexMono();
 /**
  * EL VIDEO TIENE TRES TINTAS
  *
+ * NOTA DE LECTURA (2026-08-04): los comentarios de este archivo nombran
+ * `/opcion1` y `/opcion2`. Eran dos de las diez propuestas de rediseño de
+ * portada que el usuario revisó; esas rutas **ya no existen en el árbol**.
+ * `/opcion1` «Observatorio» ganó, se promovió a `/` y hoy es **v6, el sistema
+ * visual de toda la app**; `/opcion2` «Documento» se retiró con las otras
+ * ocho. Los nombres se conservan aquí porque explican de dónde salió cada
+ * hex, y esa historia vive en git.
+ *
  * `cosmos` es el video de siempre —el de producción, el de la landing— y sus
  * valores son los de `DESIGN.md` v5 sin traducir. `documento` es el mismo
  * video impreso: los tokens de `/opcion2` (papel #FAFAFA, tinta negra, azul

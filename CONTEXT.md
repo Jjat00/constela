@@ -4,6 +4,11 @@ Red de networking para eventos presenciales: cada asistente es una estrella, cad
 
 ## Language
 
+> **El glosario se publica, y en dos idiomas.** Desde 2026-08-04 los cuatro términos centrales viven además en el sitio público —en español y en inglés— y se declaran a Google como `DefinedTermSet` en JSON-LD. La traducción canónica es: estrella → **star**, constelación → **constellation**, galaxia → **galaxy**, cierre triádico → **triadic closure**. El copy inglés vive en `src/lib/copy/en.ts` y no se inventa términos nuevos: si un concepto de aquí cambia de nombre, cambia en los dos.
+>
+> Lo que **no** se traduce: la interfaz de la aplicación con sesión (sigue solo en español) ni los valores del catálogo vivo, que son datos reales de la migración 0007.
+
+
 **Estrella**:
 El perfil de una persona dentro de Constela: nombre y foto (de Google) más titular y tags opcionales.
 _Avoid_: Usuario, cuenta, perfil (en UI)

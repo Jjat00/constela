@@ -60,7 +60,7 @@ tags             (category, label, slug GENERATED, aliases text[], is_curated, c
 - [x] **Stack local Supabase** (CLI + Docker): Postgres + Auth + Realtime + Studio — réplica de prod en local
 - [x] Migración inicial: schema + RLS + trigger de perfil + RPC `get_my_graph` (`supabase/migrations/`)
 - [x] Proyecto Supabase cloud creado (`constela`, ref `usaytsxnbqxyrmdpewbw`, us-east-1) — queda **vacío** hasta el final
-- [ ] Deploy en Vercel — **pospuesto deliberadamente** (ver flujo local-first)
+- [x] Deploy en Vercel — pospuesto durante el desarrollo local (ver flujo local-first) y hecho en la sesión 13–14: **en producción con dominio propio, `https://constela.com.co`**
 - **Entregable**: app corriendo 100% en local con landing placeholder y schema listo.
 
 > **Flujo local-first (decisión 2026-07-23)**: todo el desarrollo ocurre contra el stack local del Supabase CLI (`pnpm exec supabase start`). Las migraciones en `supabase/migrations/` son la fuente de verdad. Solo cuando la app esté completa en local se hace `supabase db push` al proyecto cloud y el deploy a Vercel. El login con magic link funciona en local sin configurar nada: los correos se capturan en el buzón local del stack (Mailpit).

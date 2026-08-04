@@ -1,8 +1,8 @@
 ---
 version: 1
 slug: "src-app-app-layout-tsx"
-primary_target: "src/app/(app)/layout.tsx"
-related_targets: ["src/app/(app)/home/page.tsx","src/app/(app)/eventos/page.tsx","src/app/(app)/qr/page.tsx","src/app/(app)/perfil/page.tsx"]
+primary_target: "src/app/(es)/(app)/layout.tsx"
+related_targets: ["src/app/(es)/(app)/home/page.tsx","src/app/(es)/(app)/eventos/page.tsx","src/app/(es)/(app)/qr/page.tsx","src/app/(es)/(app)/perfil/page.tsx"]
 ---
 
 # Surface brief — shell de la app `(app)` (home, eventos, qr, perfil)
@@ -11,14 +11,14 @@ related_targets: ["src/app/(app)/home/page.tsx","src/app/(app)/eventos/page.tsx"
 
 **Audiencia y escena**: asistente de evento, de pie, a una mano, de noche; en desktop, el mismo usuario preparando o revisando su red.
 
-**Dirección elegida (v4, fijada por el usuario con imagen de referencia + master prompt)**: command center cinematográfico — cosmos vivo a pantalla completa (CosmicSky rico: Vía Láctea, nebulosas en deriva, planeta-horizonte), paneles de cristal (`glass`) flotando encima: sidebar izquierda en desktop (wordmark, nav vertical, identidad con halo dorado abajo), grafo constelación protagonista al centro, rail derecho con datos reales (stats, actividad reciente por `createdAt` de aristas, galaxias por explorar). Móvil: grafo casi a pantalla completa, pills de cristal flotantes, barra inferior de pulgar.
+**Dirección elegida (v6 «Observatorio», 2026-08-04 — reemplaza a la v4 «Cinematic Universe»)**: instrumento, no espectáculo. Papel liso `#0B0C0F`, hairlines de 1px, esquina de 2px, Inter Tight + IBM Plex Mono y un solo azul `#6E9BFF`. La composición no cambió —sidebar izquierda en desktop, grafo protagonista al centro, rail derecho con datos reales, barra de pulgar en móvil—: cambió el material. **El cosmos de fondo está apagado** (`CosmicSky` es hoy un `div` del color del fondo) y `.glass` sobrevive como nombre de clase pero significa papel + filete, sin `backdrop-filter` ni sombra. Se apagó el énfasis (el oro de «tú», el rosa H-alfa, el grano), nunca la información: la clase espectral y la magnitud siguen siendo dato.
 
-**Momento memorable**: abrir `/home` y estar dentro del universo del evento — tu sol dorado al centro, la red respirando alrededor, cristal flotando encima.
+**Momento memorable**: abrir `/home` y leer la sala de un vistazo — tu estrella en blanco pleno, los triángulos azules de quienes ya se conocen, y el mapa que al filtrar apaga lo que no coincide sin reordenarse nunca.
 
 **Constraints**:
 - Sin features fantasma: búsqueda = buscar estrellas por nombre (client-side, real); nada de mensajes/notificaciones/XP.
 - La arista solo nace de `connectOnScan` (ADR 0001/0004): el grafo jamás conecta.
-- Copy en español según CONTEXT.md; acciones clave en el tercio inferior en móvil; QR a un tap.
+- Copy en español según CONTEXT.md — **la app con sesión no es bilingüe**: solo el sitio público lo es (`/` y `/en`). Acciones clave en el tercio inferior en móvil; QR a un tap.
 - `prefers-reduced-motion` + pausa de rAF con `document.hidden` intactos.
 
-**Sin resolver**: conversión completa de landing/login/bienvenida/e/u al v4 (heredan tokens+display font automáticamente; pass propio pendiente).
+**Sin resolver**: `login`, `bienvenida`, `e/` y `u/` heredan los tokens de v6 automáticamente —el rediseño entró por `globals.css`, no por las pantallas— pero no han tenido un pase propio de composición. Es exactamente la deuda que hace que sigan montando `CosmicSky` y `.glass`, que hoy ya no dibujan nada.

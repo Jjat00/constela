@@ -190,7 +190,7 @@ const SIN_FILTRO: ActiveFilters = { rol: [], interes: [], intencion: [] };
  * separarlas por limpieza rompería lo único que estas dos bandas demuestran.
  *
  * Recibe su copy por props desde la portada que la monta. Antes se lo llevaba
- * él mismo de `@/lib/portada`, que era más cómodo mientras hubo una sola
+ * él mismo del banco de copy, que era más cómodo mientras hubo una sola
  * portada; con dos idiomas eso significaría que la portada inglesa enseña la
  * bienvenida en español.
  */

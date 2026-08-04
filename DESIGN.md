@@ -1,153 +1,178 @@
-# Constela — Cinematic Universe Design System (v4)
+# Constela — Observatorio Design System (v6)
 
 > Documento portable: llévalo a cualquier IA de imágenes (Midjourney, DALL·E, Ideogram, Figma AI…) para generar piezas que respeten el estilo de Constela. Los prompts listos están al final en inglés.
 >
-> v4 (2026-07-28): reemplaza al v3 «universo real». Fijado por el usuario con una imagen de referencia y un master prompt propio («Cinematic Universe Design System»). La idea rectora: **el usuario no navega una app — explora su propio universo.** La física estelar de la v3 (clases espectrales, H-alfa, aurora) sobrevive como sistema de color del cielo; el chrome de UI vira al violeta nebulosa y el layout pasa de páginas con header a **cristal flotando sobre un cosmos a pantalla completa**.
+> v6 (2026-08-04): nace de una tanda de diez propuestas de portada que el usuario revisó una a una; ganó la 1 y se promovió a toda la app. **Reemplaza a la v4 «Cinematic Universe» y a la v5.** La idea rectora se invierte: donde v4 quería que cada pantalla pareciera *un frame de una película de ciencia ficción*, v6 quiere que parezca **un instrumento de medición**. La red del evento no ilumina: mide.
+>
+> Cómo se hizo, y es la parte reutilizable: **el rediseño entró por los tokens, no por las pantallas.** `.glass` dejó de tener `backdrop-filter` y sombra y pasó a ser papel + filete; `.grain::after` pasó a `content: none`; `--glow-sol` a `none`; `CosmicSky` quedó reducido a un `div` del color del fondo. Ninguna de las ~7.400 líneas de UI que usaban esas clases se tocó — siguen ahí, y ahora dibujan otra cosa.
 
 ## 1. Esencia de la marca
 
 - **Qué es**: app de networking para eventos presenciales. Conectas escaneando el QR de otra persona; la red del evento se dibuja como una constelación.
-- **Concepto**: *las personas no son contactos: son estrellas. Las relaciones crean constelaciones. Las comunidades, galaxias. El evento es tu universo y tú eres su sol.* El cosmos no es decoración: mapea al dominio.
-- **Nombre**: Constela (de "constelación", usado como verbo: *constela tu red*). Siempre en minúscula en el wordmark: `constela✦`.
-- **Dirección artística** (del master prompt del usuario): Interstellar · Dune · Mass Effect · NASA/James Webb · Apple Vision Pro · Nothing OS · Arc · Linear. **Cinematográfico, no "temática espacial"**: premium, mágico, emocional, creíble. Cada pantalla debe parecer un frame de una película de ciencia ficción de $200M.
-- **Lo que NO es**: caricatura, neón cyberpunk recargado, HUD de videojuego, morado plano de plantilla.
+- **Concepto**: *las personas no son contactos: son estrellas. Las relaciones crean constelaciones. Las comunidades, galaxias.* El cosmos no es decoración: mapea al dominio, y **eso es lo único de la metáfora que v6 conserva sin discutir**.
+- **Nombre**: Constela (de "constelación", usado como verbo: *constela tu red*). Siempre en minúscula en el wordmark.
+- **Dirección artística**: atlas estelar impreso · placa fotográfica de observatorio · cuaderno de laboratorio · Teenage Engineering · Braun. **Instrumento, no espectáculo**: preciso, sobrio, medido. Una pantalla de Constela debe parecer una lámina de datos que alguien enmarcaría, no un póster de cine.
+- **Lo que NO es**: caricatura, neón cyberpunk, HUD de videojuego, morado plano de plantilla, **ni el cristal flotando sobre un cosmos vivo de la v4** — eso se retiró a propósito.
 
-## 2. Paleta (v4) — la noche índigo, la física intacta
+## 2. Paleta (v6) — papel, tinta, un filete y un solo azul
 
-Los valores del chrome vienen del master prompt del usuario; los colores físicos (espectrales, H-alfa, aurora) se heredan de la v3 porque existen en el cielo y mapean al dominio.
+Cuatro valores hacen el 95 % de la interfaz. La quinta columna del sistema no es un color: es el espacio en blanco.
 
-| Rol | Nombre | Hex (fuente de verdad) | oklch aprox. | Uso |
-|---|---|---|---|---|
-| Fondo profundo | Primary Background | `#02030A` | `oklch(0.08 0.02 265)` | El vacío: viñetas, bordes del viewport |
-| Fondo | Deep Space | `#050816` | `oklch(0.12 0.035 265)` | Fondo global, dark-only |
-| Superficie | Galaxy | `#09111F` | `oklch(0.17 0.03 255)` | Base de paneles, popovers |
-| **Primario** | **Nebula Purple** | **`#6E63FF`** | `oklch(0.58 0.21 281)` | CTAs y controles activos (tinta de chrome, no de titulares) |
-| Acento frío | Cosmic Blue | `#4EA8FF` | `oklch(0.70 0.15 250)` | Acentos secundarios, links fríos, datos |
-| Texto | Starlight White | `#F8FAFF` | `oklch(0.98 0.005 255)` | Titulares y cuerpo |
-| Texto suave | Soft Gray | `#AAB2C8` | `oklch(0.75 0.025 265)` | Secundario, microetiquetas |
-| **Tú** | **Golden Star** | **`#FFD97A`** | `oklch(0.89 0.11 90)` | *Solo tú*: tu sol, tu corona, tu QR, tu identidad |
-| Destello | Supernova | `#FFF4C7` | `oklch(0.96 0.06 95)` | Núcleos de estrellas doradas, picos de luz |
-| Acento claro | Lavanda | `#A9A1FF` | `oklch(0.75 0.13 285)` | **La palabra destacada de los titulares** (con glow, como en el comp de referencia) y texto pequeño violeta (el primario es corto de contraste en texto fino) |
-| Espectral B | Azul estelar | `#9DB4FF` | `oklch(0.76 0.09 265)` | Estrellas jóvenes calientes |
-| Espectral A | Blanco azulado | `#CDD8FF` | `oklch(0.87 0.05 270)` | Estrellas brillantes, líneas de constelación |
-| Espectral K/M | Doradas y gigantes | `#FFD9A8` / `#FFB380` | — | Población cálida del cielo |
-| **H-alfa** | Nebulosa de emisión | `#F0699F` | `oklch(0.68 0.17 355)` | **Cierres triádicos** — el momento visual de la marca |
-| Éxito | Aurora (oxígeno) | `#63D6B4` | `oklch(0.79 0.09 170)` | Éxito, confirmaciones |
-| Bordes | — | `rgba(255,255,255,.08)` | — | Bordes de cristal |
-| Glass | — | `rgba(255,255,255,.05)` | — | Relleno de cristal sobre el cosmos |
+| Rol | Nombre | Hex (fuente de verdad) | Uso |
+|---|---|---|---|
+| Fondo | **Papel** | `#0B0C0F` | Liso. Sin gradiente, sin viñeta, sin cielo. Dark-only. |
+| Texto | **Tinta** | `#F2F3F5` | Titulares, cuerpo, y el relleno de la acción principal |
+| Texto suave | Suave | `#8E939C` | Cuerpo secundario, párrafos de apoyo |
+| Texto tenue | Tenue | `#7C828C` | Microetiquetas mono, texto terciario |
+| Línea | **Filete** | `rgba(255,255,255,.11)` | La hairline: mide 1px y cruza a sangre. **Es el único separador del sistema** |
+| **Acento** | **Azul frío** | **`#6E9BFF`** | El único color de la interfaz: foco, links, selección, cierres triádicos |
+| Relleno de hover | — | `#14161A` | El único «hover» con relleno de todo el sistema |
+| Superficie | — | `#101216` | Campos de formulario. No es una tarjeta elevada: no las hay |
 
-Reglas:
+**Población del grafo** (clase espectral estable por identidad — hash del id, la misma persona brilla siempre igual). Estos sí son color, porque **son dato, no acento**:
 
-- **El violeta es chrome, el oro es identidad.** Botones, tabs activos y filtros van en nebula purple; tu sol, tu avatar con corona y tu QR van en golden star. Nunca al revés.
-- **Los espectrales son población**: aparecen como luz (núcleos, halos, glows), casi nunca como tinta plana de UI.
-- La luz se usa con elegancia: **nunca sobresaturar el glow**. Cada estrella emite luz real; los cuerpos grandes iluminan lo cercano; las nebulosas dan luz ambiental de color.
-- **Grain de película fino (~4%)** sobre todo: el registro es cine.
+| Clase | Halo | Núcleo |
+|---|---|---|
+| B — azul estelar | `#9DB4FF` | `#EEF2FF` |
+| A — blanco azulado | `#CDD8FF` | `#F8FAFF` |
+| F/G — blanco cálido | `#F4F2EE` | `#FFFFFF` |
+| K — cálida dorada | `#FFD9A8` | `#FFF8EC` |
+| M — gigante naranja | `#FFB380` | — |
 
-## 3. Tipografía (v4 — minimal cinematográfica)
+Reglas duras:
+
+- **La jerarquía la hacen el tamaño del tipo y el aire, nunca el color.** Si una pantalla necesita un color nuevo para que se entienda, la pantalla está mal.
+- **La acción principal es tinta plena invertida** (`#F2F3F5` de fondo, `#0B0C0F` de texto), jamás una píldora de color.
+- **Un solo azul en toda la app.** `--cosmic`, `--celeste`, `--halfa`, `--ring` y `--chart-1` apuntan todos a `#6E9BFF`. Si aparece un segundo azul, es un error.
+- **«Tú» ya no es oro.** El sol dorado de v4 (`#FFD97A`) se retiró: tu estrella es la única en blanco pleno (`--sol: #F2F3F5`), y destaca por magnitud y posición, no por tinte.
+- **Los cierres triádicos son azules, ya no rosa H-alfa.** Siguen siendo el momento visual de la marca; lo que cambió es que ahora se señalan con la única tinta del sistema.
+- **Nada resplandece.** `--glow-sol: none`. Sin glows, sin bloom, sin sombras, sin degradados, sin grano de película.
+- **Esquina de 2px** (`--radius: 0.125rem`) y **toda** la escala de radios cuelga de ahí: `rounded-2xl` y `rounded-sm` miden lo mismo. La única excepción viva es `rounded-full` en lo que es de verdad circular (avatares, puntos).
+
+## 3. Tipografía (v6)
 
 | Rol | Fuente | Uso |
 |---|---|---|
-| Display | **Geist** (bold/black, tracking apretado) | Titulares enormes, mínimos en palabras; la palabra clave en lavanda con glow |
-| Cuerpo | Geist | Texto corto, mucho aire, legibilidad impecable |
-| Mono | Geist Mono | Microetiquetas `[ así ]`, magnitudes, coordenadas — anotación de observatorio |
+| Display y cuerpo | **Inter Tight** | Titulares hasta 6,4rem y texto corrido. Grotesca ya condensada de fábrica: crece sin abrirse y no necesita tracking negativo de rescate |
+| Mono | **IBM Plex Mono** (400/500) | Microetiquetas `[ ASÍ ]`, magnitudes, coordenadas, pies de figura — anotación de observatorio |
 
-La v4 retira Bricolage Grotesque y las itálicas de Instrument Serif del rol display (decisión del master prompt: Inter/Geist/SF, títulos enormes, minimal). El patrón firma pasa a ser: **titular gigante en Geist bold con 1-2 palabras en nebula purple** (como "Tu red es *tu universo*."). El mono se queda: es medición, no costume.
+v6 retira Geist y Geist Mono. El mono vive casi entero a **10,5px con `letter-spacing: .16em` y versalitas**, que es donde IBM Plex tiene más carácter de ingeniería. Escala de tracking en `globals.css`: `-0.05em` para el titular de portada, `-0.04em` para h1/h2, `-0.035em` para títulos menores, `0` para el cuerpo — que es el ancla del sistema.
 
-## 4. El command center (la gramática de layout v4)
+> El mono en versalitas es ilegible pasadas seis palabras. Para una frase larga en mono (avisos, notas al margen) va en caja baja y a 11,5px: ver `.obs-aviso`.
 
-La app con sesión no es una serie de páginas: es **una sola sala de observación**. El cosmos ocupa el viewport completo y todo lo demás flota encima como cristal.
+## 4. Gramática de layout
 
-- **El fondo no es una imagen: es un universo vivo.** `CosmicSky` a pantalla completa detrás del shell: campo de estrellas por ley de potencias, Vía Láctea, nebulosas en deriva lenta, galaxias lejanas, y un planeta que puede asomar como horizonte en el borde (estilo cabina orbital) — nunca detrás de texto denso ni compitiendo con el grafo.
-- **Glassmorphism nivel Apple**: paneles con `backdrop-blur`, relleno `rgba(255,255,255,.05)`, borde `rgba(255,255,255,.08)`, gradientes sutiles, sombras suaves, radios generosos (`rounded-2xl/3xl`). Un panel opaco sobre el cosmos es un error v4.
-- **Desktop (≥lg)**: sidebar izquierda flotante (~15rem): wordmark, nav vertical con iconos outline y glow sutil, tu identidad abajo con halo dorado. Centro: **la constelación a toda altura** — el dashboard ES el mapa galáctico, tú al centro. Rail derecho (~19rem) de cristal: stats de tu constelación, actividad reciente, galaxias por explorar. Mucho espacio negativo; nada apretado.
-- **Móvil**: el grafo protagonista a pantalla casi completa; barra inferior al alcance del pulgar (el evento se vive de pie y a una mano); identidad y evento como pills de cristal flotantes; stats condensadas.
-- **Jerarquía de brillo**: el objeto más brillante de cada pantalla es tu sol. Los paneles son oscuros; la luz la ponen las estrellas y los datos.
-- **Búsqueda real**: "Buscar estrellas…" busca por nombre entre las estrellas del evento (dato que ya vive en el cliente). **Sin features fantasma**: cada control visible opera sobre datos que existen — en distribución guerrilla toda pantalla es una primera impresión.
+v6 tiene **dos registros**, y comparten tokens pero no composición.
 
-## 5. Anatomía del cielo (recetas de material)
+### El documento (portada y páginas públicas)
 
-Capas de atrás hacia delante — el conjunto es lo que convence:
+Las clases viven en `src/components/obs-css.tsx`, servidas inline por página — son la composición de una plantilla concreta, no tokens, y no tienen por qué pesar en el CSS de la app con sesión.
 
-1. **Gradiente de espacio**: deep space con velo radial violeta; nunca color plano.
-2. **Vía Láctea**: banda diagonal difusa, opacidad baja.
-3. **Campo de estrellas**: muchas débiles diminutas (1–2px), pocas brillantes con clase espectral, picos de difracción y titileo desfasado. Tamaños SIEMPRE en px fijos.
-4. **Nebulosas**: 1–3 manchas muy difusas (blur alto) en deriva lenta — H-alfa rosa, reflexión azul o violeta; ≤ 16% en Operate, ≤ 20% en Persuade.
-5. **Cuerpos**: galaxias lejanas pequeñas; un planeta-horizonte opcional en el borde del shell.
-6. **Grain de cine** (~4%) fijo encima de todo.
+- **Carril** de `max-width: 88rem` con padding fluido; el contenido se organiza en **bandas separadas por una hairline que cruza a sangre**, de borde a borde del viewport.
+- **Cero cajas.** No hay cards, ni sombras, ni fondos de sección. Una figura se marca con su fila de datos en mono arriba y su filete, nada más.
+- El titular de portada ocupa 7 columnas y la red las 5 restantes, **recortada por el borde** — el diagrama continúa fuera de la página.
+- **Tres figuras y ninguna caja**: el diagrama de la red, el video de 35 s y el mapa real corriendo sobre el evento de ejemplo. Las dos últimas no son ilustración: son la aplicación.
 
-**Anatomía de una estrella** (el elemento más importante): núcleo blanco-caliente (el centro es casi blanco SIEMPRE; el color solo tiñe el halo) → halo espectral con scattering → picos de difracción en las brillantes → titileo sutil desfasado → radio de glow según magnitud. Cada estrella es única; una estrella como disco plano de color es un error.
+### La app con sesión
 
-**El sol (tú)**: núcleo blanco → fotosfera dorada (golden star) → corona irregular (2 capas de glow) → respiración lenta (~7s). Tu avatar vive dentro del sol. Siempre el objeto más brillante de su pantalla.
+- **El fondo es papel liso.** `CosmicSky` sigue montado en el shell pero en v6 es un `div` del color del fondo: el campo de estrellas, la Vía Láctea, las nebulosas y el planeta-horizonte están apagados.
+- `.glass` sobrevive como nombre de clase en decenas de archivos, pero hoy significa **papel + filete de 1px**: sin `backdrop-filter`, sin sombra. Un panel translúcido sobre un cosmos era la firma de v4; en v6 sería un error.
+- **Desktop (≥lg)**: barra lateral izquierda, la constelación a toda altura al centro, rail derecho con datos reales. **Móvil**: el grafo casi a pantalla completa y barra inferior al alcance del pulgar — el evento se vive de pie y a una mano.
+- **Sin features fantasma**: cada control visible opera sobre datos que existen. En distribución guerrilla toda pantalla es una primera impresión.
 
-**Conexiones**: más que líneas — **filamentos de luz**: trazo fino blanco-azulado con gradiente sutil hacia sus estrellas y glow tenue; al pasar el cursor, pulsan. El atlas estelar sigue mandando la forma (trazos finos, nunca plasma grueso de videojuego).
+## 5. Qué es dato y qué era cine
 
-**Galaxia (= evento)**: espiral pequeña — núcleo cálido + brazos difusos azulados. Vive en las cards de eventos y en «explora galaxias».
+La distinción que gobierna v6. Se apagó **el énfasis**, nunca la información:
 
-## 6. Semántica cósmica (el mapa dominio → cosmos)
+| Se conserva (es dato) | Se apagó (era cine) |
+|---|---|
+| Clase espectral por identidad (hash del id) | El halo difuso de 2,4× y los picos de difracción del avatar |
+| Magnitud: más conexiones, más brillo y radio | La corona dorada de «tú» y su respiración de 7 s |
+| El triángulo del cierre triádico | El relleno rosa H-alfa y su glow |
+| La forma del grafo y sus filamentos | El campo de estrellas, la Vía Láctea, las nebulosas, el planeta-horizonte |
+| El filete de 1,5px en el color de la clase, alrededor del avatar | El grano de película al 4 % |
 
-| Dominio | Cosmos | Regla visual |
+**Anatomía de una estrella**: núcleo casi blanco siempre; el color solo tiñe el halo — es lo que las hace creíbles. Una estrella como disco plano de color sigue siendo un error.
+
+**Conexiones**: trazo fino, sin glow. La forma la manda el atlas estelar, nunca el plasma grueso de videojuego.
+
+## 6. Semántica cósmica (dominio → cosmos)
+
+| Dominio | Cosmos | Regla visual v6 |
 |---|---|---|
-| Evento | **Galaxia** | Espiral con núcleo cálido; "estás aquí" = tu galaxia activa |
-| Tú | **Sol** | Dorado, corona, el más brillante; centrado en tu vista |
+| Evento | **Galaxia** | «Estás aquí» = tu galaxia activa |
+| Tú | **Tu estrella** | Blanco pleno `#F2F3F5`; destaca por magnitud y posición, no por color |
 | Asistente | **Estrella** | Clase espectral estable por persona (hash del id → B/A/F/K/M) |
-| Nº de conexiones | **Magnitud** | Más conexiones = mayor brillo y radio de glow |
-| Conexión | **Filamento de constelación** | Trazo fino blanco-azulado con glow tenue; pulsa al hover |
-| Cierre triádico | **Nebulosa de emisión** | Relleno H-alfa ~8% + trazo rosa: el triángulo ionizado |
-| Filtro/búsqueda activa | **Cielo profundo** | Lo no coincidente se apaga a polvo; el mapa nunca se reordena |
+| Nº de conexiones | **Magnitud** | Más conexiones = mayor radio |
+| Conexión | **Filamento** | Trazo fino; sin glow |
+| Cierre triádico | **Triángulo azul** | `#6E9BFF` — el momento social del producto |
+| Filtro/búsqueda activa | **Cielo profundo** | Lo no coincidente se apaga; **el mapa nunca se reordena**, así que nunca pierdes de vista dónde estaba quién |
 
-## 7. Movimiento — nada se siente estático, todo con elegancia
+## 7. Movimiento
 
-- **Titileo**: opacidad 0.5→1, 3–6s, desfases aleatorios; solo en estrellas, nunca en texto.
-- **Deriva cósmica**: nebulosas y cuerpos grandes derivan lentísimo (≥ 20s); el cielo respira.
-- **Respiración de corona**: ~7s, en tu sol.
-- **Constelación que se dibuja**: stroke-draw al entrar (~1.8s, ease-out).
-- **Filamentos**: pulso suave al hover de una conexión.
-- **Cristal que llega**: paneles con fade+rise corto (~300ms); transiciones lentas y cinematográficas, jamás cascada aparatosa.
-- **Estrella fugaz** ocasional y discreta: un trazo que cruza y muere (< 1 por minuto).
-- Profundidad por capas sí; **parallax agresivo no** (batería de teléfono en evento + uso de pie). El rAF del grafo pausa con `document.hidden`.
-- Todo respeta `prefers-reduced-motion` (estado final visible, sin animación).
-- Prohibido: lens flares gratuitos, warp speed, partículas persiguiendo el cursor, scroll-jacking.
+v6 recorta drásticamente el repertorio de v4. Lo que queda:
+
+- **Transiciones de estado**: 0.18s ease en color y opacidad. Es el movimiento por defecto de todo el sistema.
+- **La constelación que se dibuja** al entrar, y el pulso al seleccionar una estrella.
+- **El mapa nunca se reordena** al filtrar: se apaga lo que no coincide. Es la regla de movimiento más importante del producto.
+- Retirados: titileo del cielo, deriva de nebulosas, respiración de corona, estrella fugaz, parallax.
+- Todo respeta `prefers-reduced-motion` (estado final visible, sin animación). El rAF del grafo pausa con `document.hidden`.
+- Prohibido: lens flares, warp speed, partículas persiguiendo el cursor, scroll-jacking.
 
 ## 8. NO usar
 
-- Estrellas como discos planos o glyphs ✦ decorativos regados por la página (el ✦ vive solo en el wordmark).
-- Caricatura o flat-vector; 3D plástico; HUD de videojuego.
-- Neón cyberpunk recargado; degradados arcoíris; **morado plano de plantilla** (la saturación vive en la luz, no en tinta plana).
+- **Cristal, blur, sombras, degradados, glows y grano** — todo el vocabulario de v4. Si algo flota, está mal.
+- Un segundo color de acento. Un solo azul.
+- El oro para «tú» y el rosa H-alfa para las tríadas (v4/v5).
+- Estrellas como discos planos o glyphs ✦ decorativos regados por la página.
+- Radios generosos: `rounded-3xl` existe pero mide 2px, y eso es deliberado.
 - Fondos blancos (dark-only: la app se usa de noche, en eventos).
 - Gamificación visual (niveles, XP, badges) — descartada a propósito.
 - Features fantasma o UI muerta de cualquier tipo.
 - Robots, cerebros IA, wireframes de globo terráqueo.
 
-## 9. Direcciones para el logo
+## 9. Idioma
 
-1. **Constelación-C** (vigente): 4–6 estrellas conectadas por líneas finas blanco-azuladas cuya silueta insinúa una "C"; la estrella mayor con picos de difracción; una conexión cierra un triángulo con trazo H-alfa.
-2. **Sol con corona**: disco dorado con corona irregular — el "tú" hecho marca.
-3. **Wordmark**: `constela` en minúscula (Geist semibold) + `✦` dorado tras la última "a".
+El **sitio público es bilingüe** desde 2026-08-04: español en la raíz, inglés bajo `/en`, con dos layouts raíz (`app/(es)/` y `app/(en)/`) porque `<html lang>` es un atributo del documento. Todo el copy sale de `src/lib/copy/`, donde `tipos.ts` obliga a que los dos idiomas tengan las mismas piezas.
 
-El logo debe funcionar: monocromo blanco sobre `#050816`, favicon 32px, marca de agua.
+**La aplicación con sesión sigue solo en español**, y se dice en voz alta: en la portada inglesa antes de la parte jugable, en `llms.txt` y en el `inLanguage` del JSON-LD. Los tags del catálogo tampoco se traducen — son datos reales de la migración 0007.
 
-## 10. Prompts listos para IA de imágenes (inglés)
+Ninguna pieza gráfica cambia con el idioma salvo las dos láminas sociales (`/og/es`, `/og/en`), que llevan el titular dentro.
 
-**Fondo de app / hero:**
+## 10. Direcciones para el logo
+
+1. **Constelación-C** (vigente): 4–6 estrellas conectadas por líneas finas cuya silueta insinúa una "C"; una conexión cierra un triángulo. En v6 el triángulo se traza en azul `#6E9BFF`, no en rosa.
+2. **Wordmark**: `constela` en minúscula (Inter Tight semibold).
+
+El logo debe funcionar: monocromo blanco sobre `#0B0C0F`, favicon 32px, marca de agua. El lockup real es un PNG (`src/assets/logo-constela.png`) y es el mismo objeto en la pestaña, en el pie y en la tarjeta social — **nunca se recompone con tipografía**.
+
+> El ✦ dorado tras la última "a" que llevaba el wordmark en v4 se retiró con el oro.
+
+## 11. Prompts listos para IA de imágenes (inglés)
+
+**Fondo / lámina de marca:**
 ```
-Wide cinematic living universe: profound deep-space night (#050816) with enormous depth — realistic stars of varying magnitude and spectral temperature (blue, white, golden, orange giants) with real bloom and fine diffraction spikes, faint diagonal Milky Way, soft violet and hydrogen-alpha pink nebulas drifting (subtle volumetric light), distant small galaxies, one warm golden sun-star with corona (#FFD97A) connected by hairline pale-blue constellation filaments, one triangle glowing faint pink (#F0699F), optional planet horizon at the bottom edge with atmospheric rim light, subtle film grain. Interstellar / James Webb realism, Apple Vision Pro elegance, quiet and immense, NOT cartoon, NOT cyberpunk neon, NOT flat purple gradient, no text.
+Minimal star atlas plate on flat matte near-black paper (#0B0C0F), no gradient and no vignette. A small constellation of 10 stars of varying magnitude drawn as clean flat dots in cool greys and one pale blue (#6E9BFF), connected by hairline 1px straight lines; one triangle of three mutually connected stars is traced in pale blue. One hairline rule crosses the full width, edge to edge, at 11% white. Enormous negative space. Printed instrument, scientific plate, Teenage Engineering restraint. NO glow, NO bloom, NO diffraction spikes, NO film grain, NO glass, NO blur, NO purple, NO nebula, NO gradient. No text.
 ```
 
 **Logo (dirección 1):**
 ```
-Minimal logo for "Constela", a networking app. A small constellation of 5 realistic glowing stars connected by hairline pale-blue lines, subtly forming the letter C; the brightest star has fine diffraction spikes and a warm golden glow (#FFD97A), one connecting line closes a triangle traced in soft hydrogen-alpha pink (#F0699F). Deep space background (#050816). Photoreal star glow on a flat vector layout, cinematic, elegant, no text.
+Minimal logo for "Constela", a networking app. Five flat dots of slightly different sizes connected by hairline straight lines, subtly forming the letter C; one connecting line closes a small triangle traced in pale blue (#6E9BFF). Flat matte near-black background (#0B0C0F), cool grey dots. Precise, geometric, printed-atlas feel. NO glow, NO gradient, NO 3D, no text.
 ```
 
-**OG image / social:**
+**Social card:**
 ```
-Social card 1200x630: cinematic deep space (#050816), realistic starfield with spectral colors, one golden sun-star with corona on the right third connected into a small constellation with hairline filaments and one faint pink triangle, soft violet nebula haze, film grain, large clean dark area on the left for text overlay. Warm light in a cool night, premium, award-winning, NOT neon.
+Social card 1200x630: flat matte near-black paper (#0B0C0F), a 1px hairline at 11% white crossing the full width top and bottom. Left two thirds empty for text; right third holds a small constellation of flat dots connected by hairline lines with one pale blue (#6E9BFF) triangle. Monochrome except that single blue. Quiet, precise, instrument-like. NO glow, NO grain, NO gradient, NO glass.
 ```
 
-## 11. Voz y copy
+> La lámina social real no se genera con estos prompts: la dibuja `src/lib/og-lamina.tsx` con `next/og`, y es la referencia si hay dudas. Ojo con Satori: **ignora `transform-origin`**, así que los segmentos rotados se posicionan por su punto medio.
 
-- Tagline principal: **"El networking que por fin se ve"**.
-- Titular del universo: **"Tu red es tu universo."** (la palabra destacada en lavanda con glow).
-- Alternativas: "Cada persona es una estrella", "Escanea. Conecta. Constela.", "Los triángulos se cierran".
-- El vocabulario del dominio vive en `CONTEXT.md`; la semántica cósmica (galaxia = evento, magnitud = brillo) puede usarse en copy siempre que la UI siga el glosario.
-- Siempre en español para el público; el nombre nunca se traduce; wordmark en minúscula.
-- Meta emocional: el usuario no piensa "estoy usando una app de networking" — piensa **"estoy explorando mi propio universo"**.
+## 12. Voz y copy
+
+- Tagline: **"El networking que por fin se ve"** / *"Networking you can finally see"*.
+- Titular de portada: **"Tu red es tu universo."** / *"Your network is your universe."*
+- **Español de América**, segunda persona del singular («escaneas», «tu red»); cuando hace falta plural es «ustedes» — nunca «vosotros». El inglés es americano (organizer, digitize).
+- El nombre nunca se traduce; wordmark en minúscula.
+- El vocabulario del dominio vive en `CONTEXT.md`; la semántica cósmica puede usarse en copy siempre que la UI siga el glosario.
+- **Cero evidencia fabricada** (`PRODUCT.md` § Evidence on Hand): no existen testimonios, métricas de uso, prensa, casos ni clientes. Ninguna página del sitio contiene una sola estadística, y eso es una decisión, no un descuido: la que circula por internet sobre tarjetas de presentación no se puede rastrear hasta un estudio.
+- Meta emocional: no «estoy usando una app de networking», sino **«por fin veo la sala en la que estoy»**.

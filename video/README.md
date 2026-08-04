@@ -14,16 +14,22 @@ sobre el del encuadre.
 
 ## Tres tintas
 
-Además del cosmos de producción hay dos traducciones, una por propuesta de
-rediseño que enseña el video:
+Nacieron como una traducción por cada propuesta de rediseño que enseñaba el
+video. **`OBSERVATORIO` ganó y es la que sirve la portada de producción**
+(`/video/constela-obs-{16x9,9x16}.mp4`, montada por `VideoPortada`); las otras
+dos siguen en el árbol porque el tema es un parámetro, no una rama.
 
+- **`Constela-obs-16x9` / `-9x16`** — el mismo video **medido**, para la
+  propuesta 1 «Observatorio», hoy v6 y la portada real. El fondo ya coincidía
+  —las dos son de noche—, y precisamente por eso hubo que traducirlo: lo que
+  esa escuela rechaza no es el color del cielo, es el cine.
 - **`Constela-doc-16x9` / `-9x16`** — el mismo video **impreso en papel**, para
-  `/opcion2` «Documento»: un rectángulo de cielo nocturno entre dos secciones
-  de papel se lee como una cita de otra publicación, y esa página no cita.
-- **`Constela-obs-16x9` / `-9x16`** — el mismo video **medido**, para
-  `/opcion1` «Observatorio». Aquí el fondo ya coincidía —las dos son de
-  noche—, y precisamente por eso hay que traducirlo: lo que esa propuesta
-  rechaza no es el color del cielo, es el cine.
+  la propuesta 2 «Documento»: un rectángulo de cielo nocturno entre dos
+  secciones de papel se lee como una cita de otra publicación, y esa página no
+  citaba. **No se usa en producción**: esa propuesta se retiró el 2026-08-04
+  con las otras nueve.
+- **`Constela-16x9` / `-9x16`** — el cosmos original de v4/v5. Tampoco se usa
+  en la landing desde v6; queda como pieza de portfolio y pitch.
 
 El guion, los tiempos y la composición **no cambian**; cambia la paleta y la
 puesta en escena (`Paleta` en `src/visual.ts`, temas `COSMOS`, `DOCUMENTO` y
@@ -32,9 +38,8 @@ sobre cielo negro —halo difuso, núcleo blanco y picos de difracción— se
 **apagan** en papel, donde serían niebla, un agujero y unas cruces sucias; se
 van también el campo de estrellas, la nebulosa, la viñeta y el grano; el
 cristal del QR pasa a ser papel con filete; y la familia es **Geist**, la de
-esa escuela. Es el mismo criterio que usa `TINTA_DOCUMENTO` con el canvas del
-mapa interactivo en `../src/app/opcion2/demo.tsx`: las dos piezas de esa página
-son la misma tinta.
+esa escuela. (Ese criterio lo compartía con el canvas del mapa interactivo de
+la misma propuesta, retirado con ella.)
 
 El observatorio apaga **lo mismo** aunque el cielo se lo permitiría, porque su
 tesis es que la red no ilumina: mide. Se queda el núcleo blanco (su diagrama
@@ -45,7 +50,7 @@ la familia es **Inter Tight + IBM Plex Mono**.
 Dos compensaciones que **no se ajustan a ojo**:
 
 - **`filamentoFuerza`** iguala el trazo del mapa al del diagrama del hero de su
-  página. Se despeja: el hero de `/opcion1` traza `#8E939C` al 40 % sobre
+  página. Se despeja: el hero de la portada traza `#8E939C` al 40 % sobre
   `#0B0C0F` → `rgb(63, 66, 71)`; el filamento fino del video va al 42 % con la
   misma tinta → `f = 0,95`. En papel el mismo cálculo da `0,68`.
 - **`veloArranque`** decide cuánto sube la bruma del pie. En el observatorio es
@@ -111,8 +116,9 @@ ffmpeg -i ../public/video/constela-doc-16x9.mp4 -vf "select=eq(n\,570)" \
   posiciones iniciales van sembradas por hash y `Math.random` queda sustituido
   por un PRNG con semilla mientras corre la simulación.
 - **Los colores no se inventan**: `src/visual.ts` copia los hex de
-  `../src/app/globals.css`, que es la fuente de verdad del sistema visual (y,
-  para el tema Documento, del bloque CSS de `../src/app/opcion2/page.tsx`).
+  `../src/app/globals.css`, que es la fuente de verdad del sistema visual. (Los
+  del tema Documento salían del bloque CSS de la propuesta 2, retirada del
+  árbol el 2026-08-04 — viven en git.)
 - **Ningún componente lee `COSMOS` o `DOCUMENTO` directamente**: se pide la
   paleta con `usePaleta()`. Una constante de módulo con un hex dentro es lo
   que hacía que el video tuviera una sola tinta.
