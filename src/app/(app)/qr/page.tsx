@@ -2,12 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveActiveEvent, type ActiveEvent } from "@/lib/active-event";
-import { AuraSol, Galaxia } from "@/components/cosmos";
+import { Galaxia } from "@/components/cosmos";
 import { qrSvg, starQrPath } from "@/lib/qr";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 
 /**
- * Tu QR (diseño 2b): tu estrella en oro, lista para que la escaneen. La
+ * Tu QR (diseño 2b): tu estrella, lista para que la escaneen. La
  * arista solo nace de un encuentro real — por eso esta pantalla es la más
  * importante del evento y vive a un tap. Todo QR va clavado a una galaxia
  * (ADR 0005): por defecto la activa, o la que pida `?e=` (visitada desde
@@ -68,7 +68,6 @@ export default async function MyQrPage({
             [ TU ESTRELLA ]
           </p>
           <div className="relative size-18">
-            <AuraSol size={72} />
             {profile.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -142,7 +141,7 @@ export default async function MyQrPage({
         </Link>
       </div>
 
-      {/* El QR dorado: cristal con borde de oro y la luz de tu corona */}
+      {/* El QR: una lámina entre filetes — en v6 no lleva ni oro ni luz */}
       <div className="relative">
         <div
           aria-hidden
@@ -153,7 +152,7 @@ export default async function MyQrPage({
             filter: "blur(24px)",
           }}
         />
-        <div className="relative rounded-4xl border border-sol/30 bg-sol/[0.04] p-6 backdrop-blur-xl">
+        <div className="relative rounded-4xl border p-6">
           <div
             className="w-[min(14rem,58vw)] [&_svg]:h-auto [&_svg]:w-full"
             dangerouslySetInnerHTML={{ __html: svg }}
@@ -163,7 +162,6 @@ export default async function MyQrPage({
 
       <div className="flex flex-col items-center gap-3">
         <div className="relative size-14">
-          <AuraSol size={56} />
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

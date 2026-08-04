@@ -89,7 +89,7 @@ function SubmitButton({ ready, label }: { ready: boolean; label: string }) {
       className={
         ready
           ? "btn-cosmic h-12 w-full cursor-pointer px-6.5 text-[15px] font-medium sm:w-auto"
-          : "h-12 w-full rounded-full border border-white/10 bg-white/[0.03] px-6.5 text-[15px] text-faint sm:w-auto"
+          : "h-12 w-full rounded-full border px-6.5 text-[15px] text-faint sm:w-auto"
       }
     >
       {pending ? "Guardando…" : ready ? label : "Elige tu rol"}

@@ -2,7 +2,7 @@
 
 import { startTransition, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AuraSol, spectrumOf } from "@/components/cosmos";
+import { spectrumOf } from "@/components/cosmos";
 import { connectOnScan, type ConnectResult } from "./actions";
 
 export type ScanPeer = {
@@ -22,30 +22,19 @@ function StarAvatar({
   name,
   avatarUrl,
   halo,
-  isSun,
   size = 66,
 }: {
   name: string;
   avatarUrl: string | null;
+  /** Color de la clase espectral; para «tú», la tinta plena. */
   halo: string;
-  isSun?: boolean;
   size?: number;
 }) {
   return (
+    // v6: ni el aura dorada de «tú» ni el halo difuso espectral del resto. El
+    // filete de 1,5px del propio avatar ya lleva el color de la clase, que es
+    // el único dato que esos dos resplandores estaban diciendo.
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      {isSun ? (
-        <AuraSol size={size} />
-      ) : (
-        <div
-          aria-hidden
-          className="absolute rounded-full"
-          style={{
-            inset: -Math.round(size * 0.2),
-            background: `radial-gradient(circle, ${halo}80 0%, transparent 70%)`,
-            filter: "blur(9px)",
-          }}
-        />
-      )}
       {avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -125,8 +114,7 @@ export function AutoConnect({
           <StarAvatar
             name={me.name}
             avatarUrl={me.avatarUrl}
-            halo="#FFD97A"
-            isSun
+            halo="#F2F3F5"
           />
           <div className="h-px w-16 bg-estrella-a/70 sm:w-20" aria-hidden />
           <StarAvatar
@@ -154,7 +142,7 @@ export function AutoConnect({
         </div>
 
         <div className="flex w-full max-w-xs gap-3.5">
-          <div className="flex-1 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-3.5 text-center">
+          <div className="flex-1 rounded-2xl border px-3 py-3.5 text-center">
             <p className="text-[22px] leading-none font-semibold">
               {result.connections}
             </p>

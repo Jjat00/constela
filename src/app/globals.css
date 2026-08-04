@@ -7,10 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-dm-sans);
-  --font-heading: var(--font-dm-sans);
+  --font-sans: var(--font-inter-tight);
+  --font-mono: var(--font-plex-mono);
+  --font-display: var(--font-inter-tight);
+  --font-heading: var(--font-inter-tight);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -52,135 +52,161 @@
   --color-halfa: var(--halfa);
   --color-aurora: var(--aurora);
   /*
-   * Escala tipográfica — DM Sans en toda la app, con el tracking como sistema.
+   * Escala tipográfica — Inter Tight en toda la app, con el tracking como
+   * sistema.
    *
-   * DM Sans es la familia del wordmark del logo (medido: 3.8% de desvío en
-   * las proporciones de «constela», frente al 20.9% de Geist). El ancla la
-   * fija el usuario: 400 a -0.04em. De ahí sale el resto — el ajuste es
-   * óptico, así que cuanto mayor el texto más se cierra, nunca menos que el
-   * cuerpo; y el mono abre en dirección contraria porque es anotación de
-   * observatorio, no lectura corrida.
+   * v6 «Observatorio» (2026-08-04): la familia deja de ser DM Sans. Inter
+   * Tight ya nace estrecha, así que el cuerpo NO lleva tracking negativo —
+   * apretarlo encima lo emborrona. El ancla pasa a ser `normal` y el ajuste
+   * óptico solo actúa hacia arriba: cuanto mayor el titular, más se cierra.
+   * El mono (IBM Plex) sigue abriendo en dirección contraria porque es
+   * anotación de observatorio, no lectura corrida.
    *
-   * Pesos por zona (DM Sans variable, sin fuentes extra):
-   *   700 titulares de pantalla · 600 títulos de sección y datos
-   *   500 controles, nav y etiquetas · 400 cuerpo y microcopy
+   * Pesos por zona (Inter Tight variable, sin fuentes extra):
+   *   600 titulares y títulos de sección · 500 controles, nav y etiquetas
+   *   400 cuerpo y microcopy
    */
-  --tracking-tighter: -0.055em; /* display: el titular de la landing */
-  --tracking-tight: -0.05em; /* h1/h2 de pantalla */
-  --tracking-snug: -0.045em; /* títulos menores, cards, cifras */
-  --tracking-normal: -0.04em; /* cuerpo y peso 400 — el ancla del sistema */
+  --tracking-tighter: -0.05em; /* display: el titular de la portada */
+  --tracking-tight: -0.04em; /* h1/h2 de pantalla */
+  --tracking-snug: -0.035em; /* títulos menores, cards, cifras */
+  --tracking-normal: 0em; /* cuerpo — el ancla del sistema */
   --tracking-wide: 0.14em; /* mono: fechas y datos cortos */
   --tracking-wider: 0.16em; /* mono: microetiquetas [ ASÍ ] */
   --tracking-widest: 0.2em; /* mono: la tesis del pie */
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /*
+   * v6: la escala de radios se aplana. Antes cada peldaño multiplicaba
+   * `--radius` (0.6 · 0.8 · 1 · 1.4 · 1.8 · 2.2 · 2.6), que con el 0.625rem de
+   * v5 daba de 6 a 16px. Con el 0.125rem de v6 daría de 1,2 a 5,2px — y 5,2px
+   * en un panel grande ya NO es la esquina de 2px de la portada: se lee
+   * redondeado. Aquí la esquina es una sola en toda la app, así que los siete
+   * peldaños valen lo mismo y `rounded-2xl` o `rounded-4xl` son decoración
+   * heredada, no jerarquía.
+   *
+   * Si algún día vuelve la roundness, los multiplicadores originales están en
+   * esta nota y se restauran tal cual.
+   */
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
 }
 
 /*
- * Constela v5 — "Observatorio" (proyecto claude.ai/design «Constela UI
- * design options», Constela.dc.html). El chrome vira del violeta al azul
- * cósmico: CTAs y controles activos en cosmic blue #4EA8FF translúcido,
- * acento de titulares y links en celeste #9DC8FF, cielo casi monocromo
- * (#0A0C12, nebulosas grises). El oro #FFD97A sigue siendo solo «tú»;
- * H-alfa #F0699F, los cierres triádicos; aurora #63D6B4, éxito.
+ * Constela v6 — «Observatorio» (2026-08-04). El usuario eligió la propuesta 1
+ * de las diez y pidió que la app entera hablara su idioma, no solo la portada.
+ *
+ * QUÉ CAMBIA respecto de v5: se apaga el cine. Un solo azul frío #6E9BFF para
+ * TODO el chrome —CTA, links, selección, cierres triádicos—, papel liso
+ * #0B0C0F sin nebulosas ni grano, hairline blanco al 11 % en vez de cristal, y
+ * la esquina baja de 10 px a 2 px. La acción principal deja de ser una píldora
+ * de color: es tinta plena invertida (blanco sobre papel), que es como esta
+ * escuela marca lo que hay que pulsar.
+ *
+ * QUÉ SOBREVIVE, y por qué no es incoherencia: las clases espectrales
+ * (--estrella-*). El color de una estrella es un DATO —su clase, estable por
+ * id—, no decoración; el tamaño sale de su magnitud. Lo que se apagó fue el
+ * oro de «tú» y el rosa H-alfa de los triángulos, que sí eran énfasis: ahora
+ * son blanco pleno y azul. Decisión explícita del usuario.
+ *
+ * --destructive también sobrevive en rojo: un error no es un acento, y en una
+ * página monocroma es la única tinta que no puede confundirse con chrome.
+ *
  * App dark-only: :root y .dark comparten paleta. Fuente de verdad: DESIGN.md.
  */
 :root {
-  --background: #02030a; /* el vacío — cuerpo bajo el cielo */
-  --foreground: #f8faff; /* starlight white */
-  --card: #0b0f19;
-  --card-foreground: #f8faff;
-  --popover: #0b0f19;
-  --popover-foreground: #f8faff;
-  --primary: #4ea8ff; /* cosmic blue — tinta del chrome */
-  --primary-foreground: #04101e;
-  --secondary: #121826;
-  --secondary-foreground: #f8faff;
-  --muted: #10151f;
-  --muted-foreground: #aab2c8; /* soft gray */
-  --accent: #16202e; /* superficie hover azulada */
-  --accent-foreground: #f8faff;
+  --background: #0b0c0f; /* papel — liso, sin gradiente ni cielo */
+  --foreground: #f2f3f5; /* tinta */
+  --card: #0b0c0f; /* aquí no hay superficies elevadas: papel + filete */
+  --card-foreground: #f2f3f5;
+  --popover: #0b0c0f;
+  --popover-foreground: #f2f3f5;
+  --primary: #f2f3f5; /* la acción principal es tinta plena invertida */
+  --primary-foreground: #0b0c0f;
+  --secondary: #101216;
+  --secondary-foreground: #f2f3f5;
+  --muted: #101216;
+  --muted-foreground: #8e939c; /* suave */
+  --accent: #14161a; /* el único «hover» con relleno */
+  --accent-foreground: #f2f3f5;
   --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: #4ea8ff;
-  --chart-1: #4ea8ff;
-  --chart-2: #9dc8ff;
-  --chart-3: #f0699f;
-  --chart-4: #63d6b4;
-  --chart-5: #ffd97a;
-  --radius: 0.625rem;
-  --sidebar: #0b0f19;
-  --sidebar-foreground: #f8faff;
-  --sidebar-primary: #4ea8ff;
-  --sidebar-primary-foreground: #04101e;
-  --sidebar-accent: #16202e;
-  --sidebar-accent-foreground: #f8faff;
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: #4ea8ff;
-  --sol: #ffd97a; /* golden star — solo tú */
-  --supernova: #fff4c7;
-  --cosmic: #4ea8ff; /* cosmic blue — CTAs */
-  --celeste: #9dc8ff; /* acento de titulares y links */
-  --faint: #79839c; /* microetiquetas mono, texto terciario */
-  --estrella-b: #9db4ff;
+  --border: oklch(1 0 0 / 11%); /* la hairline: mide 1px y cruza a sangre */
+  --input: oklch(1 0 0 / 14%);
+  --ring: #6e9bff;
+  --chart-1: #6e9bff;
+  --chart-2: #f2f3f5;
+  --chart-3: #8e939c;
+  --chart-4: #b9bec7;
+  --chart-5: #7c828c;
+  --radius: 0.125rem; /* 2px: toda la escala de radios cuelga de aquí */
+  --sidebar: #0b0c0f;
+  --sidebar-foreground: #f2f3f5;
+  --sidebar-primary: #f2f3f5;
+  --sidebar-primary-foreground: #0b0c0f;
+  --sidebar-accent: #14161a;
+  --sidebar-accent-foreground: #f2f3f5;
+  --sidebar-border: oklch(1 0 0 / 11%);
+  --sidebar-ring: #6e9bff;
+  --sol: #f2f3f5; /* «tú»: la única estrella en blanco pleno */
+  --supernova: #ffffff;
+  --cosmic: #6e9bff; /* el único azul: CTA, foco, selección */
+  --celeste: #6e9bff; /* acento de titulares y links */
+  --faint: #7c828c; /* tenue: microetiquetas mono, texto terciario */
+  --estrella-b: #9db4ff; /* las clases espectrales son dato, no acento */
   --estrella-a: #cdd8ff;
   --estrella-k: #ffd9a8;
   --estrella-m: #ffb380;
-  --halfa: #f0699f;
-  --aurora: #63d6b4;
-  --glow-sol: 0 0 32px rgb(255 217 122 / 40%);
+  --halfa: #6e9bff; /* cierres triádicos: azul, ya no rosa */
+  --aurora: #6e9bff;
+  --glow-sol: none; /* en esta escuela nada resplandece */
 }
 
 .dark {
-  --background: #02030a;
-  --foreground: #f8faff;
-  --card: #0b0f19;
-  --card-foreground: #f8faff;
-  --popover: #0b0f19;
-  --popover-foreground: #f8faff;
-  --primary: #4ea8ff;
-  --primary-foreground: #04101e;
-  --secondary: #121826;
-  --secondary-foreground: #f8faff;
-  --muted: #10151f;
-  --muted-foreground: #aab2c8;
-  --accent: #16202e;
-  --accent-foreground: #f8faff;
+  --background: #0b0c0f;
+  --foreground: #f2f3f5;
+  --card: #0b0c0f;
+  --card-foreground: #f2f3f5;
+  --popover: #0b0c0f;
+  --popover-foreground: #f2f3f5;
+  --primary: #f2f3f5;
+  --primary-foreground: #0b0c0f;
+  --secondary: #101216;
+  --secondary-foreground: #f2f3f5;
+  --muted: #101216;
+  --muted-foreground: #8e939c;
+  --accent: #14161a;
+  --accent-foreground: #f2f3f5;
   --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: #4ea8ff;
-  --chart-1: #4ea8ff;
-  --chart-2: #9dc8ff;
-  --chart-3: #f0699f;
-  --chart-4: #63d6b4;
-  --chart-5: #ffd97a;
-  --sidebar: #0b0f19;
-  --sidebar-foreground: #f8faff;
-  --sidebar-primary: #4ea8ff;
-  --sidebar-primary-foreground: #04101e;
-  --sidebar-accent: #16202e;
-  --sidebar-accent-foreground: #f8faff;
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: #4ea8ff;
-  --sol: #ffd97a;
-  --supernova: #fff4c7;
-  --cosmic: #4ea8ff;
-  --celeste: #9dc8ff;
-  --faint: #79839c;
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: #6e9bff;
+  --chart-1: #6e9bff;
+  --chart-2: #f2f3f5;
+  --chart-3: #8e939c;
+  --chart-4: #b9bec7;
+  --chart-5: #7c828c;
+  --sidebar: #0b0c0f;
+  --sidebar-foreground: #f2f3f5;
+  --sidebar-primary: #f2f3f5;
+  --sidebar-primary-foreground: #0b0c0f;
+  --sidebar-accent: #14161a;
+  --sidebar-accent-foreground: #f2f3f5;
+  --sidebar-border: oklch(1 0 0 / 11%);
+  --sidebar-ring: #6e9bff;
+  --sol: #f2f3f5;
+  --supernova: #ffffff;
+  --cosmic: #6e9bff;
+  --celeste: #6e9bff;
+  --faint: #7c828c;
   --estrella-b: #9db4ff;
   --estrella-a: #cdd8ff;
   --estrella-k: #ffd9a8;
   --estrella-m: #ffb380;
-  --halfa: #f0699f;
-  --aurora: #63d6b4;
-  --glow-sol: 0 0 32px rgb(255 217 122 / 40%);
+  --halfa: #6e9bff;
+  --aurora: #6e9bff;
+  --glow-sol: none;
 }
 
 @layer base {
@@ -188,108 +214,120 @@
     @apply border-border outline-ring/50;
   }
   body {
-    /* v5: el vacío es plano — la profundidad la pone CosmicSky, no el body */
+    /* v6: el papel es liso y es lo único que hay debajo — no hay cielo */
     background: var(--background);
     @apply text-foreground;
   }
   html {
     @apply font-sans;
-    /* El cuerpo lleva el tracking que fijó el usuario; los tamaños
-       grandes lo cierran más con tracking-tight/tighter, y el mono lo abre. */
+    /* Inter Tight ya viene estrecha: el cuerpo va a tracking natural y solo
+       los titulares lo cierran con tracking-tight/tighter. El mono lo abre. */
     letter-spacing: var(--tracking-normal);
   }
   ::selection {
-    background: rgb(78 168 255 / 30%);
+    background: rgb(110 155 255 / 28%);
   }
 }
 
 @layer utilities {
-  /* Grano de cine sobre todo el fondo — el registro es película, no render */
+  /* v6: el grano se apaga. Era el registro «película» de v5 y esta escuela
+     dice lo contrario — el papel es liso y no simula nada. La clase se queda
+     como no-op porque la llevan diez plantillas y quitarla de todas es ruido
+     sin beneficio; si vuelve el cine, vuelve aquí. */
   .grain::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    pointer-events: none;
-    opacity: 0.045;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    content: none;
   }
-  /* Cristal v5: relleno blanco neutro al 5%, borde fino, blur 26 —
-     sin tinte de color. Nunca un panel opaco encima del cielo. */
+  /* Cristal v6: ya no hay vidrio. El cristal se vuelve superficie —papel
+     opaco con filete de 1px, sin blur y sin sombra—, que es la tesis literal
+     de esta escuela: nada flota sobre nada. Se conserva el nombre porque es
+     el token de «panel» en toda la app. */
   .glass {
-    background: rgb(255 255 255 / 5%);
-    border: 1px solid rgb(255 255 255 / 8%);
-    backdrop-filter: blur(26px);
-    -webkit-backdrop-filter: blur(26px);
-    box-shadow: 0 30px 70px -30px rgb(2 3 10 / 90%);
+    background: var(--background);
+    border: 1px solid var(--border);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
   }
-  /* CTA principal: píldora de cristal con tinta cosmic blue. Sin glow. */
+  /* CTA principal: tinta plena invertida. Aquí la acción no se marca con
+     color —el azul está reservado— sino con el contraste máximo de la
+     página, que es exactamente lo que hace el botón de la portada. */
   .btn-cosmic {
-    border: 1px solid rgb(78 168 255 / 75%);
-    background: rgb(78 168 255 / 14%);
-    color: var(--foreground);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: calc(infinity * 1px);
+    border: 1px solid var(--foreground);
+    background: var(--foreground);
+    color: var(--background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: var(--radius);
     transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+      background-color 0.18s ease,
+      border-color 0.18s ease;
   }
   .btn-cosmic:hover {
-    background: rgb(78 168 255 / 26%);
+    border-color: #fff;
+    background: #fff;
   }
-  /* Acción de identidad (tu QR): oro, nunca para chrome genérico */
+  /* Acción de identidad (tu QR): era oro. Sin oro, se distingue por ser la
+     única acción con filete y sin relleno junto a una de tinta plena. */
   .btn-sol {
-    border: 1px solid rgb(255 217 122 / 45%);
-    background: rgb(255 217 122 / 12%);
-    color: var(--sol);
-    border-radius: calc(infinity * 1px);
-    transition: background-color 0.2s ease;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted-foreground);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease;
   }
   .btn-sol:hover {
-    background: rgb(255 217 122 / 20%);
+    border-color: var(--foreground);
+    color: var(--foreground);
   }
-  /* Chip de filtro/tag: reposo gris, activo cosmic blue */
+  /* Chip de filtro/tag: reposo con filete, puesto en tinta plena invertida */
   .chip-star {
-    border: 1px solid rgb(255 255 255 / 9%);
-    background: rgb(255 255 255 / 4%);
+    border: 1px solid var(--border);
+    background: transparent;
     color: var(--muted-foreground);
-    border-radius: calc(infinity * 1px);
+    border-radius: var(--radius);
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
   }
   .chip-star:hover {
-    border-color: rgb(255 255 255 / 20%);
+    border-color: var(--foreground);
     color: var(--foreground);
   }
   .chip-star[data-active="true"],
   .chip-star[aria-pressed="true"] {
-    border-color: rgb(78 168 255 / 80%);
-    background: rgb(78 168 255 / 22%);
-    color: var(--foreground);
+    border-color: var(--foreground);
+    background: var(--foreground);
+    color: var(--background);
   }
-  /* Toggle triádico: H-alfa cuando está encendido */
+  /* Toggle triádico: el azul, que es lo único que ya era azul */
   .chip-triad {
-    border: 1px solid rgb(255 255 255 / 9%);
-    background: rgb(255 255 255 / 4%);
+    border: 1px solid var(--border);
+    background: transparent;
     color: var(--muted-foreground);
-    border-radius: calc(infinity * 1px);
+    border-radius: var(--radius);
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
+  }
+  .chip-triad:hover {
+    border-color: var(--foreground);
+    color: var(--foreground);
   }
   .chip-triad[data-active="true"],
   .chip-triad[aria-pressed="true"] {
-    border-color: rgb(240 105 159 / 60%);
-    background: rgb(240 105 159 / 14%);
-    color: var(--halfa);
+    border-color: var(--celeste);
+    background: rgb(110 155 255 / 14%);
+    color: var(--celeste);
   }
-  /* Glow de identidad (tú: avatar, QR) — dorado, nunca en botones de chrome */
+  /* Glow de identidad: apagado en v6 (--glow-sol es `none`). Se conserva la
+     clase para no dejar huecos en los sitios que la aplican. */
   .sol-glow {
     box-shadow: var(--glow-sol);
   }
-  /* Halo del icono activo en la barra de navegación móvil */
+  /* El icono activo de la barra móvil ya no se marca con halo sino con
+     tinta: el resplandor era cine. */
   .drop-shadow-glow {
-    filter: drop-shadow(0 0 8px rgb(157 200 255 / 60%));
+    filter: none;
   }
   /* Prosa legal: el único texto denso de Constela. El cielo nunca va detrás
      de un párrafo largo (DESIGN §4), así que vive sobre cristal y se lee como
@@ -337,7 +375,7 @@
     color: var(--celeste);
     text-decoration: underline;
     text-underline-offset: 3px;
-    text-decoration-color: rgb(157 200 255 / 40%);
+    text-decoration-color: rgb(110 155 255 / 45%);
     transition: text-decoration-color 0.2s ease;
   }
   .prosa-legal a:hover {
@@ -473,4 +511,22 @@
 .calm .animate-draw {
   animation: none !important;
   stroke-dashoffset: 0;
+}
+
+/*
+ * v6 «Observatorio» — no queda una sola píldora.
+ *
+ * Toda la escala de radios cuelga de `--radius`, así que bajarlo a 2px cuadra
+ * `rounded-sm|md|lg|xl|2xl|3xl|4xl` de una vez. `rounded-full` NO cuelga de
+ * ahí: Tailwind lo compila a `calc(infinity * 1px)` fijo, y son 67 usos
+ * repartidos por toda la app. Se cuadra aquí, en una regla sin `@layer`, que
+ * es la única forma de ganarle a una utilidad de Tailwind sin `!important` —
+ * las capas sin nombre pesan más que cualquier capa nombrada.
+ *
+ * Cuidado si algún día vuelve un elemento que DEBE ser redondo (un avatar
+ * circular, un punto de estado): no basta con quitarle `rounded-full`, hay
+ * que excluirlo aquí o darle el radio en `style`, que gana a esto.
+ */
+[class*="rounded-full"] {
+  border-radius: var(--radius);
 }

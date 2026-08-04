@@ -1,14 +1,17 @@
 /**
- * El banco de hechos de las diez propuestas de landing.
+ * El banco de hechos de la portada.
  *
- * Todo lo que las diez opciones pueden decir sale de aquí, y todo lo de aquí
- * sale de PRODUCT.md, CONTEXT.md y los ADR. La regla dura: **no existen
- * testimonios, métricas de uso, prensa, casos ni clientes — no fabricar
- * ninguno** (PRODUCT.md § Evidence on Hand). Si una propuesta necesitara una
- * cifra para funcionar, la propuesta está mal, no los datos.
+ * Todo lo que la portada dice sale de aquí, y todo lo de aquí sale de
+ * PRODUCT.md, CONTEXT.md y los ADR. La regla dura: **no existen testimonios,
+ * métricas de uso, prensa, casos ni clientes — no fabricar ninguno**
+ * (PRODUCT.md § Evidence on Hand). Si la portada necesitara una cifra para
+ * funcionar, la portada está mal, no los datos.
  *
- * Vive en un solo sitio para que comparar diez diseños compare diseño y no
- * copy: mismo mensaje, diez lenguajes visuales.
+ * Español de América: el copy va en segunda persona del singular («escaneas»,
+ * «tu red»), que sirve a los dos lados del charco, y cuando hace falta el
+ * plural es «ustedes» — nunca «vosotros». Nació como banco compartido de diez
+ * propuestas de rediseño; ganó la 1, se promovió a `/` y las otras nueve se
+ * retiraron (2026-08-04).
  */
 
 export const MARCA = {
@@ -27,7 +30,7 @@ export const PASOS = [
     n: "01",
     titulo: "Escaneas",
     texto:
-      "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y os conecta, en el mismo movimiento.",
+      "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y los conecta, en el mismo movimiento.",
   },
   {
     n: "02",
@@ -87,7 +90,7 @@ export const PREGUNTAS = [
   },
   {
     q: "¿Puedo conectar con alguien sin haberlo visto?",
-    a: "No, y es a propósito. Una conexión solo nace al abrir el QR personal del otro. Tocar su estrella abre su perfil; no os conecta.",
+    a: "No, y es a propósito. Una conexión solo nace al abrir el QR personal del otro. Tocar su estrella abre su perfil; no los conecta.",
   },
   {
     q: "¿Quién ve la constelación?",
@@ -119,27 +122,29 @@ export const VIDEO = {
   pie: "35 s · sin sonido",
 } as const;
 
+/**
+ * La bienvenida real (`/bienvenida`) enseñada en la portada: las tres
+ * preguntas del ADR 0004 sobre el catálogo del evento de ejemplo, y un botón
+ * que lleva lo elegido al mapa de la banda siguiente. El usuario pidió
+ * conservarla al promover la propuesta 1 (2026-08-04).
+ */
+export const BIENVENIDA = {
+  etiqueta: "Primero",
+  titulo: "Entras con Google y dices quién eres.",
+  texto:
+    "Tu rol, los temas de los que quieres hablar y a qué viniste al evento. Una pantalla, menos de un minuto, una sola vez: eso es toda tu estrella.",
+  textoDos:
+    "No es un perfil para adornar. Esas tres señales son el idioma con el que el resto del evento decide acercarse a ti — y con el que tú decides a quién buscar.",
+  pie: "es la pantalla de bienvenida real · los tags son los del evento de ejemplo",
+} as const;
+
 export const MAPA = {
-  etiqueta: "La constelación",
+  etiqueta: "Después",
   titulo: "Y el evento entero se vuelve legible.",
   texto:
     "Cada asistente es una estrella; cada QR que escaneas, una línea entre dos. Filtra por rol, interés o intención y lo que no coincide se apaga: el mapa nunca se reordena, así que nunca pierdes de vista dónde estaba quién.",
   textoDos:
-    "Ahí se ve lo que un salón lleno esconde: quién está contratando, quién habla de lo mismo que tú, y los triángulos rosados de gente que ya se conoce entre sí — por donde se pide una presentación.",
+    "Ahí se ve lo que un salón lleno esconde: quién está contratando, quién habla de lo mismo que tú, y los triángulos azules de gente que ya se conoce entre sí — por donde se pide una presentación.",
   marco: "constelación · evento de ejemplo",
   pie: "toca un chip, busca un nombre, abre una estrella",
 } as const;
-
-/** Las diez propuestas, para el índice y el conmutador de revisión. */
-export const OPCIONES = [
-  { n: 1, ruta: "/opcion1", nombre: "Observatorio", nota: "Minimalismo suizo, casi monocromo" },
-  { n: 2, ruta: "/opcion2", nombre: "Documento", nota: "Estilo Vercel — blanco, preciso, técnico" },
-  { n: 3, ruta: "/opcion3", nombre: "Corriente", nota: "Estilo Linear — violeta, malla, cristal" },
-  { n: 4, ruta: "/opcion4", nombre: "Telemetría", nota: "Futurista: consola de misión, mono total" },
-  { n: 5, ruta: "/opcion5", nombre: "Encuentro", nota: "Startup cálida, papel crema, redonda" },
-  { n: 6, ruta: "/opcion6", nombre: "Efemérides", nota: "Editorial: revista astronómica impresa" },
-  { n: 7, ruta: "/opcion7", nombre: "Cartel", nota: "Brutalista, tipografía enorme, amarillo" },
-  { n: 8, ruta: "/opcion8", nombre: "Secuencia", nota: "Cinematográfico, letterbox, títulos" },
-  { n: 9, ruta: "/opcion9", nombre: "Cristal", nota: "Spatial: vidrio, profundidad, píldoras" },
-  { n: 10, ruta: "/opcion10", nombre: "Serigrafía", nota: "Riso duotono, grano, cartel de evento" },
-] as const;

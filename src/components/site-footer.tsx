@@ -19,11 +19,10 @@ import { cn } from "@/lib/utils";
 export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer className={cn("mt-auto w-full", className)}>
-      {/* La línea de horizonte: no corta la página, se apaga en los bordes */}
-      <div
-        aria-hidden
-        className="h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent"
-      />
+      {/* La regla que cierra la página. v6: era una línea de horizonte que se
+          apagaba en los bordes; aquí una hairline cruza a sangre y no se
+          disculpa — es la misma que separa todas las bandas de la portada. */}
+      <div aria-hidden className="bg-border h-px w-full" />
 
       <div className="flex flex-col items-center gap-9 px-7 pt-14 pb-[calc(2.5rem+env(safe-area-inset-bottom))] text-center lg:gap-11 lg:pt-20 lg:pb-16">
         {/* La firma: la marca y su tesis, juntas y apretadas */}
@@ -54,7 +53,7 @@ export function SiteFooter({ className }: { className?: string }) {
             </Link>
             <span
               aria-hidden
-              className="size-[3px] shrink-0 rounded-full bg-white/25"
+              className="size-[3px] shrink-0 rounded-full bg-faint"
             />
             <Link
               href="/terminos"

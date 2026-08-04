@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor, type TagChoice } from "@/lib/tags";
-import { AuraSol } from "@/components/cosmos";
 import { ProfileForm } from "./profile-form";
 
 /**
@@ -60,7 +59,6 @@ export default async function ProfilePage({
       {/* Tu sol, en cabecera: la foto llega de tu cuenta */}
       <header className="flex items-center gap-5 sm:gap-6">
         <div className="relative size-16 shrink-0 sm:size-24">
-          <AuraSol size={96} />
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

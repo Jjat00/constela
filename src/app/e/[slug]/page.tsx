@@ -38,7 +38,7 @@ export default async function EventPage({
     <main className="grain relative flex flex-1 flex-col items-center justify-center overflow-hidden px-5 py-12 pb-32 sm:px-8 sm:py-16 sm:pb-40 lg:pb-48">
       {/* La ficha comparte el vacío premium de la landing, con el horizonte
           del planeta — mirar tu galaxia es asomarse a un mundo tuyo */}
-      <CosmicSky planet />
+      <CosmicSky />
 
       <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-5 text-center">
         <Galaxia seed={event.name.length} size={80} active />
@@ -63,11 +63,11 @@ export default async function EventPage({
               <img
                 src={event.creator_avatar}
                 alt=""
-                className="size-7 rounded-full border border-white/15 object-cover"
+                className="size-7 rounded-full border object-cover"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <span className="flex size-7 items-center justify-center rounded-full border border-white/15 bg-card text-xs font-semibold text-estrella-a">
+              <span className="flex size-7 items-center justify-center rounded-full border bg-card text-xs font-semibold text-estrella-a">
                 {event.creator_name.charAt(0).toUpperCase()}
               </span>
             )}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Orbit, QrCode, SlidersHorizontal } from "lucide-react";
-import { AuraSol, Galaxia } from "@/components/cosmos";
+import { Galaxia } from "@/components/cosmos";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +46,6 @@ function AvatarSol({
 }) {
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <AuraSol size={size} />
       {identity.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -91,7 +90,7 @@ export function AppNav({
         {activeEvent && (
           <Link
             href="/eventos"
-            className="mt-5 flex items-center gap-2.5 rounded-2xl border border-white/8 bg-white/[0.03] px-2.5 py-2 transition-colors hover:border-celeste/30"
+            className="mt-5 flex items-center gap-2.5 rounded-2xl border px-2.5 py-2 transition-colors hover:border-celeste/30"
           >
             <Galaxia
               seed={activeEvent.slug.charCodeAt(0)}
@@ -121,7 +120,7 @@ export function AppNav({
                   "flex items-center gap-3 rounded-2xl border px-3 py-2.5 text-[13.5px] font-medium transition-colors",
                   active
                     ? "border-cosmic/40 bg-cosmic/15 text-foreground"
-                    : "border-transparent text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                    : "border-transparent text-muted-foreground hover:bg-accent hover:text-foreground",
                 )}
               >
                 <Icon
@@ -138,7 +137,7 @@ export function AppNav({
         {identity && (
           <Link
             href="/perfil"
-            className="mt-auto flex items-center gap-3 rounded-full border border-sol/20 bg-sol/5 p-2 transition-colors hover:bg-sol/10"
+            className="mt-auto flex items-center gap-3 rounded-full border p-2 transition-colors hover:border-foreground/40"
           >
             <AvatarSol identity={identity} size={38} />
             <span className="flex min-w-0 flex-col">

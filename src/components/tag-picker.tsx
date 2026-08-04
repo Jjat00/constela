@@ -125,7 +125,7 @@ export function TagPicker({
           }
         }}
         placeholder={placeholder}
-        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base outline-none transition-colors placeholder:text-faint focus:border-cosmic/60"
+        className="h-12 w-full rounded-2xl border px-4 text-base outline-none transition-colors placeholder:text-faint focus:border-cosmic/60"
       />
 
       <div className="flex flex-wrap gap-2">

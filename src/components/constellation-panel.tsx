@@ -79,8 +79,10 @@ export function ConstellationPanel({
   /** El mapa vive dentro de una página que scrollea: devuelve los gestos de
    *  navegación al documento (ver `ConstellationGraph`). */
   embedded?: boolean;
-  /** Otra tinta para el mismo mapa: lo usa `/opcion2`, que lo imprime sobre
-   *  papel blanco. Sin ella, el cosmos de la app. */
+  /** Otra tinta para el mismo mapa. Hoy nadie la pasa —la app y la portada
+   *  comparten la del Observatorio—, pero es lo que permitió imprimir este
+   *  grafo sobre papel blanco cuando se probaban rediseños. Sin ella, la
+   *  paleta por defecto del grafo. */
   paleta?: PaletaGrafo;
 }) {
   const [ownActive, setOwnActive] = useState<ActiveFilters>(NO_FILTERS);
@@ -301,7 +303,7 @@ export function ConstellationPanel({
           {searchField(false)}
           {quickChips.length > 0 && (
             <>
-              <div className="h-5.5 w-px shrink-0 bg-white/10" aria-hidden />
+              <div className="h-5.5 w-px shrink-0 bg-border" aria-hidden />
               {/* En laptops la barra no da para todo: los chips ceden ancho y
                   scrollean antes que expulsar del pill a los controles fijos */}
               <div className="flex min-w-0 gap-1.5 overflow-x-auto [scrollbar-width:none]">
@@ -412,7 +414,7 @@ export function ConstellationPanel({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar filtros"
-                className="grid size-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+                className="grid size-8 shrink-0 place-items-center rounded-full border text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
               >
                 <X className="size-3.5" aria-hidden />
               </button>

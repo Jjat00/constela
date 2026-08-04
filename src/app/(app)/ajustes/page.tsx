@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { AuraSol } from "@/components/cosmos";
 import { CalmToggle } from "@/components/calm-mode";
 
 /**
@@ -43,7 +42,6 @@ export default async function SettingsPage() {
         className="glass group flex items-center gap-4 rounded-4xl p-5 transition-colors hover:border-sol/30"
       >
         <div className="relative size-11 shrink-0">
-          <AuraSol size={44} />
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -98,7 +96,7 @@ export default async function SettingsPage() {
         <h2 className="font-mono text-[10px] tracking-wider text-faint">
           [ PREFERENCIAS ]
         </h2>
-        <div className="flex items-start gap-3 rounded-3xl border border-white/5 bg-white/[0.03] p-3.5">
+        <div className="flex items-start gap-3 rounded-3xl border p-3.5">
           <div className="min-w-0 flex-1">
             <p className="text-[13px] leading-snug font-medium">
               Movimiento reducido

@@ -34,18 +34,29 @@ type SimNode = GraphNode & {
   fy?: number;
 };
 
-// StarMap v5 (diseño 1b): estrellas puras — núcleo blanco, halo espectral,
-// picos de difracción. Las fotos no viven en el mapa: viven en el MiniPerfil.
-// El tú es un sol dorado; las líneas son filamentos blanco azulado y los
-// triángulos, gas H-alfa con borde.
-const SOL = "#FFD97A";
-const HALFA = "240, 105, 159"; // rgb de --halfa, para armar alphas
-const FILAMENTO = "205, 216, 255"; // rgb de estrella A
-const CELESTE = "#9DC8FF"; // anillo de selección
+// StarMap v6 «Observatorio»: la red del evento no ilumina, mide. Las fotos no
+// viven en el mapa: viven en el MiniPerfil.
+//
+// Lo que se apagó (2026-08-04, decisión del usuario) es el ÉNFASIS: el oro de
+// «tú» pasa a blanco pleno, el gas H-alfa de los triángulos a azul frío, y
+// desaparecen halo difuso, picos de difracción y corona.
+//
+// Lo que NO se tocó es la INFORMACIÓN: cada estrella conserva el color de su
+// clase espectral —`tinta: ""` deja que mande `spectrumOf(id)`— y su tamaño
+// sigue saliendo de la magnitud (1 + 0,34·conexiones). Esa es la única razón
+// por la que hay color en una página monocroma: ahí el color es un dato.
+const SOL = "#F2F3F5";
+const TRIADA = "110, 155, 255"; // rgb de --halfa v6, para armar alphas
+// El diagrama de la portada traza en #8E939C al 40 % sobre #0B0C0F, que cae en
+// rgb(63, 66, 71). El canvas pinta sus filamentos al 34 %, así que con el mismo
+// gris saldría medio tono por debajo: se compensa aclarando la tinta hasta que
+// 0,34 sobre el papel oscuro aterriza donde aterriza la portada.
+const FILAMENTO = "165, 171, 181";
+const AZUL = "#6E9BFF"; // anillo de selección
 
 /**
- * La tinta del mapa. Sin `paleta` se dibuja el cosmos de la app —la anatomía
- * de siempre— y nada cambia. Con ella, el MISMO grafo se imprime en otro
+ * La tinta del mapa. Sin `paleta` se dibuja el Observatorio —la anatomía de
+ * la app— y nada cambia. Con ella, el MISMO grafo se imprime en otro
  * idioma visual: son las mismas perillas que ya tenía `<RedSVG>` para las
  * propuestas de landing, ahora sobre el mapa que sí se toca.
  *
@@ -77,18 +88,18 @@ export type PaletaGrafo = {
   etiquetaBorde?: string;
 };
 
-const PALETA_COSMOS: Required<PaletaGrafo> = {
+const PALETA_OBSERVATORIO: Required<PaletaGrafo> = {
   filamento: FILAMENTO,
-  triada: HALFA,
-  tinta: "",
+  triada: TRIADA,
+  tinta: "", // vacío = manda la clase espectral de cada estrella
   sol: SOL,
   nucleo: "#FFFFFF",
-  halo: true,
-  picos: true,
-  corona: true,
-  seleccion: CELESTE,
-  etiqueta: "#F8FAFF",
-  etiquetaBorde: "rgba(2, 3, 10, 0.75)",
+  halo: false,
+  picos: false,
+  corona: false,
+  seleccion: AZUL,
+  etiqueta: "#F2F3F5",
+  etiquetaBorde: "rgba(11, 12, 15, 0.8)",
 };
 
 // Límites del zoom, compartidos por el encuadre inicial y los botones ±.
@@ -151,7 +162,7 @@ export function ConstellationGraph({
   /** Otra tinta para el mismo grafo. Sin ella, el cosmos de la app. */
   paleta?: PaletaGrafo;
 }) {
-  const tinta = { ...PALETA_COSMOS, ...paleta };
+  const tinta = { ...PALETA_OBSERVATORIO, ...paleta };
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   // Tocar una estrella la abre en el MiniPerfil; nunca navega ni conecta: la

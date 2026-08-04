@@ -46,7 +46,7 @@ export function MiniPerfil({
 }) {
   const [infoOpen, setInfoOpen] = useState<"magnitud" | "clase" | null>(null);
   const spec = isMe
-    ? { halo: "#FFD97A", core: "#FFF6E3" }
+    ? { halo: "#F2F3F5", core: "#FFFFFF" }
     : spectrumOf(node.id);
   const letter = spectralLetterOf(node.id);
   const label = (slug: string) => tagLabels?.get(slug) ?? slug;
@@ -64,7 +64,7 @@ export function MiniPerfil({
       role="dialog"
       aria-label={isMe ? "Tu estrella" : node.name}
       className={cn(
-        "animate-rise rounded-t-4xl p-5 pb-6 bg-background border border-white/10 lg:rounded-4xl lg:pb-5",
+        "animate-rise rounded-t-4xl p-5 pb-6 bg-background border lg:rounded-4xl lg:pb-5",
         className,
       )}
     >
@@ -116,7 +116,7 @@ export function MiniPerfil({
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          className="grid size-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-[13px] text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+          className="grid size-7 shrink-0 place-items-center rounded-full border text-[13px] text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
         >
           ✕
         </button>
@@ -135,7 +135,7 @@ export function MiniPerfil({
         </div>
       )}
 
-      <div className="mt-4.5 grid grid-cols-3 gap-3 border-t border-white/5 pt-3.5">
+      <div className="mt-4.5 grid grid-cols-3 gap-3 border-t pt-3.5">
         <div>
           <p className="font-mono text-[9px] tracking-wider text-muted-foreground whitespace-nowrap">
             CONEXIONES
@@ -235,14 +235,14 @@ export function MiniPerfil({
         createPortal(
           <div data-star-dialog onMouseDown={(e) => e.stopPropagation()}>
             <div
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-background/80"
               onClick={() => setInfoOpen(null)}
               aria-hidden
             />
             <div
               role="dialog"
               aria-label={infoOpen === "magnitud" ? "Magnitud" : "Clase estelar"}
-              className="animate-rise fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 rounded-3xl border border-white/10 bg-background p-4 lg:inset-x-auto lg:top-1/2 lg:bottom-auto lg:left-1/2 lg:w-80 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-2xl"
+              className="animate-rise fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 rounded-3xl border bg-background p-4 lg:inset-x-auto lg:top-1/2 lg:bottom-auto lg:left-1/2 lg:w-80 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-2xl"
             >
               <div className="mb-2.5 flex items-start justify-between gap-2">
                 <h3 className="text-sm font-semibold">
@@ -251,7 +251,7 @@ export function MiniPerfil({
                 <button
                   type="button"
                   onClick={() => setInfoOpen(null)}
-                  className="grid size-7 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+                  className="grid size-7 shrink-0 place-items-center rounded-full border text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
                   aria-label="Cerrar"
                 >
                   <X className="size-3.5" aria-hidden />
@@ -266,7 +266,7 @@ export function MiniPerfil({
                   <p className="text-muted-foreground">
                     Se calcula por tus conexiones:
                   </p>
-                  <p className="rounded-lg bg-white/5 p-1.5 font-mono">
+                  <p className="rounded-lg bg-muted p-1.5 font-mono">
                     (Conexiones × 0.14) + 1.1
                   </p>
                   <p className="text-muted-foreground">
@@ -289,7 +289,7 @@ export function MiniPerfil({
                     {SPECTRAL_TYPES.map((type) => (
                       <div
                         key={type.letter}
-                        className="flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5"
+                        className="flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5"
                         title={`${type.label}: ${type.temp}`}
                       >
                         <div

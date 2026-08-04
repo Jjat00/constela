@@ -18,7 +18,7 @@ export default function LegalLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="grain relative flex flex-1 flex-col">
-      <CosmicSky className="fixed" nebulas="faint" />
+      <CosmicSky className="fixed" />
 
       <header className="relative z-10 flex items-center justify-between px-5 pt-[calc(1.75rem+env(safe-area-inset-top))] sm:px-8 lg:px-14 lg:pt-8">
         <Link href="/" className="transition-opacity hover:opacity-80">

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { RotateCw } from "lucide-react";
-import { AuraSol, HaloEstelar, spectralLetterOf, spectrumOf } from "@/components/cosmos";
+import { HaloEstelar, spectralLetterOf, spectrumOf } from "@/components/cosmos";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,7 @@ export function TarjetaEstelar({
   const [flipped, setFlipped] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const quieto = useRef(false);
-  const spec = isMe ? { halo: "#FFD97A" } : spectrumOf(id);
+  const spec = isMe ? { halo: "#F2F3F5" } : spectrumOf(id);
   const letra = isMe ? "Sol" : spectralLetterOf(id);
 
   // Con calma pedida la tarjeta no se inclina ni gira con transición: se
@@ -191,19 +191,16 @@ function Superficie({
   return (
     <div
       className={cn(
-        "relative flex h-full w-full flex-col border border-white/10 p-6 sm:p-7",
+        "bg-background relative flex h-full w-full flex-col border p-6 sm:p-7",
         className,
       )}
-      style={{
-        background: `
-          radial-gradient(120% 90% at 8% 0%, ${halo}1F 0%, transparent 55%),
-          radial-gradient(90% 70% at 100% 100%, ${halo}14 0%, transparent 60%),
-          linear-gradient(155deg, #0C111C 0%, #070A12 55%, #05070E 100%)`,
-        boxShadow:
-          "0 40px 90px -45px rgba(2,3,10,0.95), inset 0 1px 0 rgba(255,255,255,0.07)",
-      }}
     >
-      {/* El filo de luz superior: el canto de una tarjeta impresa */}
+      {/* El filo superior, en el color de la clase espectral.
+          v6: el remate de la tarjeta eran cuatro cosas —dos gradientes
+          radiales teñidos, un degradado diagonal y una sombra proyectada— y se
+          quedó SOLO esta línea, porque es la única de las cuatro que decía
+          algo: de qué clase es esta estrella. El resto era material, y esta
+          escuela no imita materiales. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
@@ -274,7 +271,6 @@ function Frente({
       <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
         {isMe ? (
           <div className="relative size-16 sm:size-[4.5rem]">
-            <AuraSol size={72} />
             <div className="relative z-1 size-full overflow-hidden rounded-full border border-sol/60">
               {foto}
             </div>
@@ -302,7 +298,7 @@ function Frente({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-white/8 pt-3.5">
+      <div className="flex flex-col gap-3 border-t pt-3.5">
         {tags.length > 0 && (
           <div className="flex flex-wrap justify-center gap-1.5">
             {tags.map((tag) => (
@@ -349,7 +345,7 @@ function Reverso({
 
       <div className="flex flex-1 flex-col items-center justify-center gap-3.5">
         <div
-          className="rounded-2xl border p-3.5 backdrop-blur-xl"
+          className="rounded-2xl border p-3.5"
           style={{
             borderColor: `${halo}40`,
             background: `${halo}0A`,

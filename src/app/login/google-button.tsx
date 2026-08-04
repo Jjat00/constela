@@ -31,7 +31,10 @@ export function GoogleButton({ next }: { next?: string }) {
         disabled={status === "redirecting"}
         className="btn-cosmic flex h-14 w-full cursor-pointer items-center justify-center gap-2.5 text-base font-medium disabled:cursor-default disabled:opacity-60"
       >
-        <svg aria-hidden viewBox="0 0 24 24" className="size-5 text-estrella-a">
+        {/* v6: el botón pasó a tinta plena invertida, así que la marca de
+            Google va en el color del papel (lo hereda por currentColor) — con
+            la tinta espectral de v5 quedaba un azul claro sobre blanco. */}
+        <svg aria-hidden viewBox="0 0 24 24" className="size-5">
           <path
             fill="currentColor"
             d="M21.35 11.1H12v2.9h5.35c-.5 2.4-2.55 3.9-5.35 3.9a6 6 0 1 1 0-12c1.5 0 2.85.55 3.9 1.45l2.2-2.2A9 9 0 1 0 12 21c5.2 0 8.85-3.65 8.85-8.8 0-.4-.05-.75-.1-1.1Z"

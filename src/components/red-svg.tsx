@@ -1,13 +1,15 @@
 import { construirRed } from "@/lib/constelacion";
 
 /*
- * La red del evento, dibujable en diez idiomas distintos.
+ * La red del evento, dibujada. Es el diagrama del hero de la portada.
  *
  * Los datos son siempre los mismos (`construirRed`): la forma del grafo es la
- * marca y ninguna propuesta puede inventarse una red más favorecedora. Lo que
- * cambia es la tinta, el grosor, si hay halos, si hay picos de difracción y si
- * los cierres triádicos se rellenan. Así las diez opciones comparan lenguaje
- * visual, no contenido.
+ * marca y ninguna pantalla puede inventarse una red más favorecedora. Lo que
+ * los props gobiernan es la tinta, el grosor, si hay halos, si hay picos de
+ * difracción y si los cierres triádicos se rellenan. Nació con esas perillas
+ * para que diez propuestas de rediseño comparasen lenguaje visual y no
+ * contenido; ganó la del Observatorio y hoy solo se usa esa combinación, pero
+ * las perillas se quedan porque son lo que permite volver a probar.
  *
  * Decorativa: `aria-hidden` y sin interacción. La red que sí se toca vive en
  * `/home` con datos reales.

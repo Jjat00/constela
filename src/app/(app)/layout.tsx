@@ -3,18 +3,21 @@
  *
  * THESIS: la app es una sala de observación dentro del universo del evento;
  * rechaza el patrón "páginas con header" del SaaS.
- * OWN-WORLD: el fondo premium del hero a pantalla completa — gradiente
- * #070A12 en silencio, sin estrellas ni nebulosas: la única luz es el grafo —
- * + cristal (blur 26, borde blanco 8%) + chrome cosmic blue #4EA8FF /
- * celeste #9DC8FF; el oro #FFD97A existe solo para "tú"; H-alfa #F0699F solo
- * para cierres triádicos. DM Sans-led.
+ * OWN-WORLD (v6, 2026-08-04): la app habla el mismo idioma que la portada,
+ * porque el usuario pidió exactamente eso al elegir el rediseño. Papel liso
+ * #0B0C0F sin cielo ni grano, filete blanco al 11 % en lugar de cristal,
+ * esquina de 2px, Inter Tight + IBM Plex Mono y UN solo azul frío #6E9BFF
+ * para todo el chrome. El oro de "tú" y el rosa H-alfa se apagaron: "tú" es
+ * blanco pleno y los cierres triádicos, azules. Sobreviven las clases
+ * espectrales, porque el color de una estrella es un dato y no un acento.
  * STORY: quien entra ve su constelación real respirando y entiende que su red
  * ES este universo; la única forma de crecerlo es encontrarse en persona.
- * FIRST VIEWPORT: sidebar de cristal izquierda, grafo protagonista al centro
- * bajo la barra de búsqueda, rail derecho de datos reales; móvil = grafo
- * casi completo + controles del pulgar.
- * FORM: dirección pineada por el usuario (proyecto claude.ai/design «Constela
- * UI design options», Constela.dc.html, 2026-07-28).
+ * FIRST VIEWPORT: sidebar a la izquierda, grafo protagonista al centro bajo la
+ * barra de búsqueda, rail derecho de datos reales; móvil = grafo casi
+ * completo + controles del pulgar.
+ * FORM: la composición sigue siendo la pineada por el usuario (proyecto
+ * claude.ai/design «Constela UI design options», 2026-07-28); lo que cambió en
+ * v6 es la tinta, no el plano.
  */
 import { AppNav } from "@/components/app-nav";
 import { CosmicSky } from "@/components/cosmos";

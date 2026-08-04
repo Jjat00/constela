@@ -206,7 +206,7 @@ export default async function HomePage() {
           entre el header fijo (pt 4.25rem) y la barra de tabs (pb 5.5rem) del
           layout: con 100vh la página scrolleaba y las pills del panel quedaban
           debajo del chrome fijo. En desktop, con marco. */}
-      <div className="relative h-[calc(100svh_-_9.75rem_-_env(safe-area-inset-top)_-_env(safe-area-inset-bottom))] shrink-0 lg:h-auto lg:my-5 lg:flex-1 lg:overflow-hidden lg:rounded-4xl lg:border lg:border-white/5">
+      <div className="relative h-[calc(100svh_-_9.75rem_-_env(safe-area-inset-top)_-_env(safe-area-inset-bottom))] shrink-0 lg:h-auto lg:my-5 lg:flex-1 lg:overflow-hidden lg:rounded-4xl lg:border">
         <ConstellationPanel
           nodes={graph.nodes}
           edges={graph.edges}

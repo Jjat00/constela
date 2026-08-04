@@ -58,7 +58,7 @@ export function CalmToggle() {
       aria-label="Movimiento reducido"
       onClick={toggle}
       className={`relative h-[26px] w-11 shrink-0 cursor-pointer rounded-full border transition-colors ${
-        on ? "border-cosmic/75 bg-cosmic/30" : "border-white/12 bg-white/5"
+        on ? "border-cosmic/75 bg-cosmic/30" : ""
       }`}
     >
       <span

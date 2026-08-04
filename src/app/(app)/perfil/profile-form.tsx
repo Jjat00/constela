@@ -11,7 +11,7 @@ import {
 import { updateProfile } from "./actions";
 
 const INPUT =
-  "h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-[15px] outline-none transition-colors placeholder:text-faint focus:border-cosmic/60";
+  "h-12 w-full rounded-2xl border px-4 text-[15px] outline-none transition-colors placeholder:text-faint focus:border-cosmic/60";
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (

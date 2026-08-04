@@ -160,7 +160,7 @@ export default async function EventsPage() {
                       />
                     </Link>
                     {isActive && (
-                      <span className="rounded-full border border-sol/30 bg-sol/[0.08] px-2.5 py-1.5 font-mono text-[10px] tracking-wider text-sol">
+                      <span className="rounded-full border px-2.5 py-1.5 font-mono text-[10px] tracking-wider text-foreground">
                         ESTÁS AQUÍ
                       </span>
                     )}
@@ -189,7 +189,7 @@ export default async function EventsPage() {
                   {/* Pie anclado abajo: en la grilla las cards comparten
                       altura, así stats y botones quedan alineados entre cards */}
                   <div className="mt-auto pt-5">
-                    <div className="flex items-center justify-between gap-3 border-t border-white/5 pt-4">
+                    <div className="flex items-center justify-between gap-3 border-t pt-4">
                       <span className="truncate font-mono text-[10px] tracking-wide text-muted-foreground">
                         {stars} {stars === 1 ? "ESTRELLA" : "ESTRELLAS"}
                         {links > 0
@@ -243,7 +243,7 @@ export default async function EventsPage() {
 
           <Link
             href="/eventos/nuevo"
-            className="flex min-h-14 items-center justify-center gap-2 rounded-full border border-dashed border-white/15 px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-celeste/40 hover:text-celeste lg:hidden"
+            className="flex min-h-14 items-center justify-center gap-2 rounded-full border border-dashed px-4 py-4 font-mono text-xs text-muted-foreground transition-colors hover:border-celeste/40 hover:text-celeste lg:hidden"
           >
             <Plus className="size-4" aria-hidden />
             nuevo evento

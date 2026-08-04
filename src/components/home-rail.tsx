@@ -57,7 +57,7 @@ export function RailContent({
   return (
     <>
       {/* Constelación actual: prominente al tope */}
-      <section className="glass flex flex-col gap-3.5 rounded-4xl p-5 xl:bg-sol/[0.08] xl:border xl:border-sol/20">
+      <section className="glass flex flex-col gap-3.5 rounded-4xl p-5">
         <div className="flex items-center gap-3">
           <Galaxia seed={galaxySeed} size={48} active />
           <div className="min-w-0 flex-1">
@@ -108,7 +108,7 @@ export function RailContent({
         <div>
           <RailLabel>[ tu red ]</RailLabel>
           <div className="mt-3 flex gap-2.5">
-            <div className="flex-1 rounded-2xl border border-white/5 bg-white/[0.03] px-2.5 py-3">
+            <div className="flex-1 rounded-2xl border px-2.5 py-3">
               <p className="text-[22px] leading-none font-semibold">
                 {connectionCount}
               </p>
@@ -124,7 +124,7 @@ export function RailContent({
                 {triangleCount === 1 ? "triángulo" : "triángulos"}
               </p>
             </div>
-            <div className="flex-1 rounded-2xl border border-sol/20 bg-sol/5 px-2.5 py-3">
+            <div className="flex-1 rounded-2xl border px-2.5 py-3">
               <p className="text-[22px] leading-none font-semibold text-sol">
                 {magnitude}
               </p>
@@ -152,7 +152,7 @@ export function RailContent({
             {activity.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-white/[0.04] -mx-2"
+                className="flex items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-accent -mx-2"
               >
                 <span
                   aria-hidden
@@ -181,7 +181,7 @@ export function RailContent({
             {nearby.map((person) => (
               <li
                 key={person.id}
-                className="flex items-center gap-2.5 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-2.5"
+                className="flex items-center gap-2.5 rounded-2xl border px-3 py-2.5"
               >
                 <span
                   aria-hidden
@@ -272,7 +272,7 @@ export function MobileRailDrawer({
       {open && (
         <>
           <div
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-50 bg-background/80 lg:hidden"
             onClick={() => setOpen(false)}
             aria-hidden
           />
@@ -280,9 +280,9 @@ export function MobileRailDrawer({
           <div
             role="dialog"
             aria-label="Datos de tu constelación"
-            className="animate-rise fixed inset-x-0 bottom-0 z-50 max-h-[85svh] overflow-y-auto rounded-t-4xl border border-white/10 bg-background lg:hidden"
+            className="animate-rise fixed inset-x-0 bottom-0 z-50 max-h-[85svh] overflow-y-auto rounded-t-4xl border bg-background lg:hidden"
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-white/5 bg-background px-4 py-3">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-background px-4 py-3">
               <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
                 [ tu constelación ]
               </p>
@@ -290,7 +290,7 @@ export function MobileRailDrawer({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar"
-                className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
+                className="grid size-8 place-items-center rounded-full border text-muted-foreground transition-colors hover:bg-celeste/15 hover:text-foreground"
               >
                 <X className="size-4" aria-hidden />
               </button>

@@ -1,18 +1,19 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Cosmos — primitivas del cielo de Constela (DESIGN.md v5 «Observatorio»).
+ * Cosmos — primitivas de la identidad estelar de Constela (DESIGN.md v6
+ * «Observatorio»).
  *
- * Todo es determinista: el cielo se genera con un PRNG de semilla fija, así
- * que se renderiza en servidor (cero JS de cliente), no hay hydration
- * mismatch y el universo es el mismo en cada visita. Los tamaños de estrella
- * van en px fijos: un cielo nunca escala con el alto del documento.
+ * Todo es determinista: la clase espectral sale de un hash del id, así que se
+ * renderiza en servidor (cero JS de cliente), no hay hydration mismatch y la
+ * misma persona es siempre la misma estrella.
  *
- * v5 (fondo premium del hero, 2026-07-28): el cielo por defecto es silencio —
- * solo el gradiente #070A12→#0A0D18, sin estrellas ni nebulosas. La única luz
- * de cada pantalla la ponen el grafo y la identidad (espectrales, oro,
- * H-alfa). Los props siguen existiendo para encender un cielo rico a
- * propósito, pero el default ES el estilo de la landing.
+ * v6 (2026-08-04): se apaga el cine de v5 — el degradado del cielo, el campo
+ * de estrellas, las nebulosas, el horizonte de planeta, la corona dorada y los
+ * picos de difracción. El fondo de la app es papel liso `--background` y la
+ * única luz de cada pantalla la pone el dato: la clase espectral de cada
+ * estrella y su magnitud. Lo que se apagó fue el énfasis (el oro de «tú», el
+ * rosa H-alfa), no la información.
  */
 
 /** mulberry32 — PRNG pequeño y estable; suficiente para sembrar un cielo. */
@@ -59,196 +60,40 @@ export function spectralLetterOf(id: string) {
   return SPECTRA_LETTERS[hashOf(id) % SPECTRA.length];
 }
 
-type Star = {
-  x: number; // %
-  y: number; // %
-  r: number; // px
-  opacity: number;
-  bright: boolean;
-  delay: number; // s
-  duration: number; // s
-};
-
-function makeStars(seed: number, count: number): Star[] {
-  const rand = prng(seed);
-  const stars: Star[] = [];
-  for (let i = 0; i < count; i++) {
-    const u = rand();
-    const bright = u > 0.94;
-    stars.push({
-      x: Math.round(rand() * 1000) / 10,
-      y: Math.round(rand() * 1000) / 10,
-      r: bright ? 1.4 + rand() * 0.6 : 0.5 + rand() * 0.6,
-      opacity: 0.18 + u * 0.55,
-      bright,
-      delay: Math.round(rand() * 50) / 10,
-      duration: 3 + Math.round(rand() * 40) / 10,
-    });
-  }
-  return stars;
-}
-
 /**
- * Campo de estrellas + banda láctea + nebulosas grises sobre #0A0C12.
- * Cubre a su contenedor (position: absolute); el contenedor decide el
- * tamaño y lleva `relative` (o se monta `fixed inset-0` como fondo global).
+ * El papel de la pantalla.
+ *
+ * En v5 esto pintaba un cielo: degradado diagonal, campo de estrellas,
+ * nebulosas grises y un horizonte de planeta con resplandor. En v6 el fondo es
+ * liso y punto — la escuela dice que nada simula profundidad, y una superficie
+ * uniforme es lo que deja que un filete de 1px se lea como estructura.
+ *
+ * El componente NO se borró junto con el cielo porque sigue haciendo un
+ * trabajo real: mantener el contrato de capas. Va `absolute inset-0 z-0` bajo
+ * un contenedor `relative` (o `fixed inset-0` como fondo global) y garantiza
+ * que el papel llega a sangre incluso donde el contenedor trae su propio
+ * fondo, un `overflow-hidden` o una máscara. Si algún día vuelve una textura,
+ * vuelve aquí, en un solo sitio.
  */
-export function CosmicSky({
-  seed = 7,
-  stars = 0,
-  milkyWay = false,
-  nebulas = "none",
-  planet = false,
-  className,
-}: {
-  seed?: number;
-  stars?: number;
-  milkyWay?: boolean;
-  /** Nebulosas grises de reflexión — `rich` añade la tercera y la deriva. */
-  nebulas?: "none" | "faint" | "rich";
-  /** Horizonte de planeta oscuro asomando por abajo (landing). */
-  planet?: boolean;
-  className?: string;
-}) {
-  const field = makeStars(seed, stars);
-
+export function CosmicSky({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#070A12]",
+        "bg-background pointer-events-none absolute inset-0 z-0",
         className,
       )}
-      style={{
-        background: "linear-gradient(135deg, #070A12 0%, #0A0D18 50%, #070A12 100%)",
-      }}
-    >
-      {/* Gradiente azul sutil superior */}
-      {milkyWay && (
-        <div
-          className="absolute top-0 left-0 right-0 h-1/3"
-          style={{
-            background: "radial-gradient(ellipse at 50% 0%, rgba(130,184,255,0.04) 0%, transparent 70%)",
-            filter: "blur(40px)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
-
-      {/* Nebulosas de reflexión: grises, muy difusas — ambiente, no color */}
-      {nebulas !== "none" && (
-        <>
-          <div
-            className={cn(
-              "absolute rounded-full",
-              nebulas === "rich" && "animate-drift",
-            )}
-            style={{
-              left: "12%",
-              top: "14%",
-              width: "46%",
-              height: "40%",
-              background:
-                "radial-gradient(circle at 42% 40%, rgba(200,204,216,0.10) 0%, transparent 70%)",
-              filter: "blur(46px)",
-            }}
-          />
-          <div
-            className={cn(
-              "absolute rounded-full",
-              nebulas === "rich" && "animate-drift",
-            )}
-            style={{
-              left: "58%",
-              top: "8%",
-              width: "52%",
-              height: "46%",
-              background:
-                "radial-gradient(circle at 42% 40%, rgba(170,178,200,0.12) 0%, transparent 70%)",
-              filter: "blur(62px)",
-              animationDelay: "-16s",
-              animationDirection: "reverse",
-            }}
-          />
-          {nebulas === "rich" && (
-            <div
-              className="animate-drift absolute rounded-full"
-              style={{
-                left: "34%",
-                top: "58%",
-                width: "44%",
-                height: "38%",
-                background:
-                  "radial-gradient(circle at 42% 40%, rgba(140,148,168,0.09) 0%, transparent 70%)",
-                filter: "blur(54px)",
-                animationDelay: "-32s",
-              }}
-            />
-          )}
-        </>
-      )}
-
-      {/* Estrellas: puntos blancos; las brillantes titilan */}
-      <svg className="absolute inset-0 h-full w-full">
-        {field.map((s, i) => (
-          <circle
-            key={i}
-            cx={`${s.x}%`}
-            cy={`${s.y}%`}
-            r={s.r}
-            fill="#F8FAFF"
-            opacity={s.opacity}
-            className={s.bright ? "animate-twinkle" : undefined}
-            style={
-              s.bright
-                ? {
-                    animationDelay: `${s.delay}s`,
-                    animationDuration: `${s.duration}s`,
-                  }
-                : undefined
-            }
-          />
-        ))}
-      </svg>
-
-      {/* Horizonte de planeta: resplandor cinematográfico */}
-      {planet && (
-        <>
-          {/* Resplandor del planeta: gradiente radial blanco elegante */}
-          <div
-            className="absolute left-1/2 pointer-events-none animate-draw"
-            style={{
-              top: "calc(75vh - 3%)",
-              transform: "translateX(-50%)",
-              width: "1200px",
-              height: "240px",
-              background:
-                "radial-gradient(ellipse, rgba(255,255,255,.95) 0%, rgba(255,255,255,.55) 20%, rgba(255,255,255,.18) 45%, transparent 80%)",
-              filter: "blur(55px)",
-              animationDelay: "0.5s",
-            }}
-          />
-          {/* Planeta: silueta oscura */}
-          <div
-            className="absolute left-1/2 w-[500vw] aspect-square rounded-full -translate-x-1/2"
-            style={{
-              top: "75vh",
-              background: "#0A0D14",
-              clipPath: "circle(50%)",
-              boxShadow: "inset 0 2px 0 0 rgba(214,218,228,0.28)",
-              zIndex: 20,
-            }}
-          />
-        </>
-      )}
-    </div>
+    />
   );
 }
 
 /**
- * Marco estelar para avatares: la persona vive dentro de su estrella —
- * halo espectral estable por id, picos de difracción y anillo. Es el mismo
- * tratamiento que pinta el grafo, en versión DOM para páginas de perfil.
+ * Marco estelar para avatares: la persona vive dentro de su estrella.
+ *
+ * v6 conserva lo que es dato —el color de la clase espectral, estable por id—
+ * y apaga lo que era cine: el halo difuso de 2,4× y los dos picos de
+ * difracción que cruzaban la foto. Queda el filete de 1,5px en el color de la
+ * clase, que dice exactamente lo mismo con una línea.
  */
 export function HaloEstelar({
   id,
@@ -268,34 +113,8 @@ export function HaloEstelar({
       style={{ width: size, height: size }}
     >
       <div
-        aria-hidden
-        className="absolute inset-0 rounded-full"
-        style={{
-          background: `radial-gradient(closest-side, ${spec.halo}59, transparent 70%)`,
-          transform: "scale(2.4)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute top-1/2 left-1/2 h-px -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: size * 2.6,
-          background: `linear-gradient(90deg, transparent, ${spec.halo}B3, transparent)`,
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute top-1/2 left-1/2 w-px -translate-x-1/2 -translate-y-1/2"
-        style={{
-          height: size * 2.6,
-          background: `linear-gradient(180deg, transparent, ${spec.halo}B3, transparent)`,
-        }}
-      />
-      <div
         className="relative h-full w-full overflow-hidden rounded-full"
-        style={{
-          boxShadow: `0 0 0 1.5px ${spec.halo}CC, 0 0 24px ${spec.halo}66`,
-        }}
+        style={{ boxShadow: `0 0 0 1.5px ${spec.halo}CC` }}
       >
         {children}
       </div>
@@ -304,33 +123,16 @@ export function HaloEstelar({
 }
 
 /**
- * Aura dorada para «tú»: el halo de identidad detrás de tu foto.
- * Radial blur como en el diseño — nunca para otras personas.
- */
-export function AuraSol({
-  size,
-  className,
-}: {
-  size: number;
-  className?: string;
-}) {
-  return (
-    <div
-      aria-hidden
-      className={cn("absolute rounded-full", className)}
-      style={{
-        inset: -Math.round(size * 0.15),
-        background:
-          "radial-gradient(circle, rgba(255,217,122,0.4) 0%, transparent 70%)",
-        filter: `blur(${Math.max(5, Math.round(size * 0.1))}px)`,
-      }}
-    />
-  );
-}
-
-/**
- * El sol: tú. Núcleo blanco, fotosfera dorada, corona que respira.
- * Siempre el objeto más brillante de su pantalla.
+ * El sol: tú.
+ *
+ * Era una fotosfera dorada con corona respirando y destello de lente. En v6
+ * «tú» sigue siendo la estrella más brillante de su pantalla, pero lo es por
+ * contraste y no por color: disco de tinta plena sobre papel. Sin oro, sin
+ * corona, sin destello.
+ *
+ * Aquí se fueron enteros dos componentes de v5: `AuraSol` (el aura dorada
+ * detrás de tu foto), porque el oro dejó de significar «tú», y `Planeta`,
+ * porque era material de escala para un cielo que ya no existe.
  */
 export function Sol({
   size = 88,
@@ -339,97 +141,17 @@ export function Sol({
   size?: number;
   className?: string;
 }) {
-return (
-    <div
-      aria-hidden
-      className={cn("relative", className)}
-      style={{
-        width: size,
-        aspectRatio: "1/1",
-      }}
-    >
-      {/* Corona externa: muy amplia, muy tenue, respirando */}
-      <div
-        className="animate-corona absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(255,217,122,0.3), transparent 72%)",
-          transform: "scale(3)",
-        }}
-      />
-      {/* Corona interna */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(255,225,140,0.52), transparent 70%)",
-          transform: "scale(1.7)",
-        }}
-      />
-      {/* Fotosfera: luz real con oscurecimiento de limbo */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 42% 38%, #FFF9E8 0%, #FFE9A8 28%, #FFD97A 58%, #E3A93E 82%, #B27818 100%)",
-          boxShadow:
-            "0 0 18px rgba(255,217,122,0.6), inset -6px -8px 18px rgba(120,60,10,0.35)",
-        }}
-      />
-      {/* Destello horizontal fino, de lente de cine */}
-      <div
-        className="absolute top-1/2 left-1/2 h-px -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: size * 2.8,
-          background:
-            "linear-gradient(90deg, transparent, rgba(255,240,200,0.45), transparent)",
-        }}
-      />
-    </div>
-  );
-}
-
-/**
- * Planeta: esfera con luz direccional cálida (el lado del sol), terminador
- * suave y borde de atmósfera. Material de escala para superficies Persuade.
- */
-export function Planeta({
-  size = 280,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) {
   return (
     <div
       aria-hidden
       className={cn("relative", className)}
-      style={{
-        width: size,
-        height: size,
-        minWidth: size,
-        minHeight: size,
-        maxWidth: size,
-        maxHeight: size,
-        clipPath: `ellipse(${size / 2}px ${size / 2}px at 50% 50%)`,
-      }}
+      style={{ width: size, aspectRatio: "1/1" }}
     >
-      {/* Cuerpo: iluminado desde arriba-izquierda por el sol */}
       <div
         className="absolute inset-0 rounded-full"
         style={{
-          background:
-            "radial-gradient(circle at 30% 24%, #8D7B68 0%, #4E4A55 30%, #23222F 55%, #0C0C16 78%, #05050A 100%)",
-          boxShadow:
-            "inset -24px -30px 70px rgba(0,0,0,0.9), inset 10px 12px 34px rgba(245,180,92,0.22)",
-        }}
-      />
-      {/* Atmósfera: rim light fino del lado iluminado */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          boxShadow:
-            "inset 2px 3px 8px rgba(255,223,163,0.5), 0 0 30px rgba(157,180,255,0.08)",
+          background: "var(--foreground)",
+          boxShadow: "0 0 0 6px rgb(242 243 245 / 8%)",
         }}
       />
     </div>
@@ -437,10 +159,14 @@ export function Planeta({
 }
 
 /**
- * Galaxia espiral: un evento visto desde lejos. Dos brazos azulados en giro
- * lentísimo + núcleo cálido + polvo de estrellas. `active` la enciende
- * (el evento donde estás ahora). Traducción del componente `Constelacion`
- * del proyecto de diseño.
+ * Galaxia espiral: un evento visto desde lejos. Dos brazos en giro lentísimo,
+ * núcleo y polvo de estrellas. `active` la enciende (el evento donde estás
+ * ahora).
+ *
+ * v6: el núcleo dejó de ser dorado y los brazos, azulados. La galaxia es gris
+ * y el ÚNICO cambio que trae `active` es que el núcleo sube a tinta plena — la
+ * misma jerarquía por brillo con la que el mapa distingue «tú». El giro se
+ * queda: no es adorno, es lo que distingue un evento de un icono.
  */
 export function Galaxia({
   size = 72,
@@ -487,28 +213,28 @@ export function Galaxia({
         <radialGradient id={ids.armA}>
           <stop
             offset="0%"
-            stopColor="#9DB4FF"
-            stopOpacity={active ? 0.55 : 0.34}
+            stopColor="#B9BEC7"
+            stopOpacity={active ? 0.5 : 0.3}
           />
-          <stop offset="72%" stopColor="#9DB4FF" stopOpacity="0" />
+          <stop offset="72%" stopColor="#B9BEC7" stopOpacity="0" />
         </radialGradient>
         <radialGradient id={ids.armB}>
           <stop
             offset="0%"
-            stopColor="#9DC8FF"
-            stopOpacity={active ? 0.45 : 0.26}
+            stopColor="#8E939C"
+            stopOpacity={active ? 0.42 : 0.24}
           />
-          <stop offset="72%" stopColor="#9DC8FF" stopOpacity="0" />
+          <stop offset="72%" stopColor="#8E939C" stopOpacity="0" />
         </radialGradient>
-        {/* Núcleo cálido en espectral K; si el evento está activo, dorado */}
+        {/* Núcleo: tinta plena si el evento está activo, gris si no */}
         <radialGradient id={ids.core}>
-          <stop offset="0%" stopColor="#FFF4C7" stopOpacity="0.95" />
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
           <stop
             offset="34%"
-            stopColor={active ? "#FFD97A" : "#FFD9A8"}
-            stopOpacity={active ? 0.7 : 0.5}
+            stopColor={active ? "#F2F3F5" : "#B9BEC7"}
+            stopOpacity={active ? 0.7 : 0.45}
           />
-          <stop offset="72%" stopColor="#FFB478" stopOpacity="0" />
+          <stop offset="72%" stopColor="#8E939C" stopOpacity="0" />
         </radialGradient>
         <filter id={ids.blur} x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="3.4" />
@@ -543,7 +269,7 @@ export function Galaxia({
             cx={d.cx}
             cy={d.cy}
             r={1}
-            fill="#F8FAFF"
+            fill="#F2F3F5"
             opacity={d.o}
           />
         ))}

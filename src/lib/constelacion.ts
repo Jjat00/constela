@@ -1,12 +1,13 @@
 /**
  * El grafo del evento, como dato reutilizable.
  *
- * Es el mismo universo determinista que dibuja la landing de producción
+ * Es el mismo universo determinista que dibuja el hero de la portada
  * (`src/app/page.tsx`): ángulo áureo para repartir las estrellas, vecino más
- * cercano para las aristas y cierre triádico explícito. Se extrae aquí porque
- * las diez propuestas de rediseño (`/opcion1` … `/opcion10`) comparten los
- * MISMOS datos y solo cambian de lenguaje visual: la forma de la red es la
- * marca, así que ninguna opción puede inventarse una red más bonita.
+ * cercano para las aristas y cierre triádico explícito. Vive extraído porque
+ * la forma de la red es la marca: nació para que diez propuestas de rediseño
+ * compartieran los MISMOS datos y solo cambiaran de lenguaje visual, y sigue
+ * aquí por la misma razón — ninguna pantalla puede inventarse una red más
+ * bonita que la que sale de los datos.
  *
  * Determinista a propósito: idéntico en servidor y cliente (cero hydration
  * mismatch) e idéntico en cada visita.
