@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+// El sufijo «— Constela» ya lo pone el `title.template` del layout raíz:
+// escribirlo aquí otra vez daría «Política de privacidad — Constela — Constela».
 export const metadata: Metadata = {
-  title: "Política de privacidad — Constela",
+  title: "Política de privacidad",
   description:
     "Qué datos trata Constela, para qué, quién los ve y cómo pedir que se borren.",
+  alternates: { canonical: "/privacidad" },
 };
 
 const CONTACTO = "userjjat00@gmail.com";

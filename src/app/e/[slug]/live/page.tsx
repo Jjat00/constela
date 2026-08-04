@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDate } from "@/lib/format";
+import { NO_INDEXAR } from "@/lib/seo";
 import type { GraphEdge, GraphNode } from "@/components/constellation-graph";
 import { ConstellationPanel } from "@/components/constellation-panel";
 import {
@@ -17,6 +19,9 @@ import { LiveRefresh } from "./refresh";
  * Proyección en vivo (diseño 2f mejorado): constelación interactiva del evento
  * en tiempo real. Datos actualizados cada 30s, pan/zoom/filtros habilitados.
  */
+
+/** Gente real de un evento real, proyectada en una pared: no se archiva. */
+export const metadata: Metadata = { title: "Proyección en vivo", ...NO_INDEXAR };
 
 
 export default async function LivePage({

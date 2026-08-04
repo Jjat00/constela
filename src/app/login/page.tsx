@@ -1,10 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmicSky, Sol } from "@/components/cosmos";
 import { Logo } from "@/components/logo";
+import { NO_INDEXAR } from "@/lib/seo";
 import { GoogleButton } from "./google-button";
 import { DevLoginForm } from "./dev-login-form";
+
+/**
+ * Una pantalla de login no es un resultado de búsqueda útil para nadie: quien
+ * busca «app de networking» quiere saber qué es esto, no un formulario. Que
+ * Google la indexara solo serviría para que compitiera con la portada.
+ */
+export const metadata: Metadata = { title: "Entrar", ...NO_INDEXAR };
 
 export default async function LoginPage({
   searchParams,

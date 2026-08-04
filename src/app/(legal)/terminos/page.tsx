@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+// Sin el sufijo: lo añade el `title.template` del layout raíz.
 export const metadata: Metadata = {
-  title: "Términos y condiciones — Constela",
+  title: "Términos y condiciones",
   description:
     "Las reglas de Constela: qué es, qué esperamos de ti y qué puedes esperar de nosotros.",
+  alternates: { canonical: "/terminos" },
 };
 
 const CONTACTO = "userjjat00@gmail.com";

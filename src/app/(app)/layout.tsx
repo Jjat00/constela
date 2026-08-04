@@ -19,11 +19,21 @@
  * claude.ai/design «Constela UI design options», 2026-07-28); lo que cambió en
  * v6 es la tinta, no el plano.
  */
+import type { Metadata } from "next";
 import { AppNav } from "@/components/app-nav";
 import { CosmicSky } from "@/components/cosmos";
 import { resolveActiveEvent } from "@/lib/active-event";
+import { NO_INDEXAR } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
+
+/**
+ * Nada de lo que hay tras la sesión se indexa. Es la constelación de gente
+ * real de un evento real: no es contenido del sitio, es contenido de ellos.
+ * Lo hereda todo el grupo (`/home`, `/eventos`, `/qr`, `/perfil`, `/ajustes`,
+ * `/tarjeta`), así que ninguna pantalla nueva del shell tendrá que acordarse.
+ */
+export const metadata: Metadata = NO_INDEXAR;
 
 /**
  * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`,

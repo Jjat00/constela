@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CosmicSky } from "@/components/cosmos";
 import { safeNext } from "@/lib/nav";
+import { NO_INDEXAR } from "@/lib/seo";
 import { fetchTagCatalog, type TagChoice } from "@/lib/tags";
 import { OnboardingFlow } from "./onboarding-flow";
+
+/** Detrás de la sesión y a mitad de un flujo: no es una página de entrada. */
+export const metadata: Metadata = { title: "Bienvenida", ...NO_INDEXAR };
 
 /** El nombre del evento al que ibas, para hablar de SU constelación. */
 async function eventNameFromNext(

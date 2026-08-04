@@ -1,9 +1,39 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { NO_INDEXAR } from "@/lib/seo";
 import { fetchTagCatalog, labelFor } from "@/lib/tags";
 import { CosmicSky, HaloEstelar } from "@/components/cosmos";
 import { AutoConnect } from "./auto-connect";
+
+/**
+ * Abierta sin sesión —tiene que serlo: quien llega acaba de ser escaneado y
+ * todavía no tiene cuenta— pero **nunca indexada**. La ficha existe para la
+ * persona que tiene el QR delante, no para el archivo de un buscador: nadie
+ * consintió que su nombre, su rol y su foto quedaran guardados en Google al
+ * dejarse escanear en un evento.
+ *
+ * El título sí lleva el nombre porque es lo que se ve en la pestaña y en la
+ * vista previa de un chat, que son los dos sitios donde este link vive.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_profile_by_slug", { p_slug: slug });
+  const nombre = data?.[0]?.name as string | undefined;
+  return {
+    title: nombre ? `${nombre} en Constela` : "Una estrella de la constelación",
+    description: nombre
+      ? `${nombre} está en la constelación de su evento. Escanea su QR para conectar en persona.`
+      : undefined,
+    ...NO_INDEXAR,
+  };
+}
 
 /**
  * La estrella detrás de un QR. Todo QR va clavado a una galaxia (ADR 0005):

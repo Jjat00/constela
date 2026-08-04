@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { eventDateLong } from "@/lib/format";
+import { NO_INDEXAR } from "@/lib/seo";
 import { CosmicSky, Galaxia } from "@/components/cosmos";
+
+/**
+ * La ficha ya está cerrada en la base (sin sesión y sin pertenecer al evento,
+ * la RPC devuelve cero filas), así que un rastreador nunca vería más que un
+ * 404. La etiqueta lo dice igualmente: la URL puede filtrarse por un enlace
+ * externo y acabar indexada sin haber sido leída.
+ */
+export const metadata: Metadata = { title: "Galaxia", ...NO_INDEXAR };
 
 /**
  * La ficha de la galaxia (ADR 0005): solo para quienes ya están dentro —

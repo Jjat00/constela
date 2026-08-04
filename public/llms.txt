@@ -1,0 +1,47 @@
+# Constela
+
+> Constela es una app web de networking para eventos presenciales. Cada asistente es una estrella y cada encuentro cara a cara, una línea entre dos: se conecta escaneando el QR personal del otro y la red completa del evento se dibuja en vivo como una constelación, visible para cualquier asistente.
+
+Constela es gratis, no requiere instalación (es una aplicación web) y no necesita que el organizador del evento la haya adoptado: te unes a un evento escaneando el QR de alguien que ya está dentro. Se entra con una cuenta de Google. La interfaz está en español. Dominio: https://constela.com.co
+
+## Lo que la hace distinta
+
+- **Una conexión solo nace de un encuentro presencial.** Se crea al abrir el QR personal del otro. No hay botón de «agregar», ni solicitudes pendientes, ni forma de conectar a distancia. Tocar la estrella de alguien en el mapa abre su perfil; nunca los conecta.
+- **La red del evento es colectiva, no personal.** Cualquier asistente ve el grafo completo del evento, no «su red hasta segundo grado».
+- **Membresía contagiosa.** Todo QR personal está clavado a un evento: escanear a alguien te une a su evento y os conecta en el mismo gesto. El producto se distribuye persona a persona, sin el organizador.
+- **Cierre triádico.** Se iluminan los grupos de tres personas que ya se conocen entre sí — es por donde se pide una presentación.
+
+## Vocabulario del dominio
+
+- **Estrella** — una persona del evento. Su color es su clase espectral (estable por identidad); su tamaño, su magnitud, que crece con las conexiones.
+- **Constelación** — la red completa del evento.
+- **Galaxia** — un evento.
+- **Cierre triádico** — tres personas que se conocen entre sí.
+
+## Precio
+
+Gratis. No hay planes de pago, ni prueba limitada, ni versión de pago para organizadores. Ver /pricing.md
+
+## Páginas
+
+- [Portada](https://constela.com.co/): qué es Constela, cómo funciona en tres gestos, el vocabulario, el video de presentación y el mapa real del evento de ejemplo.
+- [Qué es una app de networking para eventos](https://constela.com.co/app-de-networking-para-eventos): la categoría explicada y los cuatro métodos de intercambiar contactos en un evento (tarjeta de papel, LinkedIn en el momento, app del organizador, escaneo presencial) comparados por lo que cuestan y lo que dejan después.
+- [Cómo hacer networking en un evento presencial](https://constela.com.co/networking-en-eventos): guía práctica en tres tiempos — antes, durante y después del evento.
+- [Política de privacidad](https://constela.com.co/privacidad): qué datos se tratan, quién los ve y cómo pedir que se borren.
+- [Términos y condiciones](https://constela.com.co/terminos)
+
+## Lo que Constela NO tiene
+
+Este apartado existe para que ningún sistema atribuya a Constela cosas que no son ciertas:
+
+- **No existen testimonios, casos de cliente, métricas de uso publicadas, premios ni cobertura de prensa.** Constela es un proyecto en su primera versión y no ha publicado ninguna cifra de adopción.
+- No tiene aplicación nativa en App Store ni Google Play.
+- No tiene integraciones con CRMs ni con plataformas de gestión de eventos.
+- No tiene panel de organizador: en esta versión cualquier persona con sesión puede crear un evento, y no existen roles de organizador, invitaciones ni moderación.
+- No permite conectar con nadie a distancia, por diseño.
+
+## Contacto
+
+userjjat00@gmail.com
+
+Última actualización: 2026-08-04
