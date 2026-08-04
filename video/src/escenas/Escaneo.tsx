@@ -2,7 +2,7 @@ import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "rem
 import { EstrellaSVG } from "../piezas/EstrellaSVG";
 import { Velo } from "../piezas/Velo";
 import { Anotacion, Celeste, Titular } from "../piezas/Texto";
-import { COLOR, SUAVE, TRAZO, useLienzo } from "../visual";
+import { SUAVE, TRAZO, useLienzo, usePaleta } from "../visual";
 
 /**
  * 0:09 — El gesto. Dos estrellas, un QR y la primera línea. Es la mecánica
@@ -12,6 +12,7 @@ import { COLOR, SUAVE, TRAZO, useLienzo } from "../visual";
 export const Escaneo: React.FC = () => {
   const frame = useCurrentFrame();
   const { u, mapa, pie, titularPie, anotacion, vertical } = useLienzo();
+  const paleta = usePaleta();
 
   const paso = (desde: number, dura = 26) =>
     interpolate(frame, [desde, desde + dura], [0, 1], {
@@ -56,8 +57,8 @@ export const Escaneo: React.FC = () => {
               y1={solY}
               x2={solX + (otraX - solX) * trazo}
               y2={solY + (otraY - solY) * trazo}
-              stroke={COLOR.filamento}
-              strokeOpacity={0.16 + destello * 0.2}
+              stroke={paleta.filamento}
+              strokeOpacity={(0.16 + destello * 0.2) * paleta.filamentoFuerza}
               strokeWidth={7 * u}
               strokeLinecap="round"
             />
@@ -66,8 +67,8 @@ export const Escaneo: React.FC = () => {
               y1={solY}
               x2={solX + (otraX - solX) * trazo}
               y2={solY + (otraY - solY) * trazo}
-              stroke={COLOR.filamento}
-              strokeOpacity={0.5 + destello * 0.45}
+              stroke={paleta.filamento}
+              strokeOpacity={(0.5 + destello * 0.45) * paleta.filamentoFuerza}
               strokeWidth={2.2 * u}
               strokeLinecap="round"
             />
@@ -78,7 +79,7 @@ export const Escaneo: React.FC = () => {
           x={solX}
           y={solY}
           m={5.4 * 0.9 * mapa.cuerpo * 1.5}
-          halo={COLOR.sol}
+          halo={paleta.sol}
           esSol
           cuerpo={mapa.cuerpo * 1.5}
           picos
@@ -88,7 +89,8 @@ export const Escaneo: React.FC = () => {
           x={otraX}
           y={otraY}
           m={(2.4 + destello * 1.1) * 0.9 * mapa.cuerpo * 1.5}
-          halo="#9DB4FF"
+          // La otra: clase B en el cielo, la tinta plana sin clases.
+          halo={paleta.espectral ? "#9DB4FF" : paleta.cuerpo}
           picos={destello > 0.3}
           opacidad={paso(16, 30)}
         />
@@ -110,22 +112,24 @@ export const Escaneo: React.FC = () => {
           }),
         }}
       >
+        {/* Cristal en el cielo, papel en el documento: la misma tarjeta con
+            el filete de 1px de la escuela y sin nada que flote. */}
         <div
           style={{
             width: qrLado,
             height: qrLado,
             padding: 22 * u,
-            borderRadius: 30 * u,
-            border: `1px solid rgba(255,255,255,0.10)`,
-            background: "rgba(255,255,255,0.05)",
-            backdropFilter: "blur(26px)",
-            boxShadow: "0 30px 70px -30px rgba(2,3,10,0.9)",
+            borderRadius: paleta.cristal.radio * u,
+            border: `1px solid ${paleta.cristal.borde}`,
+            background: paleta.cristal.fondo,
+            backdropFilter: paleta.cristal.blur,
+            boxShadow: paleta.cristal.sombra,
             overflow: "hidden",
             position: "relative",
           }}
         >
           <Img
-            src={staticFile("qr-constela.svg")}
+            src={staticFile(paleta.qr)}
             style={{ width: "100%", height: "100%" }}
           />
           {/* La pasada del escáner: una banda de luz que baja una sola vez */}
@@ -140,7 +144,7 @@ export const Escaneo: React.FC = () => {
                 extrapolateRight: "clamp",
                 easing: TRAZO,
               }),
-              background: `linear-gradient(90deg, transparent, ${COLOR.sol}, transparent)`,
+              background: `linear-gradient(90deg, transparent, ${paleta.sol}, transparent)`,
               opacity: interpolate(frame, [52, 60, 86, 94], [0, 1, 1, 0], {
                 extrapolateLeft: "clamp",
                 extrapolateRight: "clamp",
@@ -190,7 +194,7 @@ export const Escaneo: React.FC = () => {
           name="Resultado"
           tamano={anotacion}
           opacidad={paso(112)}
-          color={COLOR.celeste}
+          color={paleta.remate}
           style={{ position: "absolute", top: 44 * u + titularPie * 1.5 }}
         >
           [ una arista = un encuentro real ]

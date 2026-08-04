@@ -1,6 +1,6 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Anotacion } from "../piezas/Texto";
-import { COLOR, SUAVE, useLienzo } from "../visual";
+import { SUAVE, useLienzo, usePaleta } from "../visual";
 
 /**
  * 0:00 — La marca. Un lockup, una anotación y una línea de horizonte que se
@@ -9,6 +9,7 @@ import { COLOR, SUAVE, useLienzo } from "../visual";
 export const Marca: React.FC = () => {
   const frame = useCurrentFrame();
   const { u, anotacion, vertical } = useLienzo();
+  const paleta = usePaleta();
 
   const entra = interpolate(frame, [6, 34], [0, 1], {
     extrapolateLeft: "clamp",
@@ -32,7 +33,7 @@ export const Marca: React.FC = () => {
       }}
     >
       <Img
-        src={staticFile("logo-constela.png")}
+        src={staticFile(paleta.logo)}
         style={{
           height: (vertical ? 132 : 104) * u,
           width: "auto",
@@ -55,7 +56,7 @@ export const Marca: React.FC = () => {
             extrapolateRight: "clamp",
             easing: SUAVE,
           }),
-          background: `linear-gradient(90deg, transparent, ${COLOR.filamento}55, transparent)`,
+          background: `linear-gradient(90deg, transparent, ${paleta.filamento}55, transparent)`,
         }}
       />
 

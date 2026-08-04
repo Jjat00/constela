@@ -39,10 +39,57 @@ type SimNode = GraphNode & {
 // El tú es un sol dorado; las líneas son filamentos blanco azulado y los
 // triángulos, gas H-alfa con borde.
 const SOL = "#FFD97A";
-const SOL_CORE = "#FFF6E3";
 const HALFA = "240, 105, 159"; // rgb de --halfa, para armar alphas
 const FILAMENTO = "205, 216, 255"; // rgb de estrella A
 const CELESTE = "#9DC8FF"; // anillo de selección
+
+/**
+ * La tinta del mapa. Sin `paleta` se dibuja el cosmos de la app —la anatomía
+ * de siempre— y nada cambia. Con ella, el MISMO grafo se imprime en otro
+ * idioma visual: son las mismas perillas que ya tenía `<RedSVG>` para las
+ * propuestas de landing, ahora sobre el mapa que sí se toca.
+ *
+ * Existe porque una propuesta sobre papel blanco no puede enseñar el producto
+ * de verdad si el producto solo sabe dibujarse sobre cielo negro: un núcleo
+ * blanco sobre papel blanco es un agujero, y un halo difuso es niebla.
+ */
+export type PaletaGrafo = {
+  /** rgb «r, g, b» del filamento; el componente le pone los alphas. */
+  filamento: string;
+  /** rgb «r, g, b» del gas de los cierres triádicos. */
+  triada: string;
+  /** Tinta plana de todas las estrellas. Sin ella, su clase espectral. */
+  tinta?: string;
+  /** El sol, que siempre es «tú». */
+  sol?: string;
+  /** Núcleo interior de cada estrella; `null` lo apaga. */
+  nucleo?: string | null;
+  /** Halo difuso alrededor de cada estrella (el registro «cine»). */
+  halo?: boolean;
+  /** Picos de difracción en las estrellas brillantes. */
+  picos?: boolean;
+  /** Corona respirando y luz interna del sol. */
+  corona?: boolean;
+  /** Anillo de la estrella seleccionada. */
+  seleccion?: string;
+  /** Tinta del nombre y su borde de legibilidad. */
+  etiqueta?: string;
+  etiquetaBorde?: string;
+};
+
+const PALETA_COSMOS: Required<PaletaGrafo> = {
+  filamento: FILAMENTO,
+  triada: HALFA,
+  tinta: "",
+  sol: SOL,
+  nucleo: "#FFFFFF",
+  halo: true,
+  picos: true,
+  corona: true,
+  seleccion: CELESTE,
+  etiqueta: "#F8FAFF",
+  etiquetaBorde: "rgba(2, 3, 10, 0.75)",
+};
 
 // Límites del zoom, compartidos por el encuadre inicial y los botones ±.
 // El techo era 3 y con 4 estrellas dejaba la constelación en un quinto de la
@@ -73,6 +120,7 @@ export function ConstellationGraph({
   showTriads = true,
   showNames = true,
   embedded = false,
+  paleta,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -100,7 +148,10 @@ export function ConstellationGraph({
    * arrastrar una estrella y los botones ± siguen funcionando.
    */
   embedded?: boolean;
+  /** Otra tinta para el mismo grafo. Sin ella, el cosmos de la app. */
+  paleta?: PaletaGrafo;
 }) {
+  const tinta = { ...PALETA_COSMOS, ...paleta };
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   // Tocar una estrella la abre en el MiniPerfil; nunca navega ni conecta: la
@@ -644,14 +695,14 @@ export function ConstellationGraph({
               ctx.beginPath();
               ctx.moveTo(x1, y1);
               ctx.lineTo(x2, y2);
-              ctx.strokeStyle = `rgba(${FILAMENTO}, ${alpha * 0.35})`;
+              ctx.strokeStyle = `rgba(${tinta.filamento}, ${alpha * 0.35})`;
               ctx.lineWidth = width + 2.4 * s;
               ctx.stroke();
             }
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
-            ctx.strokeStyle = `rgba(${FILAMENTO}, ${alpha})`;
+            ctx.strokeStyle = `rgba(${tinta.filamento}, ${alpha})`;
             ctx.lineWidth = width;
             ctx.stroke();
           }}
@@ -679,9 +730,9 @@ export function ConstellationGraph({
               ctx.lineTo(nb.x ?? 0, nb.y ?? 0);
               ctx.lineTo(nc.x ?? 0, nc.y ?? 0);
               ctx.closePath();
-              ctx.fillStyle = `rgba(${HALFA}, ${0.085 * fade})`;
+              ctx.fillStyle = `rgba(${tinta.triada}, ${0.085 * fade})`;
               ctx.fill();
-              ctx.strokeStyle = `rgba(${HALFA}, ${0.34 * fade})`;
+              ctx.strokeStyle = `rgba(${tinta.triada}, ${0.34 * fade})`;
               ctx.lineWidth = 0.6 / globalScale;
               ctx.stroke();
             }
@@ -695,9 +746,9 @@ export function ConstellationGraph({
             const hot = hoverRef.current === id;
             const isSel = selectedRef.current === id;
 
-            const spec = isMe
-              ? { halo: SOL, core: SOL_CORE }
-              : spectrumOf(id);
+            const tintaEstrella = isMe
+              ? tinta.sol
+              : tinta.tinta || spectrumOf(id).halo;
             // La anatomía EXACTA de la constelación del hero: magnitud
             // 1 + 0.34·conexiones (tope 7), m = mag·0.9. Todo se dibuja en
             // píxeles de PANTALLA (÷ globalScale): las estrellas del hero
@@ -712,15 +763,15 @@ export function ConstellationGraph({
 
             // El sol lleva corona respirando y luz interna cálida (el
             // mismo par de círculos difusos del hero: r=46 y r=22)
-            if (isMe) {
+            if (isMe && tinta.corona) {
               const breath = reducedMotion
                 ? 1
                 : 1 + 0.05 * Math.sin(performance.now() / 1100);
               const coronaR = 46 * s * breath;
               const corona = ctx.createRadialGradient(x, y, 0, x, y, coronaR);
-              corona.addColorStop(0, hexA(SOL, 0.16));
-              corona.addColorStop(0.55, hexA(SOL, 0.09));
-              corona.addColorStop(1, hexA(SOL, 0));
+              corona.addColorStop(0, hexA(tinta.sol, 0.16));
+              corona.addColorStop(0.55, hexA(tinta.sol, 0.09));
+              corona.addColorStop(1, hexA(tinta.sol, 0));
               ctx.beginPath();
               ctx.arc(x, y, coronaR, 0, 2 * Math.PI);
               ctx.fillStyle = corona;
@@ -739,31 +790,43 @@ export function ConstellationGraph({
 
             // Halo exterior difuso (el circle con blur del hero): gradiente
             // que se desvanece, nunca un disco plano
-            const glowR = m * 4.2 * (hot || isSel ? 1.25 : 1) * s;
-            const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
-            glow.addColorStop(0, hexA(spec.halo, isMe ? 0.3 : 0.22));
-            glow.addColorStop(0.5, hexA(spec.halo, (isMe ? 0.3 : 0.22) * 0.55));
-            glow.addColorStop(1, hexA(spec.halo, 0));
-            ctx.beginPath();
-            ctx.arc(x, y, glowR, 0, 2 * Math.PI);
-            ctx.fillStyle = glow;
-            ctx.fill();
+            if (tinta.halo) {
+              const glowR = m * 4.2 * (hot || isSel ? 1.25 : 1) * s;
+              const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+              glow.addColorStop(0, hexA(tintaEstrella, isMe ? 0.3 : 0.22));
+              glow.addColorStop(
+                0.5,
+                hexA(tintaEstrella, (isMe ? 0.3 : 0.22) * 0.55),
+              );
+              glow.addColorStop(1, hexA(tintaEstrella, 0));
+              ctx.beginPath();
+              ctx.arc(x, y, glowR, 0, 2 * Math.PI);
+              ctx.fillStyle = glow;
+              ctx.fill();
+            }
 
-            // Halo cercano: aquí vive el color
+            // Halo cercano: aquí vive el color. Sin halo difuso detrás sube a
+            // 0.9 — misma compensación que hace `<RedSVG>`, porque el disco
+            // pasa a ser toda la estrella y con 0.62 se queda en un gris.
             ctx.beginPath();
             ctx.arc(x, y, m * 1.9 * s, 0, 2 * Math.PI);
-            ctx.fillStyle = hexA(spec.halo, isMe ? 0.95 : 0.62);
+            ctx.fillStyle = hexA(
+              tintaEstrella,
+              isMe ? 0.95 : tinta.halo ? 0.62 : 0.9,
+            );
             ctx.fill();
 
             // Núcleo blanco-caliente
-            ctx.beginPath();
-            ctx.arc(x, y, m * (isMe ? 0.62 : 0.72) * s, 0, 2 * Math.PI);
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fill();
+            if (tinta.nucleo) {
+              ctx.beginPath();
+              ctx.arc(x, y, m * (isMe ? 0.62 : 0.72) * s, 0, 2 * Math.PI);
+              ctx.fillStyle = tinta.nucleo;
+              ctx.fill();
+            }
 
             // Picos de difracción: el sol siempre; el resto, al ganar
             // magnitud (mismo umbral 2.1 del hero)
-            if (isMe || mag > 2.1) {
+            if (tinta.picos && (isMe || mag > 2.1)) {
               const spike = m * 4.6 * s;
               ctx.strokeStyle = hexA(isMe ? "#FFF4C7" : "#FFFFFF", 0.45);
               ctx.lineWidth = 0.5 * s;
@@ -780,7 +843,7 @@ export function ConstellationGraph({
             if (isSel) {
               ctx.beginPath();
               ctx.arc(x, y, Math.max(m * 3.2, 8) * s, 0, 2 * Math.PI);
-              ctx.strokeStyle = hexA(CELESTE, 0.9);
+              ctx.strokeStyle = hexA(tinta.seleccion, 0.9);
               ctx.lineWidth = 1.1 * s;
               ctx.stroke();
             }
@@ -814,11 +877,11 @@ export function ConstellationGraph({
               ctx.textAlign = "left";
               ctx.textBaseline = "middle";
               ctx.lineWidth = fontSize / 4;
-              ctx.strokeStyle = "rgba(2, 3, 10, 0.75)";
+              ctx.strokeStyle = tinta.etiquetaBorde;
               const sx = t.a * labelX + t.c * y + t.e;
               const sy = t.b * labelX + t.d * y + t.f;
               ctx.strokeText(label, sx, sy);
-              ctx.fillStyle = isMe ? SOL : "#F8FAFF";
+              ctx.fillStyle = isMe ? tinta.sol : tinta.etiqueta;
               ctx.fillText(label, sx, sy);
               ctx.restore();
             }

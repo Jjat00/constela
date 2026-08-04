@@ -3,7 +3,7 @@ import { Mapa } from "../piezas/Mapa";
 import { Velo } from "../piezas/Velo";
 import { Anotacion, Celeste, Titular } from "../piezas/Texto";
 import { cuantasEncendidas, ESTRELLAS, LINEAS, type Filtro } from "../universo";
-import { COLOR, MONO, MONO_TRACKING, SANS, SUAVE, TRAZO, useLienzo } from "../visual";
+import { MONO_TRACKING, SUAVE, TRAZO, useLienzo, usePaleta } from "../visual";
 
 /**
  * 0:15 — La constelación se dibuja sola y después obedece.
@@ -26,6 +26,7 @@ const ENCENDIDAS = FILTROS.map((f) => cuantasEncendidas(f.filtro));
 export const Constelacion: React.FC = () => {
   const frame = useCurrentFrame();
   const { u, mapa, pie, titularPie, anotacion, nombreEstrella, chip } = useLienzo();
+  const paleta = usePaleta();
 
   const paso = (desde: number, dura = 26) =>
     interpolate(frame, [desde, desde + dura], [0, 1], {
@@ -182,15 +183,18 @@ export const Constelacion: React.FC = () => {
               <div
                 key={opcion.etiqueta}
                 style={{
-                  fontFamily: SANS,
+                  fontFamily: paleta.sans,
                   fontSize: chip,
                   fontWeight: 500,
                   letterSpacing: "-0.04em",
                   padding: `${chip * 0.5}px ${chip}px`,
-                  borderRadius: 999,
-                  border: `1px solid ${activo ? "rgba(78,168,255,0.8)" : "rgba(255,255,255,0.09)"}`,
-                  background: activo ? "rgba(78,168,255,0.22)" : "rgba(255,255,255,0.04)",
-                  color: activo ? COLOR.tinta : COLOR.suave,
+                  // Píldora en el cielo y en el papel —es lo que hace el panel
+                  // real dentro de `/opcion2`, donde solo las cards se
+                  // cuadran—; rectángulo en el observatorio, que no tiene una.
+                  borderRadius: paleta.chip.radio * u,
+                  border: `1px solid ${activo ? paleta.chipActivo.borde : paleta.chip.borde}`,
+                  background: activo ? paleta.chipActivo.fondo : paleta.chip.fondo,
+                  color: activo ? paleta.chipActivo.texto : paleta.suave,
                 }}
               >
                 {opcion.etiqueta}
@@ -199,14 +203,14 @@ export const Constelacion: React.FC = () => {
           })}
           <div
             style={{
-              fontFamily: MONO,
+              fontFamily: paleta.mono,
               fontSize: anotacion,
               letterSpacing: MONO_TRACKING,
-              color: COLOR.suave,
+              color: paleta.suave,
               opacity: paso(266, 24),
             }}
           >
-            <span style={{ color: COLOR.celeste }}>{mostradas}</span> de{" "}
+            <span style={{ color: paleta.remate }}>{mostradas}</span> de{" "}
             {ESTRELLAS.length} estrellas
           </div>
         </div>

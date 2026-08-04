@@ -5,7 +5,7 @@ import { Problema } from "./escenas/Problema";
 import { Escaneo } from "./escenas/Escaneo";
 import { Constelacion } from "./escenas/Constelacion";
 import { Cierre } from "./escenas/Cierre";
-import { COLOR } from "./visual";
+import { PALETAS, PaletaProvider, type TemaId } from "./visual";
 
 /**
  * Constela — video de presentación (35 s).
@@ -28,8 +28,15 @@ import { COLOR } from "./visual";
 /** 30 fps · 35 s. Los solapes hacen que ninguna escena entre en negro. */
 export const DURACION = 1050;
 
-export const Pelicula: React.FC = () => (
-  <AbsoluteFill style={{ backgroundColor: COLOR.vacio }}>
+/**
+ * `tema` elige la tinta y nada más: las escenas, los tiempos y la
+ * composición son los mismos. `cosmos` es el video de producción —el de la
+ * landing—, `documento` la lámina impresa que enseña `/opcion2` y
+ * `observatorio` el instrumento monocromo de `/opcion1`.
+ */
+export const Pelicula: React.FC<{ tema?: TemaId }> = ({ tema = "cosmos" }) => (
+  <PaletaProvider value={PALETAS[tema]}>
+  <AbsoluteFill style={{ backgroundColor: PALETAS[tema].fondo }}>
     <Cielo />
 
     <Sequence name="Marca"  durationInFrames={130}>
@@ -52,4 +59,5 @@ export const Pelicula: React.FC = () => (
       <Cierre />
     </Sequence>
   </AbsoluteFill>
+  </PaletaProvider>
 );

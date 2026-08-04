@@ -1,6 +1,6 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Anotacion, Celeste, Titular } from "../piezas/Texto";
-import { COLOR, SANS, SUAVE, useLienzo } from "../visual";
+import { SUAVE, useLienzo, usePaleta } from "../visual";
 
 /**
  * 0:29 — El cierre. El titular de la landing, el dominio y la promesa de los
@@ -10,6 +10,7 @@ import { COLOR, SANS, SUAVE, useLienzo } from "../visual";
 export const Cierre: React.FC = () => {
   const frame = useCurrentFrame();
   const { u, anotacion, vertical } = useLienzo();
+  const paleta = usePaleta();
 
   const paso = (desde: number, dura = 30) =>
     interpolate(frame, [desde, desde + dura], [0, 1], {
@@ -29,7 +30,7 @@ export const Cierre: React.FC = () => {
       }}
     >
       <Img
-        src={staticFile("logo-constela.png")}
+        src={staticFile(paleta.logo)}
         style={{
           height: (vertical ? 74 : 60) * u,
           width: "auto",
@@ -61,17 +62,17 @@ export const Cierre: React.FC = () => {
             extrapolateRight: "clamp",
             easing: SUAVE,
           }),
-          background: `linear-gradient(90deg, transparent, ${COLOR.filamento}55, transparent)`,
+          background: `linear-gradient(90deg, transparent, ${paleta.filamento}55, transparent)`,
         }}
       />
 
       <div
         style={{
-          fontFamily: SANS,
+          fontFamily: paleta.sans,
           fontSize: (vertical ? 46 : 42) * u,
           fontWeight: 500,
           letterSpacing: "-0.045em",
-          color: COLOR.celeste,
+          color: paleta.remate,
           opacity: paso(56, 30),
         }}
       >

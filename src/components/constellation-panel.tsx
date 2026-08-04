@@ -7,6 +7,7 @@ import {
   ConstellationGraph,
   type GraphEdge,
   type GraphNode,
+  type PaletaGrafo,
 } from "@/components/constellation-graph";
 import { Galaxia } from "@/components/cosmos";
 import {
@@ -60,6 +61,7 @@ export function ConstellationPanel({
   active: controlledActive,
   onActiveChange,
   embedded = false,
+  paleta,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -77,6 +79,9 @@ export function ConstellationPanel({
   /** El mapa vive dentro de una página que scrollea: devuelve los gestos de
    *  navegación al documento (ver `ConstellationGraph`). */
   embedded?: boolean;
+  /** Otra tinta para el mismo mapa: lo usa `/opcion2`, que lo imprime sobre
+   *  papel blanco. Sin ella, el cosmos de la app. */
+  paleta?: PaletaGrafo;
 }) {
   const [ownActive, setOwnActive] = useState<ActiveFilters>(NO_FILTERS);
   const active = controlledActive ?? ownActive;
@@ -286,6 +291,7 @@ export function ConstellationPanel({
           showTriads={triads}
           showNames={showNames}
           embedded={embedded}
+          paleta={paleta}
         />
       </div>
 

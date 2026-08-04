@@ -1,6 +1,6 @@
 import { interpolate } from "remotion";
 import { EstrellaSVG } from "./EstrellaSVG";
-import { COLOR, MONO } from "../visual";
+import { usePaleta } from "../visual";
 import {
   encendida,
   ESTRELLAS,
@@ -77,6 +77,8 @@ export const Mapa: React.FC<MapaProps> = ({
   etiqueta,
   rotar = false,
 }) => {
+  const paleta = usePaleta();
+
   // Girar es intercambiar ejes: el grafo no tiene norte, solo proporción.
   const ux = (estrella: Estrella) => (rotar ? -estrella.y : estrella.x);
   const uy = (estrella: Estrella) => (rotar ? estrella.x : estrella.y);
@@ -91,6 +93,17 @@ export const Mapa: React.FC<MapaProps> = ({
           extrapolateLeft: "clamp",
           extrapolateRight: "clamp",
         });
+
+  /**
+   * El color del cuerpo. En el cielo lo pone la clase espectral de cada
+   * estrella; sin clases hay una sola tinta y el único que se sale es «tú».
+   */
+  const cuerpoDe = (estrella: Estrella) =>
+    paleta.espectral
+      ? estrella.halo
+      : estrella.esSol
+        ? paleta.sol
+        : paleta.cuerpo;
 
   return (
     <svg
@@ -109,9 +122,9 @@ export const Mapa: React.FC<MapaProps> = ({
             points={[a, b, c]
               .map((n) => `${px(ESTRELLAS[n]).toFixed(1)},${py(ESTRELLAS[n]).toFixed(1)}`)
               .join(" ")}
-            fill={COLOR.halfa}
+            fill={paleta.triada}
             fillOpacity={0.085 * triadas * encendido}
-            stroke={COLOR.halfa}
+            stroke={paleta.triada}
             strokeOpacity={0.34 * triadas * encendido}
             strokeWidth={1.2 * u}
           />
@@ -136,8 +149,8 @@ export const Mapa: React.FC<MapaProps> = ({
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke={COLOR.filamento}
-              strokeOpacity={0.13 * encendido}
+              stroke={paleta.filamento}
+              strokeOpacity={0.13 * paleta.filamentoFuerza * encendido}
               strokeWidth={6 * u}
               strokeLinecap="round"
             />
@@ -146,8 +159,8 @@ export const Mapa: React.FC<MapaProps> = ({
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke={COLOR.filamento}
-              strokeOpacity={0.42 * encendido}
+              stroke={paleta.filamento}
+              strokeOpacity={0.42 * paleta.filamentoFuerza * encendido}
               strokeWidth={1.9 * u}
               strokeLinecap="round"
             />
@@ -175,7 +188,7 @@ export const Mapa: React.FC<MapaProps> = ({
               x={x}
               y={y}
               m={m}
-              halo={estrella.halo}
+              halo={cuerpoDe(estrella)}
               esSol={estrella.esSol}
               opacidad={opacidad}
               cuerpo={cuerpo}
@@ -190,15 +203,15 @@ export const Mapa: React.FC<MapaProps> = ({
                 x={(ux(estrella) < 0 ? -1 : 1) * (m * 4.6 + 9 * u)}
                 y={0}
                 textAnchor={ux(estrella) < 0 ? "end" : "start"}
-                fill={estrella.esSol ? COLOR.sol : "#F8FAFF"}
-                fontFamily={MONO}
+                fill={estrella.esSol ? paleta.sol : paleta.tinta}
+                fontFamily={paleta.mono}
                 fontSize={etiqueta}
                 fontWeight={500}
                 dominantBaseline="middle"
                 opacity={nombres * entrada * encendido}
                 style={{
                   paintOrder: "stroke",
-                  stroke: "rgba(2, 3, 10, 0.8)",
+                  stroke: paleta.etiquetaBorde,
                   strokeWidth: etiqueta / 3,
                   strokeLinejoin: "round",
                 }}

@@ -2,7 +2,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { EstrellaSVG } from "../piezas/EstrellaSVG";
 import { Anotacion, Lede, Titular } from "../piezas/Texto";
 import { prng } from "../universo";
-import { SUAVE, useLienzo } from "../visual";
+import { SUAVE, useLienzo, usePaleta } from "../visual";
 
 /**
  * 0:04 — El problema. Un salón lleno es un cielo de estrellas anónimas: todas
@@ -23,6 +23,7 @@ const ANONIMAS = (() => {
 export const Problema: React.FC = () => {
   const frame = useCurrentFrame();
   const { u, width, height, margen, anotacion, vertical } = useLienzo();
+  const paleta = usePaleta();
 
   const campo = interpolate(frame, [0, 40], [0, 1], {
     extrapolateLeft: "clamp",
@@ -50,7 +51,9 @@ export const Problema: React.FC = () => {
             x={margen + estrella.x * (width - margen * 2)}
             y={height * (vertical ? 0.06 : 0.08) + estrella.y * height * (vertical ? 0.5 : 0.84)}
             m={estrella.m * 2.6 * u}
-            halo="#CDD8FF"
+            // Anónimas: clase A en el cielo, un punto de la tinta plana
+            // cuando la propuesta que enseña el video no tiene clases.
+            halo={paleta.espectral ? "#CDD8FF" : paleta.cuerpo}
             opacidad={
               campo * 0.5 * (0.6 + 0.4 * Math.sin(frame / 22 + estrella.fase))
             }

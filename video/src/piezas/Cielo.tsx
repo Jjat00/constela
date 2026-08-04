@@ -1,5 +1,5 @@
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
-import { COLOR, GRANO } from "../visual";
+import { GRANO, usePaleta } from "../visual";
 import { prng } from "../universo";
 
 /**
@@ -7,6 +7,13 @@ import { prng } from "../universo";
  * fondo premium de la app —gradiente casi monocromo, sin nebulosas de
  * colores— con un campo de estrellas lejanas en deriva lentísima. Sembrado
  * con PRNG, así que es idéntico en cada pestaña de render.
+ *
+ * En papel no queda nada de eso: un documento no tiene fondo, tiene hoja. Las
+ * cuatro capas de ambiente —campo, nebulosa, viñeta y grano— se apagan por
+ * paleta y el gradiente colapsa en el papel liso de `/opcion2`. En el
+ * observatorio de `/opcion1` se apagan también, aunque ahí el fondo siga
+ * siendo oscuro: esa propuesta no tiene degradados ni ambiente en ninguna
+ * parte, y el cielo es una superficie, no una atmósfera.
  */
 
 type Lejana = { x: number; y: number; r: number; o: number; fase: number };
@@ -29,15 +36,17 @@ const CAMPO: Lejana[] = (() => {
 
 export const Cielo: React.FC<{ densidad?: number }> = ({ densidad = 1 }) => {
   const frame = useCurrentFrame();
+  const paleta = usePaleta();
 
   return (
     <AbsoluteFill
       name="Cielo"
       style={{
-        background: `linear-gradient(135deg, ${COLOR.cielo} 0%, ${COLOR.cieloClaro} 50%, ${COLOR.cielo} 100%)`,
+        background: `linear-gradient(135deg, ${paleta.cieloA} 0%, ${paleta.cieloB} 50%, ${paleta.cieloA} 100%)`,
       }}
     >
       {/* Deriva cósmica: el cielo respira a escala de minutos, no de segundos */}
+      {paleta.campo && (
       <AbsoluteFill
         style={{
           translate: `${interpolate(frame, [0, 1050], [0, -26])}px ${interpolate(frame, [0, 1050], [0, 14])}px`,
@@ -56,7 +65,7 @@ export const Cielo: React.FC<{ densidad?: number }> = ({ densidad = 1 }) => {
               cy={estrella.y}
               // El radio va en px reales: un cielo nunca escala con el lienzo
               r={0.06}
-              fill={COLOR.tinta}
+              fill={paleta.tinta}
               opacity={
                 estrella.o *
                 densidad *
@@ -67,33 +76,42 @@ export const Cielo: React.FC<{ densidad?: number }> = ({ densidad = 1 }) => {
           ))}
         </svg>
       </AbsoluteFill>
+      )}
 
       {/* Velo de nebulosa gris: ambiente, nunca color */}
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(60% 50% at 62% 34%, rgba(200,204,216,0.09) 0%, transparent 70%)",
-        }}
-      />
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(52% 44% at 26% 72%, rgba(140,148,168,0.07) 0%, transparent 70%)",
-        }}
-      />
+      {paleta.nebulosa && (
+        <>
+          <AbsoluteFill
+            style={{
+              background:
+                "radial-gradient(60% 50% at 62% 34%, rgba(200,204,216,0.09) 0%, transparent 70%)",
+            }}
+          />
+          <AbsoluteFill
+            style={{
+              background:
+                "radial-gradient(52% 44% at 26% 72%, rgba(140,148,168,0.07) 0%, transparent 70%)",
+            }}
+          />
+        </>
+      )}
 
       {/* Viñeta: los bordes del viewport caen al vacío */}
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(120% 90% at 50% 45%, transparent 42%, rgba(2,3,10,0.55) 100%)",
-        }}
-      />
+      {paleta.vineta && (
+        <AbsoluteFill
+          style={{
+            background:
+              "radial-gradient(120% 90% at 50% 45%, transparent 42%, rgba(2,3,10,0.55) 100%)",
+          }}
+        />
+      )}
 
       {/* Grano de cine, encima de todo: el registro es película */}
-      <AbsoluteFill
-        style={{ opacity: 0.05, backgroundImage: GRANO, mixBlendMode: "overlay" }}
-      />
+      {paleta.grano && (
+        <AbsoluteFill
+          style={{ opacity: 0.05, backgroundImage: GRANO, mixBlendMode: "overlay" }}
+        />
+      )}
     </AbsoluteFill>
   );
 };
