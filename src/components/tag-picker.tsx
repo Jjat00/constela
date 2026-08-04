@@ -21,6 +21,7 @@ export function TagPicker({
   placeholder = "busca o escribe el tuyo",
   emptyHint,
   preview = PREVIEW,
+  verRestantes = "ver los {n} restantes",
 }: {
   options: CatalogTag[];
   value: TagChoice[];
@@ -31,6 +32,8 @@ export function TagPicker({
   /** Cuántas sugerencias se ven antes de «ver los N restantes». En columnas
    *  estrechas (la bienvenida de la landing) caben menos sin desbordar. */
   preview?: number;
+  /** La plantilla de ese enlace: `{n}` se sustituye por cuántas quedan. */
+  verRestantes?: string;
 }) {
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -164,7 +167,7 @@ export function TagPicker({
             onClick={() => setExpanded(true)}
             className="inline-flex min-h-11 items-center px-2 font-mono text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            ver los {matches.length - preview} restantes
+            {verRestantes.replace("{n}", String(matches.length - preview))}
           </button>
         )}
 

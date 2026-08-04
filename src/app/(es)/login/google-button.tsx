@@ -1,9 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import type { Chrome } from "@/lib/copy";
+import { ES } from "@/lib/copy/es";
 import { createClient } from "@/lib/supabase/client";
 
-export function GoogleButton({ next }: { next?: string }) {
+/**
+ * La puerta.
+ *
+ * `textos` es opcional y cae en español: este botón es el de `/login` y el de
+ * la app, que hablan español, y solo la landing inglesa necesita pasarle otra
+ * cosa. Ponerlo obligatorio habría obligado a tocar cinco pantallas que no
+ * tienen nada que ver con los idiomas.
+ */
+export function GoogleButton({
+  next,
+  textos = ES.chrome.google,
+}: {
+  next?: string;
+  textos?: Chrome["google"];
+}) {
   const [status, setStatus] = useState<"idle" | "redirecting" | "error">(
     "idle",
   );
@@ -40,12 +56,10 @@ export function GoogleButton({ next }: { next?: string }) {
             d="M21.35 11.1H12v2.9h5.35c-.5 2.4-2.55 3.9-5.35 3.9a6 6 0 1 1 0-12c1.5 0 2.85.55 3.9 1.45l2.2-2.2A9 9 0 1 0 12 21c5.2 0 8.85-3.65 8.85-8.8 0-.4-.05-.75-.1-1.1Z"
           />
         </svg>
-        {status === "redirecting" ? "Abriendo Google…" : "Continuar con Google"}
+        {status === "redirecting" ? textos.abriendo : textos.continuar}
       </button>
       {status === "error" && (
-        <p className="text-sm text-destructive">
-          Google no respondió. Intenta de nuevo.
-        </p>
+        <p className="text-sm text-destructive">{textos.error}</p>
       )}
     </div>
   );

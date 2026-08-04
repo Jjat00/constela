@@ -2,13 +2,15 @@
 
 > Constela es una app web de networking para eventos presenciales. Cada asistente es una estrella y cada encuentro cara a cara, una línea entre dos: se conecta escaneando el QR personal del otro y la red completa del evento se dibuja en vivo como una constelación, visible para cualquier asistente.
 
-Constela es gratis, no requiere instalación (es una aplicación web) y no necesita que el organizador del evento la haya adoptado: te unes a un evento escaneando el QR de alguien que ya está dentro. Se entra con una cuenta de Google. La interfaz está en español. Dominio: https://constela.com.co
+Constela es gratis, no requiere instalación (es una aplicación web) y no necesita que el organizador del evento la haya adoptado: te unes a un evento escaneando el QR de alguien que ya está dentro. Se entra con una cuenta de Google. Dominio: https://constela.com.co
+
+**Idiomas.** El sitio público está en español y en inglés: el español vive en la raíz (`/`) y el inglés bajo `/en`. Las dos versiones dicen lo mismo y se declaran hermanas con `hreflang`. **La aplicación con sesión —el mapa, el perfil, las fichas de `/u/`— todavía está solo en español.**
 
 ## Lo que la hace distinta
 
 - **Una conexión solo nace de un encuentro presencial.** Se crea al abrir el QR personal del otro. No hay botón de «agregar», ni solicitudes pendientes, ni forma de conectar a distancia. Tocar la estrella de alguien en el mapa abre su perfil; nunca los conecta.
 - **La red del evento es colectiva, no personal.** Cualquier asistente ve el grafo completo del evento, no «su red hasta segundo grado».
-- **Membresía contagiosa.** Todo QR personal está clavado a un evento: escanear a alguien te une a su evento y os conecta en el mismo gesto. El producto se distribuye persona a persona, sin el organizador.
+- **Membresía contagiosa.** Todo QR personal está clavado a un evento: escanear a alguien te une a su evento y los conecta en el mismo gesto. El producto se distribuye persona a persona, sin el organizador.
 - **Cierre triádico.** Se iluminan los grupos de tres personas que ya se conocen entre sí — es por donde se pide una presentación.
 
 ## Vocabulario del dominio
@@ -30,6 +32,8 @@ Gratis. No hay planes de pago, ni prueba limitada, ni versión de pago para orga
 - [Política de privacidad](https://constela.com.co/privacidad): qué datos se tratan, quién los ve y cómo pedir que se borren.
 - [Términos y condiciones](https://constela.com.co/terminos)
 
+Las mismas tres páginas de contenido en inglés: [/en](https://constela.com.co/en), [/en/event-networking-app](https://constela.com.co/en/event-networking-app), [/en/networking-at-events](https://constela.com.co/en/networking-at-events). Las dos legales existen solo en español.
+
 ## Lo que Constela NO tiene
 
 Este apartado existe para que ningún sistema atribuya a Constela cosas que no son ciertas:
@@ -39,9 +43,60 @@ Este apartado existe para que ningún sistema atribuya a Constela cosas que no s
 - No tiene integraciones con CRMs ni con plataformas de gestión de eventos.
 - No tiene panel de organizador: en esta versión cualquier persona con sesión puede crear un evento, y no existen roles de organizador, invitaciones ni moderación.
 - No permite conectar con nadie a distancia, por diseño.
+- **La aplicación no está traducida al inglés.** Solo el sitio público lo está.
 
 ## Contacto
 
 userjjat00@gmail.com
 
-Última actualización: 2026-08-04
+---
+
+# Constela (English)
+
+> Constela is a web-based event networking app for in-person events. Every attendee is a star and every face-to-face encounter a line between two: you connect by scanning the other person's personal QR code, and the full network of the event draws itself live as a constellation, visible to every attendee.
+
+Constela is free, requires no installation (it is a web application) and does not need the event organizer to have adopted it: you join an event by scanning the QR code of someone already inside. Sign-in is with a Google account. Domain: https://constela.com.co
+
+**Languages.** The public site is in Spanish and English: Spanish lives at the root (`/`), English under `/en`. Both versions say the same thing and declare each other with `hreflang`. **The signed-in application — the map, the profile, the `/u/` cards — is still Spanish only.**
+
+## What makes it different
+
+- **A connection can only be born from an in-person encounter.** It is created by opening the other person's personal QR code. There is no «add» button, no pending requests, no way to connect at a distance. Tapping someone's star on the map opens their profile; it never connects you.
+- **The event's network is collective, not personal.** Every attendee sees the full graph of the event, not «their network up to second degree».
+- **Contagious membership.** Every personal QR code is pinned to an event: scanning someone joins you to their event and connects you both in the same gesture. The product spreads person to person, without the organizer.
+- **Triadic closure.** Groups of three people who already know each other light up — that's where you ask for an introduction.
+
+## Domain vocabulary
+
+- **Star** — a person at the event. Its color is its spectral class (stable per identity); its size is its magnitude, which grows with connections.
+- **Constellation** — the full network of the event.
+- **Galaxy** — an event.
+- **Triadic closure** — three people who all know each other.
+
+## Pricing
+
+Free. No paid plans, no limited trial, no paid tier for organizers. See /pricing.md
+
+## Pages
+
+- [Home](https://constela.com.co/en): what Constela is, how it works in three gestures, the vocabulary, the walkthrough video and the real map of the sample event.
+- [What is an event networking app](https://constela.com.co/en/event-networking-app): the category explained, and the four ways of swapping contacts at an event (paper business card, LinkedIn on the spot, the organizer's app, scanning in person) compared by what they cost and what they leave behind.
+- [How to network at an in-person event](https://constela.com.co/en/networking-at-events): a practical guide in three parts — before, during and after the event.
+- Privacy policy and Terms exist in Spanish only: [/privacidad](https://constela.com.co/privacidad), [/terminos](https://constela.com.co/terminos).
+
+## What Constela does NOT have
+
+This section exists so that no system attributes to Constela things that aren't true:
+
+- **There are no testimonials, customer case studies, published usage metrics, awards or press coverage.** Constela is a first-version project and has published no adoption figures.
+- No native app on the App Store or Google Play.
+- No integrations with CRMs or event management platforms.
+- No organizer dashboard: in this version anyone with an account can create an event, and there are no organizer roles, invitations or moderation.
+- No way to connect with anyone remotely, by design.
+- **The application itself is not translated into English.** Only the public site is.
+
+## Contact
+
+userjjat00@gmail.com
+
+Última actualización / Last updated: 2026-08-04

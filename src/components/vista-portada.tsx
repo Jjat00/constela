@@ -1,20 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { GoogleButton } from "@/app/login/google-button";
-import { LogoutButton } from "@/app/login/logout-button";
+import { GoogleButton } from "@/app/(es)/login/google-button";
+import { LogoutButton } from "@/app/(es)/login/logout-button";
 import { JsonLd } from "@/components/json-ld";
 import { Logo } from "@/components/logo";
 import { ObsCSS } from "@/components/obs-css";
 import { BienvenidaYMapa, VideoPortada } from "@/components/portada-demo";
 import { RedSVG } from "@/components/red-svg";
-import {
-  MARCA,
-  NO_HACE,
-  PASOS,
-  PREGUNTAS,
-  VIDEO,
-  VOCABULARIO,
-} from "@/lib/portada";
+import { SelectorIdioma } from "@/components/selector-idioma";
+import { copy } from "@/lib/copy";
+import { type Locale, RUTAS } from "@/lib/i18n";
 import {
   appLd,
   faqLd,
@@ -56,36 +50,26 @@ import { createClient } from "@/lib/supabase/server";
  * traduce nada. Si el mapa de esta página se viera distinto al de `/home`, el
  * que está mal es este archivo.
  *
- * QUÉ SE INJERTÓ de la landing v5: la banda «Entras con Google y dices quién
- * eres» —la bienvenida real, jugable— que la propuesta 1 no traía y que el
- * usuario pidió conservar. Va pegada al mapa y en su mismo componente de
- * cliente (`BienvenidaYMapa`), porque lo que eliges en ella es el filtro que
- * se aplica abajo: esa cadena es el argumento entero de la portada.
+ * POR QUÉ ES UN COMPONENTE Y NO `page.tsx`: la misma portada se sirve en dos
+ * idiomas desde dos árboles distintos (`/` y `/en`). El copy entra por
+ * `copy(locale)` y no queda una sola frase escrita aquí dentro — si aparece
+ * una, es un texto que la portada inglesa enseñará en español.
  */
 
-/**
- * El canónico se declara aquí y no en el layout raíz: heredado, le diría a
- * Google que /privacidad y / son la misma página.
- */
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+export function ldPortada(locale: Locale) {
+  const c = copy(locale).portada;
+  return grafoLd(
+    orgLd(locale),
+    sitioLd(),
+    appLd(locale),
+    howToLd(locale, c.pasos.howTo, [...c.pasos.lista]),
+    faqLd([...c.preguntas.lista]),
+    glosarioLd(locale, [...c.vocabulario.lista]),
+  );
+}
 
-/**
- * Todo lo que esta página le cuenta a una máquina ya está escrito en ella:
- * la app y su precio (cero), los tres gestos como `HowTo`, las preguntas como
- * `FAQPage` y el vocabulario del dominio como glosario. Nada de esto es
- * información exclusiva del script — declarar en JSON-LD algo que el visitante
- * no puede leer es spam estructurado, y Google lo trata como tal.
- */
-const LD = grafoLd(
-  orgLd(),
-  sitioLd(),
-  appLd(),
-  howToLd("Cómo se conecta con alguien en Constela", [...PASOS]),
-  faqLd([...PREGUNTAS]),
-  glosarioLd([...VOCABULARIO]),
-);
-
-export default async function Portada() {
+export async function VistaPortada({ locale }: { locale: Locale }) {
+  const { portada: t, chrome } = copy(locale);
   const supabase = await createClient();
   const {
     data: { user },
@@ -96,29 +80,32 @@ export default async function Portada() {
   // puedan diverger.
   const puerta = user ? (
     <Link href="/home" className="obs-cta">
-      Entrar a tu constelación
+      {chrome.entrarConstelacion}
     </Link>
   ) : (
     <div className="obs-puerta">
-      <GoogleButton next="/home" />
+      <GoogleButton next="/home" textos={chrome.google} />
     </div>
   );
 
   return (
     <>
       <ObsCSS doc />
-      <JsonLd data={LD} />
+      <JsonLd data={ldPortada(locale)} />
       <div className="obs">
         <header className="obs-carril">
           <div className="obs-top">
             <Logo className="h-8 lg:h-9" priority />
-            {user ? (
-              <LogoutButton />
-            ) : (
-              <Link href="/login" className="obs-entrar">
-                Entrar →
-              </Link>
-            )}
+            <div className="obs-top-fin">
+              <SelectorIdioma locale={locale} pagina="portada" />
+              {user ? (
+                <LogoutButton />
+              ) : (
+                <Link href="/login" className="obs-entrar">
+                  {chrome.entrar}
+                </Link>
+              )}
+            </div>
           </div>
         </header>
         <div className="obs-regla" />
@@ -126,11 +113,11 @@ export default async function Portada() {
         <main className="obs-carril">
           <section className="obs-hero">
             <div>
-              <p className="obs-mono">Constela · para cualquier evento</p>
+              <p className="obs-mono">{t.hero.mono}</p>
               <h1 className="obs-h1">
-                {MARCA.titular.antes}
+                {t.marca.titular.antes}
                 <br />
-                <em>{MARCA.titular.destacado}</em>
+                <em>{t.marca.titular.destacado}</em>
               </h1>
               {/* El titular es poesía; esta es la definición, y va primero en
                   tinta plena porque quien llega aquí acaba de ser escaneado
@@ -141,12 +128,11 @@ export default async function Portada() {
                   PNG: sin esta línea «Constela» solo viviría en el título del
                   documento y en un alt, y el alt no cuenta. */}
               <p className="obs-lede">
-                <b>{MARCA.nombre} es el networking que por fin se ve.</b>{" "}
-                {MARCA.definicion}
+                <b>{t.hero.ledeFuerte}</b> {t.marca.definicion}
               </p>
               <div className="obs-acciones">
                 {puerta}
-                <span className="obs-mono">8 segundos</span>
+                <span className="obs-mono">{t.hero.tiempo}</span>
               </div>
             </div>
             <div className="obs-red">
@@ -170,19 +156,17 @@ export default async function Portada() {
               del hero y en su misma tinta — el diagrama es la red dibujada, la
               película es la red dibujándose. */}
           <section className="obs-banda" id="video">
-            <p className="obs-mono">{VIDEO.etiqueta}</p>
-            <h2 className="obs-titulo">{VIDEO.titulo}</h2>
-            <p className="obs-parrafo">{VIDEO.texto}</p>
-            <VideoPortada marco={VIDEO.marco} pie={VIDEO.pie} />
+            <p className="obs-mono">{t.video.etiqueta}</p>
+            <h2 className="obs-titulo">{t.video.titulo}</h2>
+            <p className="obs-parrafo">{t.video.texto}</p>
+            <VideoPortada video={t.video} demo={t.demo} />
           </section>
 
           <section className="obs-banda">
-            <p className="obs-mono">Cómo funciona</p>
-            <h2 className="obs-titulo">
-              Tres gestos, ninguno remoto: la conexión existe porque se vieron.
-            </h2>
+            <p className="obs-mono">{t.pasos.mono}</p>
+            <h2 className="obs-titulo">{t.pasos.titulo}</h2>
             <div className="obs-rejilla3">
-              {PASOS.map((p) => (
+              {t.pasos.lista.map((p) => (
                 <article key={p.n} className="obs-celda">
                   <span className="obs-mono">{p.n}</span>
                   <h3>{p.titulo}</h3>
@@ -193,12 +177,10 @@ export default async function Portada() {
           </section>
 
           <section className="obs-banda">
-            <p className="obs-mono">Vocabulario</p>
-            <h2 className="obs-titulo">
-              El cosmos no es decoración: es el modelo.
-            </h2>
+            <p className="obs-mono">{t.vocabulario.mono}</p>
+            <h2 className="obs-titulo">{t.vocabulario.titulo}</h2>
             <dl className="obs-glosario">
-              {VOCABULARIO.map((v) => (
+              {t.vocabulario.lista.map((v) => (
                 <div key={v.termino} className="obs-def">
                   <dt>{v.termino}</dt>
                   <dd className="obs-mono">{v.dominio}</dd>
@@ -209,18 +191,18 @@ export default async function Portada() {
           </section>
 
           <section className="obs-banda">
-            <p className="obs-mono">Lo que no encontrarás</p>
+            <p className="obs-mono">{t.noHace.mono}</p>
             <ul className="obs-no">
-              {NO_HACE.map((t) => (
-                <li key={t}>{t}</li>
+              {t.noHace.lista.map((x) => (
+                <li key={x}>{x}</li>
               ))}
             </ul>
           </section>
 
           <section className="obs-banda">
-            <p className="obs-mono">Preguntas</p>
+            <p className="obs-mono">{t.preguntas.mono}</p>
             <div className="obs-preg">
-              {PREGUNTAS.map((p) => (
+              {t.preguntas.lista.map((p) => (
                 <div key={p.q}>
                   <h3>{p.q}</h3>
                   <p>{p.a}</p>
@@ -229,10 +211,19 @@ export default async function Portada() {
             </div>
           </section>
 
+          {/* El aviso de que el producto todavía habla español. Va aquí —justo
+              antes de la parte jugable, que es la primera pantalla real de la
+              app que se ve— y no en el pie: quien está a punto de tocar la
+              interfaz merece saberlo antes, no después de entrar. En español
+              es la cadena vacía y no se renderiza nada. */}
+          {chrome.avisoIdiomaApp && (
+            <p className="obs-aviso">{chrome.avisoIdiomaApp}</p>
+          )}
+
           {/* Las dos últimas bandas van juntas y en cliente: la bienvenida
               real y el mapa real, encadenados — lo que eliges arriba filtra
               lo de abajo. */}
-          <BienvenidaYMapa />
+          <BienvenidaYMapa portada={t} ficha={chrome.ficha} />
 
           {/* Las dos páginas que explican la categoría, no el producto. Van
               aquí y no en el pie a propósito: son el único enlace interno de
@@ -240,35 +231,15 @@ export default async function Portada() {
               donde valen algo. Quien llegó hasta abajo sin entrar es
               exactamente quien todavía está comparando. */}
           <section className="obs-banda">
-            <p className="obs-mono">Seguir leyendo</p>
-            <h2 className="obs-titulo">
-              Si todavía estás decidiendo cómo hacer networking.
-            </h2>
+            <p className="obs-mono">{t.siguiente.mono}</p>
+            <h2 className="obs-titulo">{t.siguiente.titulo}</h2>
             <div className="obs-siguiente">
-              <Link href="/app-de-networking-para-eventos">
-                <strong>
-                  Qué es una app de networking para eventos, y en qué se
-                  diferencian
-                </strong>
-                <span>
-                  Las cuatro formas de intercambiar contactos en un evento
-                  —papel, LinkedIn, la app del organizador y el escaneo
-                  presencial— comparadas por lo que cuesta cada una y por lo
-                  que queda después.
-                </span>
-              </Link>
-              <Link href="/networking-en-eventos">
-                <strong>
-                  Cómo hacer networking en un evento sin que se te haga cuesta
-                  arriba
-                </strong>
-                <span>
-                  Qué falla antes de la conversación, por qué los contactos que
-                  te llevas a casa casi nunca se convierten en nada y qué hacer
-                  distinto la próxima vez que entres a un salón lleno de
-                  desconocidos.
-                </span>
-              </Link>
+              {t.siguiente.enlaces.map((e) => (
+                <Link key={e.a} href={RUTAS[locale][e.a]}>
+                  <strong>{e.titulo}</strong>
+                  <span>{e.texto}</span>
+                </Link>
+              ))}
             </div>
           </section>
 
@@ -277,18 +248,22 @@ export default async function Portada() {
               className="obs-regla"
               style={{ marginBottom: "clamp(2rem,5vw,3.5rem)" }}
             />
-            <h2>Entra por una estrella.</h2>
+            <h2>{t.cierre.titulo}</h2>
             <div className="obs-acciones">
               {puerta}
-              <span className="obs-mono">{MARCA.tagline}</span>
+              <span className="obs-mono">{t.marca.tagline}</span>
             </div>
           </section>
 
           <footer className="obs-pie">
-            <span className="obs-mono">© 2026 Constela</span>
-            <nav aria-label="Enlaces legales">
-              <Link href="/privacidad">Privacidad</Link>
-              <Link href="/terminos">Términos</Link>
+            <span className="obs-mono">{chrome.copyright}</span>
+            <nav aria-label={chrome.pieLegalAria}>
+              <Link href="/privacidad" hrefLang="es">
+                {chrome.privacidad}
+              </Link>
+              <Link href="/terminos" hrefLang="es">
+                {chrome.terminos}
+              </Link>
             </nav>
           </footer>
         </main>

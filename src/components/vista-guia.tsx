@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { ObsCSS } from "@/components/obs-css";
 import { DocHeader, DocMigas, DocPie, DocPuerta } from "@/components/obs-doc";
-import { GUIA, REVISADO } from "@/lib/guia";
-import { articuloLd, faqLd, grafoLd, metaPagina, migasLd } from "@/lib/seo";
+import { copy, REVISADO } from "@/lib/copy";
+import { type Locale, RUTAS } from "@/lib/i18n";
+import { articuloLd, faqLd, grafoLd, migasLd, NOMBRE } from "@/lib/seo";
 
 /*
  * CONTRATO DE DIRECCIÓN — la guía
  *
  * DE DÓNDE SALE: la otra mitad de las búsquedas de la categoría no preguntan
  * por una herramienta, preguntan por el problema: «cómo hacer networking en un
- * evento». Quien busca eso no quiere que le vendan una app — y esta página no
- * se la vende hasta el final.
+ * evento», «how to network at an event». Quien busca eso no quiere que le
+ * vendan una app — y esta página no se la vende hasta el final.
  *
  * THESIS: una guía que sirve aunque no uses Constela. Es la única forma
  * honesta de escribirla y, de paso, la única que consigue que alguien la
@@ -25,65 +25,60 @@ import { articuloLd, faqLd, grafoLd, metaPagina, migasLd } from "@/lib/seo";
  * lista, preguntas, puerta.
  *
  * HONESTIDAD: ni una cifra. Los «80 % de las tarjetas se tiran» que circulan
- * por internet no se pueden rastrear hasta un estudio y aquí no se repiten.
+ * por internet no se pueden rastrear hasta un estudio y aquí no se repiten, ni
+ * traducidos.
  */
 
-export const metadata: Metadata = metaPagina({
-  titulo: GUIA.titulo,
-  descripcion: GUIA.descripcion,
-  path: GUIA.ruta,
-});
+export function ldGuia(locale: Locale) {
+  const t = copy(locale).guia;
+  return grafoLd(
+    articuloLd({
+      locale,
+      pagina: "guia",
+      titulo: t.titulo,
+      descripcion: t.descripcion,
+      publicado: REVISADO,
+      modificado: REVISADO,
+    }),
+    faqLd([...t.preguntas.lista]),
+    migasLd([
+      { nombre: NOMBRE, path: RUTAS[locale].portada },
+      { nombre: t.titulo, path: RUTAS[locale].guia },
+    ]),
+  );
+}
 
-const LD = grafoLd(
-  articuloLd({
-    titulo: GUIA.titulo,
-    descripcion: GUIA.descripcion,
-    path: GUIA.ruta,
-    publicado: REVISADO,
-    modificado: REVISADO,
-  }),
-  faqLd([...GUIA.preguntas]),
-  migasLd([
-    { nombre: "Constela", path: "/" },
-    { nombre: GUIA.titulo, path: GUIA.ruta },
-  ]),
-);
+export function VistaGuia({ locale }: { locale: Locale }) {
+  const t = copy(locale).guia;
+  const chrome = copy(locale).chrome;
 
-/** Los tres tiempos, en orden. Es la estructura entera de la guía. */
-const TIEMPOS = [
-  { mono: "Antes", ...GUIA.antes },
-  { mono: "Durante", ...GUIA.durante },
-  { mono: "Después", ...GUIA.despues },
-] as const;
-
-export default function GuiaPage() {
   return (
     <>
       <ObsCSS doc />
-      <JsonLd data={LD} />
+      <JsonLd data={ldGuia(locale)} />
       <div className="obs">
-        <DocHeader />
-        <DocMigas actual={GUIA.etiqueta} />
+        <DocHeader locale={locale} pagina="guia" />
+        <DocMigas locale={locale} actual={t.etiqueta} />
 
         <main className="obs-carril">
           <article>
             <header className="obs-banda" style={{ paddingTop: 0 }}>
-              <p className="obs-mono">{GUIA.etiqueta}</p>
-              <h1 className="obs-h1-doc">{GUIA.h1}</h1>
-              <p className="obs-clave">{GUIA.clave}</p>
+              <p className="obs-mono">{t.etiqueta}</p>
+              <h1 className="obs-h1-doc">{t.h1}</h1>
+              <p className="obs-clave">{t.clave}</p>
               {/* La fecha no es adorno: en una guía, saber de cuándo es
                   cambia cuánto te fías de ella. */}
               <p className="obs-mono" style={{ marginTop: "1.75rem" }}>
-                Revisada el 4 de agosto de 2026
+                {t.revisada}
               </p>
             </header>
 
-            {TIEMPOS.map((t) => (
-              <section key={t.mono} className="obs-banda">
-                <p className="obs-mono">{t.mono}</p>
-                <h2 className="obs-titulo">{t.titulo}</h2>
+            {t.tiempos.map((tiempo) => (
+              <section key={tiempo.mono} className="obs-banda">
+                <p className="obs-mono">{tiempo.mono}</p>
+                <h2 className="obs-titulo">{tiempo.titulo}</h2>
                 <div className="obs-prosa">
-                  {t.parrafos.map((p) => (
+                  {tiempo.parrafos.map((p) => (
                     <p key={p.slice(0, 32)}>{p}</p>
                   ))}
                 </div>
@@ -91,11 +86,11 @@ export default function GuiaPage() {
             ))}
 
             <section className="obs-banda">
-              <p className="obs-mono">Lo que no funciona</p>
-              <h2 className="obs-titulo">{GUIA.errores.titulo}</h2>
+              <p className="obs-mono">{t.errores.mono}</p>
+              <h2 className="obs-titulo">{t.errores.titulo}</h2>
               <div className="obs-prosa">
                 <ul>
-                  {GUIA.errores.lista.map((e) => (
+                  {t.errores.lista.map((e) => (
                     <li key={e.slice(0, 32)}>{e}</li>
                   ))}
                 </ul>
@@ -103,12 +98,10 @@ export default function GuiaPage() {
             </section>
 
             <section className="obs-banda">
-              <p className="obs-mono">Preguntas</p>
-              <h2 className="obs-titulo">
-                Las que se hacen antes de entrar al salón.
-              </h2>
+              <p className="obs-mono">{t.preguntas.mono}</p>
+              <h2 className="obs-titulo">{t.preguntas.titulo}</h2>
               <div className="obs-preg">
-                {GUIA.preguntas.map((p) => (
+                {t.preguntas.lista.map((p) => (
                   <div key={p.q}>
                     <h3>{p.q}</h3>
                     <p>{p.a}</p>
@@ -118,16 +111,12 @@ export default function GuiaPage() {
             </section>
 
             <section className="obs-banda">
-              <p className="obs-mono">Y si buscabas herramienta</p>
+              <p className="obs-mono">{t.cruce.mono}</p>
               <div className="obs-prosa">
                 <p>
-                  Esta guía funciona con una libreta y cuatro tarjetas de papel.
-                  Si además estabas comparando herramientas, la página sobre{" "}
-                  <Link href="/app-de-networking-para-eventos">
-                    qué es una app de networking para eventos
-                  </Link>{" "}
-                  compara los cuatro métodos por lo que queda después de cada
-                  uno.
+                  {t.cruce.antes}
+                  <Link href={RUTAS[locale][t.cruce.a]}>{t.cruce.enlace}</Link>
+                  {t.cruce.despues}
                 </p>
               </div>
             </section>
@@ -138,14 +127,14 @@ export default function GuiaPage() {
               className="obs-regla"
               style={{ marginBottom: "clamp(2rem,5vw,3.5rem)" }}
             />
-            <h2>Entra por una estrella.</h2>
+            <h2>{copy(locale).portada.cierre.titulo}</h2>
             <div className="obs-acciones">
-              <DocPuerta />
-              <span className="obs-mono">Gratis · sin instalar nada</span>
+              <DocPuerta locale={locale} />
+              <span className="obs-mono">{chrome.gratis}</span>
             </div>
           </section>
 
-          <DocPie />
+          <DocPie locale={locale} />
         </main>
       </div>
     </>

@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { SITIO } from "@/lib/seo";
+import type { Locale } from "@/lib/i18n";
+import { NOMBRE, SITIO } from "@/lib/seo";
 
 /*
  * La tarjeta que sale cuando alguien pega el link de Constela en un chat.
@@ -18,11 +19,42 @@ import { SITIO } from "@/lib/seo";
  * `ImageResponse`— no ejecuta el SVG animado de la portada; las coordenadas
  * son fijas para que la imagen sea idéntica en cada build y la caché de las
  * redes sociales no tenga que invalidarse.
+ *
+ * SE DIBUJA DOS VECES, una por idioma. No es un capricho de simetría: esta
+ * lámina lleva tres frases dentro, y el link de la portada inglesa compartido
+ * en un chat inglés con un titular en castellano sería exactamente el tipo de
+ * detalle que hace dudar de si el producto está terminado.
  */
 
-export const alt = `${SITIO.nombre} — ${SITIO.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+/** El `alt` de la lámina — lo lee quien no puede ver la imagen. */
+export const altDe = (locale: Locale) =>
+  `${NOMBRE} — ${SITIO[locale].tagline}`;
+
+/**
+ * Las tres frases de la lámina.
+ *
+ * Viven aquí y no en `copy/` porque no son copy de página: son una versión
+ * recortada a la medida de 1200×630, donde el titular no puede pasar de dos
+ * líneas y el subtítulo de tres. Alargarlas rompe el dibujo, así que se
+ * escriben mirando el dibujo.
+ */
+const TEXTO: Record<Locale, { titular: string; texto: string; pie: string }> = {
+  es: {
+    titular: "El networking que por fin se ve.",
+    texto:
+      "Escaneas el QR de quien acabas de conocer y la red del evento se dibuja en vivo.",
+    pie: "App de networking para eventos",
+  },
+  en: {
+    titular: "Networking you can finally see.",
+    texto:
+      "Scan the QR code of someone you just met and the network of the event draws itself live.",
+    pie: "Event networking app",
+  },
+};
 
 const PAPEL = "#0B0C0F";
 const TINTA = "#F2F3F5";
@@ -153,7 +185,8 @@ async function interTight(): Promise<
   }
 }
 
-export default async function OpenGraphImage() {
+export async function laminaOg(locale: Locale) {
+  const t = TEXTO[locale];
   // El lockup real, no un wordmark recompuesto: la marca de la pestaña, del
   // pie y de esta tarjeta tienen que ser el mismo objeto.
   const [logo, fuentes] = await Promise.all([
@@ -197,7 +230,7 @@ export default async function OpenGraphImage() {
           >
             {/* `next/image` no existe dentro de Satori: aquí `img` es la
                 única primitiva de imagen que hay. */}
-            <img src={logoSrc} alt="Constela" height={46} width={139} />
+            <img src={logoSrc} alt={NOMBRE} height={46} width={139} />
 
             {/* En una sola línea a propósito: JSX colapsa los saltos de línea
                 del código en espacios, y en Satori eso se ve —el titular salía
@@ -212,7 +245,7 @@ export default async function OpenGraphImage() {
                 lineHeight: 1.02,
               }}
             >
-              {"El networking que por fin se ve."}
+              {t.titular}
             </div>
 
             <div
@@ -225,7 +258,7 @@ export default async function OpenGraphImage() {
                 maxWidth: 600,
               }}
             >
-              {"Escaneas el QR de quien acabas de conocer y la red del evento se dibuja en vivo."}
+              {t.texto}
             </div>
           </div>
 
@@ -287,9 +320,7 @@ export default async function OpenGraphImage() {
             color: TENUE,
           }}
         >
-          <div style={{ display: "flex" }}>
-            App de networking para eventos
-          </div>
+          <div style={{ display: "flex" }}>{t.pie}</div>
           <div style={{ display: "flex" }}>constela.com.co</div>
         </div>
       </div>

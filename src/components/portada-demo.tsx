@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import type { ActiveFilters } from "@/components/constellation-panel";
 import { OnboardingFields } from "@/components/onboarding-fields";
+import type { Chrome, Portada } from "@/lib/copy";
 import {
   DEMO_CATALOG,
   DEMO_EDGES,
@@ -12,7 +13,6 @@ import {
   DEMO_ME_ID,
   DEMO_NODES,
 } from "@/lib/demo-universe";
-import { BIENVENIDA, MAPA } from "@/lib/portada";
 import { slugifyTag, type TagChoice } from "@/lib/tags";
 
 /*
@@ -30,10 +30,10 @@ import { slugifyTag, type TagChoice } from "@/lib/tags";
  * archivo.
  */
 
-function MapaDurmiendo() {
+function MapaDurmiendo({ aviso }: { aviso?: string }) {
   return (
     <div className="obs-app-espera">
-      <span className="obs-mono">encendiendo la constelación…</span>
+      <span className="obs-mono">{aviso}</span>
     </div>
   );
 }
@@ -41,6 +41,11 @@ function MapaDurmiendo() {
 /**
  * El panel real de `/home`, cargado aparte: arrastra el motor de canvas del
  * grafo, y quien solo lee la página no debería descargarlo.
+ *
+ * El `loading` no lleva copy: es el parpadeo entre que el mapa entra en el
+ * viewport y termina de llegar su código, y para entonces la banda ya enseñó
+ * su propio aviso. Poner texto aquí obligaría a pasarle el idioma a un
+ * `dynamic()` que se evalúa en el módulo, fuera de todo componente.
  */
 const ConstellationPanel = dynamic(
   () =>
@@ -81,7 +86,14 @@ function useConsulta(consulta: string): boolean | null {
  *   oculto por CSS igual descarga;
  * - con `prefers-reduced-motion` no arranca solo: se queda en su fotograma.
  */
-export function VideoPortada({ marco, pie }: { marco: string; pie: string }) {
+export function VideoPortada({
+  video,
+  demo,
+}: {
+  video: Portada["video"];
+  demo: Portada["demo"];
+}) {
+  const { marco, pie } = video;
   const marcoRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [sonando, setSonando] = useState(false);
@@ -124,7 +136,7 @@ export function VideoPortada({ marco, pie }: { marco: string; pie: string }) {
         <span className="obs-cab-fin">
           <span className="obs-mono">{pie}</span>
           <button type="button" onClick={alternar} className="obs-ctrl">
-            {sonando ? "Pausar" : "Reproducir"}
+            {sonando ? demo.pausar : demo.reproducir}
           </button>
         </span>
       </figcaption>
@@ -142,7 +154,7 @@ export function VideoPortada({ marco, pie }: { marco: string; pie: string }) {
             playsInline
             preload="none"
             poster={`/video/poster-obs-${orientacion}.webp`}
-            aria-label="Constela en 35 segundos: cómo se dibuja la constelación de un evento"
+            aria-label={demo.videoAria}
             onPlay={() => setSonando(true)}
             onPause={() => setSonando(false)}
           >
@@ -177,11 +189,19 @@ const SIN_FILTRO: ActiveFilters = { rol: [], interes: [], intencion: [] };
  * filtro de abajo. Esa cadena es el argumento entero de la portada, así que
  * separarlas por limpieza rompería lo único que estas dos bandas demuestran.
  *
- * Se lleva su copy de `@/lib/portada` en vez de recibirlo por props: son
- * constantes, no datos de servidor, y así las dos bandas se montan con una
- * sola etiqueta desde `page.tsx`.
+ * Recibe su copy por props desde la portada que la monta. Antes se lo llevaba
+ * él mismo de `@/lib/portada`, que era más cómodo mientras hubo una sola
+ * portada; con dos idiomas eso significaría que la portada inglesa enseña la
+ * bienvenida en español.
  */
-export function BienvenidaYMapa() {
+export function BienvenidaYMapa({
+  portada,
+  ficha,
+}: {
+  portada: Portada;
+  ficha: Chrome["ficha"];
+}) {
+  const { bienvenida: BIENVENIDA, mapa: MAPA, demo } = portada;
   const [rol, setRol] = useState<TagChoice[]>([]);
   const [intereses, setIntereses] = useState<TagChoice[]>([]);
   const [intenciones, setIntenciones] = useState<TagChoice[]>([]);
@@ -250,6 +270,7 @@ export function BienvenidaYMapa() {
               onInterestsChange={setIntereses}
               onIntentsChange={setIntenciones}
               preview={9}
+              textos={ficha}
             />
           </div>
 
@@ -260,14 +281,12 @@ export function BienvenidaYMapa() {
               disabled={elegidas === 0}
               className={elegidas > 0 ? "obs-cta" : "obs-cta-apagado"}
             >
-              {elegidas > 0
-                ? "Filtrar la constelación con esto ↓"
-                : "Elige tu rol"}
+              {elegidas > 0 ? demo.filtrar : demo.eligeRol}
             </button>
             <p className="obs-mono">
               {elegidas > 0
-                ? `${elegidas} ${elegidas === 1 ? "señal elegida" : "señales elegidas"} · abajo se apaga lo que no coincida`
-                : "elige al menos tu rol para ver qué hace"}
+                ? `${elegidas} ${elegidas === 1 ? demo.senal : demo.senales} · ${demo.seApaga}`
+                : demo.pistaVacia}
             </p>
           </div>
         </div>
@@ -285,8 +304,8 @@ export function BienvenidaYMapa() {
         <figure className="obs-figura">
           <figcaption className="obs-figura-cab">
             <span className="obs-mono">
-              {MAPA.marco} · {DEMO_NODES.length} estrellas · {DEMO_EDGES.length}{" "}
-              conexiones
+              {MAPA.marco} · {DEMO_NODES.length} {demo.estrellas} ·{" "}
+              {DEMO_EDGES.length} {demo.conexiones}
             </span>
             <span className="obs-mono">{MAPA.pie}</span>
           </figcaption>
@@ -302,14 +321,14 @@ export function BienvenidaYMapa() {
                   dateLabel: DEMO_EVENT.dateLabel,
                   galaxySeed: DEMO_EVENT.galaxySeed,
                   switchHref: "/eventos",
-                  switchLabel: "tus eventos",
+                  switchLabel: demo.tusEventos,
                 }}
                 active={filtro}
                 onActiveChange={setFiltro}
                 embedded
               />
             ) : (
-              <MapaDurmiendo />
+              <MapaDurmiendo aviso={demo.encendiendo} />
             )}
           </div>
         </figure>

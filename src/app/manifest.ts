@@ -18,7 +18,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Constela — app de networking para eventos",
     short_name: "Constela",
-    description: SITIO.descripcion,
+    description: SITIO.es.descripcion,
     start_url: "/home",
     id: "/",
     scope: "/",
@@ -26,7 +26,10 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait",
     background_color: "#0B0C0F",
     theme_color: "#0B0C0F",
-    lang: SITIO.idioma,
+    // El manifiesto es el de la aplicación instalable, no el del sitio: la app
+    // con sesión habla español y solo español, así que declarar `es` aquí es
+    // el dato correcto aunque la landing sea bilingüe.
+    lang: SITIO.es.idioma,
     dir: "ltr",
     categories: ["social", "business", "productivity"],
     icons: [

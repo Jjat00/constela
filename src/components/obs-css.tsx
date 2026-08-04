@@ -29,6 +29,13 @@ const OBS_BASE = `
 .obs-top{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:4.5rem}
 .obs-entrar{font-size:.8125rem;font-weight:500;color:var(--muted-foreground);text-decoration:none;padding:.55rem .1rem;transition:color .18s ease}
 .obs-entrar:hover{color:var(--foreground)}
+/* El lado derecho de la cabecera: el idioma y la puerta, en ese orden. El
+   idioma va en mono y en el gris más apagado —es una utilidad, no una
+   acción— y aun así se toca cómodo: el padding le da los 44px de alto que
+   pide un pulgar aunque el texto mida diez píxeles y medio. */
+.obs-top-fin{display:flex;align-items:center;gap:clamp(1rem,2.5vw,1.75rem)}
+.obs-idioma{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);text-decoration:none;padding:.9rem .2rem;transition:color .18s ease}
+.obs-idioma:hover{color:var(--foreground)}
 
 /* — hero — */
 /* En móvil el hero es una banda más y se lee de arriba abajo. A partir de
@@ -120,6 +127,12 @@ const OBS_BASE = `
 .obs-ficha-pie{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.5rem;margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid var(--border)}
 .obs-cta-apagado{display:inline-flex;align-items:center;height:3.5rem;padding-inline:1.75rem;border:1px solid var(--border);background:transparent;color:var(--faint);font-size:.9375rem;font-weight:500;border-radius:var(--radius);cursor:not-allowed}
 .obs-nota{margin:.9rem 0 0}
+/* — el aviso —
+   Una anotación al margen, no una alerta: mono en caja baja (el .obs-mono de
+   versalitas es ilegible pasadas seis palabras) contra la misma hairline de
+   1px que separa todas las bandas. Sin fondo, sin icono y sin ámbar: en esta
+   escuela nada se pinta de un color para pedir atención. */
+.obs-aviso{margin:clamp(2.5rem,6vw,4rem) 0 0;max-width:56ch;padding-left:1.1rem;border-left:1px solid var(--border);font-family:var(--font-mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
 
 /* — glosario — */
 .obs-glosario{margin:clamp(2rem,4vw,3rem) 0 0;display:grid;grid-template-columns:1fr;gap:0}

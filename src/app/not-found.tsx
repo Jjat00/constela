@@ -1,26 +1,30 @@
-import Link from "next/link";
-import { CosmicSky } from "@/components/cosmos";
+import type { Metadata } from "next";
+import { NoEncontrado } from "@/components/no-encontrado";
+import { RaizHtml } from "@/components/raiz-html";
+import { NOMBRE, NO_INDEXAR, SITIO_URL } from "@/lib/seo";
+
+/**
+ * El 404 de las URLs que no encajan en ningún árbol.
+ *
+ * Trae su propio `<html>` porque no hay layout raíz por encima: al partir el
+ * sitio en `(es)` y `(en)` para que cada idioma tenga su atributo `lang`,
+ * `app/layout.tsx` dejó de existir, y una página sin layout raíz no tiene
+ * documento.
+ *
+ * Y por lo mismo declara su propio `metadataBase`: sin layout encima no hereda
+ * ninguno, y Next avisa en cada build de que está resolviendo las URL sociales
+ * contra `localhost`.
+ */
+export const metadata: Metadata = {
+  metadataBase: new URL(SITIO_URL),
+  title: `404 — ${NOMBRE}`,
+  ...NO_INDEXAR,
+};
 
 export default function NotFound() {
   return (
-    <main className="grain relative flex flex-1 flex-col items-center justify-center gap-6 px-5 py-16 text-center sm:px-8">
-      <CosmicSky />
-      <p className="relative z-10 font-mono text-[11px] tracking-wider text-faint uppercase">
-        [ 404 ]
-      </p>
-      <h1 className="relative z-10 max-w-md text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-        Esta estrella no está en el <span className="text-celeste">mapa</span>
-      </h1>
-      <p className="relative z-10 max-w-xs text-sm leading-6 text-muted-foreground">
-        El enlace o el QR que abriste no lleva a ningún lado. Puede que el
-        evento ya no exista.
-      </p>
-      <Link
-        href="/home"
-        className="btn-cosmic relative z-10 flex h-13 w-full max-w-xs items-center justify-center px-7 text-[15px] font-medium sm:w-auto"
-      >
-        Ir a mi universo
-      </Link>
-    </main>
+    <RaizHtml lang="es">
+      <NoEncontrado />
+    </RaizHtml>
   );
 }
