@@ -1,0 +1,53 @@
+# Revisa cada PR nuevo con Claude y publica los hallazgos como comentarios.
+# Los criterios de qué revisar viven en .github/REVIEW.md — este archivo solo
+# es la infraestructura (cuándo corre, con qué permisos, con qué credencial).
+#
+# El review NUNCA escribe en el repo: el job pide `contents: read`, así que un
+# push es imposible aunque el prompt lo pidiera. Para aplicar una corrección,
+# la escribes tú o comentas `@claude` y él propone el cambio como sugerencia.
+#
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   CLAUDE_CODE_OAUTH_TOKEN — generado con `claude setup-token` (usa tu suscripción)
+
+name: Revisión de PRs
+
+on:
+  pull_request:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+# Un PR con varios `@claude` seguidos no arranca revisiones en paralelo.
+concurrency:
+  group: revision-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    # Al abrir el PR, o cuando alguien comenta @claude en un PR (no en un issue).
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event.issue.pull_request && contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: read # solo lectura: el review no puede commitear
+      pull-requests: write # para publicar el review y sus comentarios
+      issues: write # para responder en el hilo del PR
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Lee el archivo .github/REVIEW.md de este repositorio y sigue sus
+            instrucciones al pie de la letra para revisar el pull request
+            número ${{ github.event.pull_request.number || github.event.issue.number }}
+            del repositorio ${{ github.repository }}.
+          claude_args: |
+            --model claude-opus-5
+            --max-turns 25
+            --allowedTools "Bash(gh:*),Read,Grep,Glob"
