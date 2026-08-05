@@ -98,7 +98,7 @@ export const EN: Copy = {
           n: "01",
           titulo: "You scan",
           texto:
-            "You open the personal QR code of whoever is standing in front of you. That gesture puts you inside the event and connects the two of you, in one movement.",
+            "You open the personal QR code of whoever is standing in front of you. That gesture puts you inside the event and connects the two of you, in one movement; before you pocket the phone, one tap notes where the encounter happened.",
         },
         {
           n: "02",
@@ -172,6 +172,10 @@ export const EN: Copy = {
           a: "Everyone at the event. The collective view of the network is the product, not an extra.",
         },
         {
+          q: "How do I remember what I talked about with each person?",
+          a: "By noting it in the moment: when you connect, the same screen offers one-tap contexts —«at the talk», «at the afterparty»— plus free text, and later you edit the note by tapping their star. It's private: only you can see it, not even the other person.",
+        },
+        {
           q: "How do I get in?",
           a: "With your Google account, and that's it. The rest of the profile is optional and can wait.",
         },
@@ -194,7 +198,7 @@ export const EN: Copy = {
       texto:
         "Every attendee is a star; every QR code you scan, a line between two. Filter by role, interest or intent and whatever doesn't match dims out: the map never reshuffles, so you never lose track of who was where.",
       textoDos:
-        "That's where you see what a crowded room hides: who's hiring, who works on the same thing you do, and the blue triangles of people who already know each other — which is where you ask for an introduction.",
+        "That's where you see what a crowded room hides: who's hiring, who works on the same thing you do, and the blue triangles of people who already know each other — which is where you ask for an introduction. And on the stars you've already crossed paths with, your note of that encounter: where it was, what you talked about. Only you can see it.",
       marco: "constellation · sample event",
       pie: "tap a chip, search a name, open a star",
     },

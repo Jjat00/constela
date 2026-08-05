@@ -107,7 +107,7 @@ export const ES: Copy = {
           n: "01",
           titulo: "Escaneas",
           texto:
-            "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y los conecta, en el mismo movimiento.",
+            "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y los conecta, en el mismo movimiento; antes de guardar el teléfono puedes anotar de un tap dónde nació el encuentro.",
         },
         {
           n: "02",
@@ -184,6 +184,10 @@ export const ES: Copy = {
           a: "Todo el que esté en el evento. La visión colectiva de la red es el producto, no un extra.",
         },
         {
+          q: "¿Cómo recuerdo de qué hablé con cada quien?",
+          a: "Anotándolo en el momento: al conectar, la misma pantalla ofrece contextos de un tap —«en la charla», «en el after»— y texto libre, y después la nota se edita tocando su estrella. Es privada: solo tú la ves, ni siquiera la otra persona.",
+        },
+        {
           q: "¿Cómo entro?",
           a: "Con tu cuenta de Google, y ya. El resto del perfil es opcional y se puede dejar para después.",
         },
@@ -210,7 +214,7 @@ export const ES: Copy = {
       texto:
         "Cada asistente es una estrella; cada QR que escaneas, una línea entre dos. Filtra por rol, interés o intención y lo que no coincide se apaga: el mapa nunca se reordena, así que nunca pierdes de vista dónde estaba quién.",
       textoDos:
-        "Ahí se ve lo que un salón lleno esconde: quién está contratando, quién habla de lo mismo que tú, y los triángulos azules de gente que ya se conoce entre sí — por donde se pide una presentación.",
+        "Ahí se ve lo que un salón lleno esconde: quién está contratando, quién habla de lo mismo que tú, y los triángulos azules de gente que ya se conoce entre sí — por donde se pide una presentación. Y en las estrellas con las que ya te cruzaste, tu nota de ese encuentro: dónde fue, de qué hablaron. Solo tú la ves.",
       marco: "constelación · evento de ejemplo",
       pie: "toca un chip, busca un nombre, abre una estrella",
     },

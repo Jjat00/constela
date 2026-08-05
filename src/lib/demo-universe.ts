@@ -15,8 +15,10 @@ import { buildFacets, type CatalogTag, type TagCatalog, type TagCategory } from 
  * - Nadie nace como estrella suelta: cada persona entra conectándose a gente
  *   que ya se conoce entre sí, así que la constelación tiene cierres triádicos
  *   de verdad (el momento visual de la marca), no un grafo aleatorio.
- * - Las conexiones no llevan nota: escribir notas todavía no existe en la app,
- *   y la landing no muestra funciones que no puedes usar.
+ * - Solo las aristas de «tú» llevan nota, y es la tuya: la nota del encuentro
+ *   es privada por lado (migración 0014), así que en la app jamás verías la de
+ *   otro. En el mapa incrustado se lee tal cual, sin editar (`connectionId`
+ *   null), y no todas la tienen — no todo el mundo anota.
  * - Nada de fechas relativas al reloj: el universo es idéntico en servidor y
  *   en cliente (cero hydration mismatch) y en cada visita.
  */
@@ -215,11 +217,23 @@ const ENCUENTROS: Array<[string, string]> = [
 /** La noche del evento, fija: el orden de las aristas marca el trazado. */
 const ULTIMO_ESCANEO = Date.parse("2026-08-14T02:15:00.000Z");
 
+/**
+ * Tu nota privada de cada encuentro, escrita como la escribe la app: chips
+ * reales («en la charla», «nos presentaron»…) más texto libre. Es dato de la
+ * aplicación, no copy — por eso no se traduce en `/en`, igual que los tags.
+ */
+const NOTAS = new Map<string, string>([
+  ["ana-mora", "en la charla · hablamos de diseño con ia"],
+  ["sara-quintero", "en la fila del café · me ofreció mentoría de agentes"],
+  ["mariana-lopez", "en un stand · está contratando frontend"],
+  ["camila-torres", "nos presentaron · organiza los meetups de open source"],
+]);
+
 export const DEMO_EDGES: GraphEdge[] = ENCUENTROS.map(([source, target], i) => ({
   id: `demo-${i}`,
   source,
   target,
-  note: null,
+  note: source === DEMO_ME_ID ? (NOTAS.get(target) ?? null) : null,
   createdAt: new Date(ULTIMO_ESCANEO - i * 420_000).toISOString(),
 }));
 
