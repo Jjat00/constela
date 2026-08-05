@@ -149,17 +149,9 @@ export async function VistaPortada({ locale }: { locale: Locale }) {
                 preserveAspectRatio="xMidYMid meet"
               />
             </div>
-            {/* El verso del dominio cierra el hero a todo lo ancho, con la
-                frase EXACTA que fue la meta description original. Se parte
-                por sus comas solo para repartirla (space-between); el texto
-                reconstruido es idéntico, coma a coma. */}
-            <p className="obs-verso">
-              {t.hero.verso.split(", ").map((parte, i, todas) => (
-                <span key={parte}>
-                  {i < todas.length - 1 ? `${parte},` : parte}
-                </span>
-              ))}
-            </p>
+            {/* El verso del dominio cierra el hero, centrado y con la frase
+                EXACTA que fue la meta description original. */}
+            <p className="obs-verso">{t.hero.verso}</p>
           </section>
 
           {/* El video antes de la explicación: quien no quiere leer se lleva
