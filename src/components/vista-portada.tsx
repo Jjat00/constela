@@ -130,6 +130,9 @@ export async function VistaPortada({ locale }: { locale: Locale }) {
               <p className="obs-lede">
                 <b>{t.hero.ledeFuerte}</b> {t.marca.definicion}
               </p>
+              {/* El verso del dominio, recitado como anotación de placa: la
+                  poesía va en mono tenue para no pelearse con el titular. */}
+              <p className="obs-verso">{t.hero.verso}</p>
               <div className="obs-acciones">
                 {puerta}
                 <span className="obs-mono">{t.hero.tiempo}</span>
