@@ -107,7 +107,7 @@ export const ES: Copy = {
           n: "01",
           titulo: "Escaneas",
           texto:
-            "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y los conecta, en el mismo movimiento; antes de guardar el teléfono puedes anotar de un tap dónde nació el encuentro.",
+            "Abres el QR personal de quien tienes delante. Ese gesto te mete al evento y los conecta, en el mismo movimiento — y ahí mismo, de un tap, dejas anotado dónde nació el encuentro.",
         },
         {
           n: "02",

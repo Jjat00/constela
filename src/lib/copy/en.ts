@@ -98,7 +98,7 @@ export const EN: Copy = {
           n: "01",
           titulo: "You scan",
           texto:
-            "You open the personal QR code of whoever is standing in front of you. That gesture puts you inside the event and connects the two of you, in one movement; before you pocket the phone, one tap notes where the encounter happened.",
+            "You open the personal QR code of whoever is standing in front of you. That gesture puts you inside the event and connects the two of you, in one movement — and right there, one tap notes where the encounter happened.",
         },
         {
           n: "02",
