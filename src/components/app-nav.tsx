@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Orbit, QrCode, SlidersHorizontal } from "lucide-react";
+import { LogoutButton } from "@/app/(es)/login/logout-button";
 import { Galaxia } from "@/components/cosmos";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
@@ -134,29 +135,44 @@ export function AppNav({
           })}
         </nav>
 
+        {/* Tu identidad y la salida, hermanas y separadas.
+            Van en dos objetos y no en una fila con menú desplegable: en esta
+            escuela nada flota sobre nada, y un desplegable convertiría la
+            acción más rápida de la cuenta en dos taps otra vez. El botón de
+            salir tiene su propia área táctil precisamente porque su vecino
+            —tu perfil— es lo que se toca a diario: pegados en el mismo enlace,
+            el error sería cuestión de tiempo. */}
         {identity && (
-          <Link
-            href="/perfil"
-            className="mt-auto flex items-center gap-3 rounded-full border p-2 transition-colors hover:border-foreground/40"
-          >
-            <AvatarSol identity={identity} size={38} />
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate text-[13px] font-medium">
-                {identity.name}
+          <div className="mt-auto flex items-center gap-2">
+            <Link
+              href="/perfil"
+              className="flex min-w-0 flex-1 items-center gap-3 rounded-full border p-2 transition-colors hover:border-foreground/40"
+            >
+              <AvatarSol identity={identity} size={38} />
+              <span className="flex min-w-0 flex-col">
+                <span className="truncate text-[13px] font-medium">
+                  {identity.name}
+                </span>
+                <span className="mt-0.5 truncate font-mono text-[10px] tracking-wide text-sol uppercase">
+                  {identity.subtitle ?? "completa tu perfil"}
+                </span>
               </span>
-              <span className="mt-0.5 truncate font-mono text-[10px] tracking-wide text-sol uppercase">
-                {identity.subtitle ?? "completa tu perfil"}
-              </span>
-            </span>
-          </Link>
+            </Link>
+            <LogoutButton variante="icono" />
+          </div>
         )}
       </aside>
 
-      {/* Móvil y tablet: wordmark arriba, tabs abajo */}
-      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 lg:hidden">
+      {/* Móvil y tablet: wordmark arriba, tabs abajo.
+          La barra inferior es de secciones y son cuatro — salir no es una
+          sección y meterla ahí como quinta pestaña sería mentir sobre lo que
+          hace. Va arriba a la derecha, que es donde estaba el hueco y donde
+          todo el mundo la busca. */}
+      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-3 px-5 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 lg:hidden">
         <span className="glass inline-flex rounded-full px-3.5 py-1.5">
           <Wordmark />
         </span>
+        {identity && <LogoutButton variante="icono" className="glass" />}
       </header>
 
       <nav
