@@ -360,7 +360,7 @@ export function ConstellationPanel({
 
       {/* Móvil: la galaxia activa como pill arriba */}
       <div className="pointer-events-none absolute inset-x-3 top-2 z-10 flex justify-start lg:hidden">
-        <div className="pointer-events-auto glass flex min-w-0 items-center gap-2.5 rounded-full py-1.5 pr-4 pl-2">
+        <div className="pointer-events-auto glass flex h-11 min-w-0 items-center gap-2.5 rounded-full pr-4 pl-2">
           <Galaxia seed={event.galaxySeed} size={30} active />
           <div className="min-w-0">
             <p className="max-w-52 truncate text-[13px] leading-tight font-medium">

@@ -167,9 +167,12 @@ export function AppNav({
           La barra inferior es de secciones y son cuatro — salir no es una
           sección y meterla ahí como quinta pestaña sería mentir sobre lo que
           hace. Va arriba a la derecha, que es donde estaba el hueco y donde
-          todo el mundo la busca. */}
-      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-3 px-5 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 lg:hidden">
-        <span className="glass inline-flex rounded-full px-3.5 py-1.5">
+          todo el mundo la busca.
+          El chrome flotante comparte retícula: 12px del borde (como la barra
+          inferior y los controles del mapa) y 44px de alto (h-11/size-11) —
+          bordes y huecos alineados con la fila de pills que vive debajo. */}
+      <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-3 px-3 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 lg:hidden">
+        <span className="glass inline-flex h-11 items-center rounded-full px-4">
           <Wordmark />
         </span>
         {identity && <LogoutButton variante="icono" className="glass" />}
