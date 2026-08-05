@@ -76,8 +76,7 @@ export const EN: Copy = {
     hero: {
       mono: "Constela · for any event",
       ledeFuerte: "Constela is networking you can finally see.",
-      verso:
-        "every person is a star · every encounter, a line · every event, a constellation",
+      verso: "Every person is a star, every connection, a constellation.",
       tiempo: "8 seconds",
     },
 

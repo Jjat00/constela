@@ -109,10 +109,11 @@ export type Portada = {
     /** La primera frase del lede, en tinta plena: nombre + tesis. */
     ledeFuerte: string;
     /**
-     * El verso del dominio bajo el lede, en mono de caja baja: persona →
-     * estrella, encuentro → línea, evento → constelación. Vivió como meta
-     * description hasta que el SEO la reescribió (`d61f39c`); aquí vuelve
-     * donde sí se ve.
+     * El verso del dominio al pie del hero, a todo lo ancho. Es la frase
+     * EXACTA que fue la meta description hasta que el SEO la reescribió
+     * (`d61f39c`) — el usuario la pidió de vuelta tal cual, y aquí vuelve
+     * donde sí se ve. El render la parte por «, » para repartir sus
+     * cláusulas a lo ancho del carril: las comas importan.
      */
     verso: string;
     /** Cuánto se tarda en entrar. */

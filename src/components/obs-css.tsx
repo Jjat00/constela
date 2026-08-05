@@ -49,9 +49,11 @@ const OBS_BASE = `
 .obs-h1 em{font-style:normal;color:var(--muted-foreground)}
 .obs-lede{margin:clamp(1.5rem,3vw,2rem) 0 0;max-width:34rem;font-size:clamp(1rem,1.5vw,1.1875rem);line-height:1.55;color:var(--muted-foreground)}
 .obs-lede b{color:var(--foreground);font-weight:500}
-/* El verso del dominio bajo el lede: mono en caja baja porque pasa de seis
-   palabras (DESIGN §3) — anotación de placa, no microetiqueta versalitas. */
-.obs-verso{margin:1.25rem 0 0;max-width:56ch;font-family:var(--font-mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
+/* El verso del dominio cierra el hero a todo lo ancho: sus tres cláusulas se
+   reparten el carril como anotaciones al borde de una placa (space-between);
+   en móvil caen en columna. Mono en caja baja, no versalitas: pasa de seis
+   palabras (DESIGN §3). */
+.obs-verso{grid-column:1/-1;margin:clamp(1.5rem,4vw,2.5rem) 0 0;display:flex;flex-wrap:wrap;justify-content:space-between;column-gap:2.5rem;font-family:var(--font-mono);font-size:11.5px;line-height:1.8;color:var(--faint)}
 .obs-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;margin-top:clamp(2rem,4vw,2.75rem)}
 /* La puerta de verdad: el botón de Google es un componente de cliente que se
    comparte con /login, así que se le da el ancho desde fuera en vez de

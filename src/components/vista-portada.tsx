@@ -130,9 +130,6 @@ export async function VistaPortada({ locale }: { locale: Locale }) {
               <p className="obs-lede">
                 <b>{t.hero.ledeFuerte}</b> {t.marca.definicion}
               </p>
-              {/* El verso del dominio, recitado como anotación de placa: la
-                  poesía va en mono tenue para no pelearse con el titular. */}
-              <p className="obs-verso">{t.hero.verso}</p>
               <div className="obs-acciones">
                 {puerta}
                 <span className="obs-mono">{t.hero.tiempo}</span>
@@ -152,6 +149,17 @@ export async function VistaPortada({ locale }: { locale: Locale }) {
                 preserveAspectRatio="xMidYMid meet"
               />
             </div>
+            {/* El verso del dominio cierra el hero a todo lo ancho, con la
+                frase EXACTA que fue la meta description original. Se parte
+                por sus comas solo para repartirla (space-between); el texto
+                reconstruido es idéntico, coma a coma. */}
+            <p className="obs-verso">
+              {t.hero.verso.split(", ").map((parte, i, todas) => (
+                <span key={parte}>
+                  {i < todas.length - 1 ? `${parte},` : parte}
+                </span>
+              ))}
+            </p>
           </section>
 
           {/* El video antes de la explicación: quien no quiere leer se lleva
