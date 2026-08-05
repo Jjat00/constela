@@ -6,6 +6,7 @@ import Link from "next/link";
 import { IdCard, Info, X } from "lucide-react";
 import { spectralLetterOf, spectrumOf } from "@/components/cosmos";
 import type { GraphNode } from "@/components/constellation-graph";
+import { NotaEncuentro } from "@/components/nota-encuentro";
 import { cn } from "@/lib/utils";
 
 const SPECTRAL_TYPES = [
@@ -25,6 +26,8 @@ export function MiniPerfil({
   degree,
   connected,
   note,
+  connectionId = null,
+  onNoteSaved,
   tagLabels,
   cardHref,
   onClose,
@@ -36,7 +39,14 @@ export function MiniPerfil({
   isCreator?: boolean;
   degree: number;
   connected: boolean;
+  /** TU nota privada sobre este encuentro (0014): el otro extremo no la ve. */
   note: string | null;
+  /** La arista entre ustedes. Sin ella la nota es solo lectura (la demo de
+   *  la landing enseña fichas de estrellas que no existen en la base). */
+  connectionId?: string | null;
+  /** Tu nota persistida sube al dueño de `edges`: sin esto, cerrar y reabrir
+   *  esta ficha la mostraría como estaba antes de editarla. */
+  onNoteSaved?: (note: string | null) => void;
   tagLabels?: Map<string, string>;
   /** A dónde lleva «ver tarjeta». Sin él no hay botón: en la demo de la
    *  landing estas estrellas no existen en la base de datos. */
@@ -45,6 +55,7 @@ export function MiniPerfil({
   className?: string;
 }) {
   const [infoOpen, setInfoOpen] = useState<"magnitud" | "clase" | null>(null);
+  const [editingNote, setEditingNote] = useState(false);
   const spec = isMe
     ? { halo: "#F2F3F5", core: "#FFFFFF" }
     : spectrumOf(node.id);
@@ -210,12 +221,47 @@ export function MiniPerfil({
         )}
 
         {isMe ? null : connected ? (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1.5">
             <p className="font-mono text-xs tracking-wide text-aurora">
               [ CONECTADOS ]
             </p>
-            {note && (
-              <p className="text-sm text-muted-foreground">&quot;{note}&quot;</p>
+            {/* La nota del encuentro se edita aquí mismo: tocar una estrella
+                días después es el camino natural de «la pongo luego». */}
+            {connectionId ? (
+              editingNote ? (
+                <NotaEncuentro
+                  connectionId={connectionId}
+                  initialNote={note}
+                  chips
+                  autoFocus
+                  onSaved={onNoteSaved}
+                />
+              ) : note ? (
+                <button
+                  type="button"
+                  onClick={() => setEditingNote(true)}
+                  className="text-left text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  &quot;{note}&quot;{" "}
+                  <span className="font-mono text-[10px] text-faint">
+                    [ editar ]
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setEditingNote(true)}
+                  className="self-start font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  + añadir nota del encuentro
+                </button>
+              )
+            ) : (
+              note && (
+                <p className="text-sm text-muted-foreground">
+                  &quot;{note}&quot;
+                </p>
+              )
             )}
           </div>
         ) : (

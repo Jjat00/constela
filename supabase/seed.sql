@@ -104,10 +104,8 @@ on conflict do nothing;
 -- Par canónico garantizado: least(a) < greatest(b)
 -- ============================================================
 
-insert into public.connections (event_id, user_a, user_b, note, created_by)
-select e.id, least(d.a, d.b), greatest(d.a, d.b), d.note, d.created_by
-from public.events e,
-  (values
+with datos as (
+  select * from (values
     -- Triángulo 1: Backend + Datos + Jaime (infraestructura)
     ('a0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, 'Cómo escalar pipelines de ML',    'a0000000-0000-4000-8000-000000000001'::uuid),
     ('a0000000-0000-4000-8000-000000000001'::uuid, 'b1111111-1111-4000-8000-000000000001'::uuid, 'Constela · stack backend Go',    'a0000000-0000-4000-8000-000000000001'::uuid),
@@ -132,7 +130,22 @@ from public.events e,
     ('a0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000008'::uuid, 'Financiación de edtech',        'a0000000-0000-4000-8000-000000000002'::uuid),
     ('a0000000-0000-4000-8000-000000000006'::uuid, 'a0000000-0000-4000-8000-000000000007'::uuid, 'UX en infraestructura',         'a0000000-0000-4000-8000-000000000006'::uuid)
   ) as d(a, b, note, created_by)
-where e.slug = 'bogota-2026-08'
+),
+aristas as (
+  insert into public.connections (event_id, user_a, user_b, created_by)
+  select e.id, least(d.a, d.b), greatest(d.a, d.b), d.created_by
+  from public.events e, datos d
+  where e.slug = 'bogota-2026-08'
+  on conflict do nothing
+  returning id, user_a, user_b
+)
+-- La nota es privada por lado (migración 0014): la del seed pertenece a
+-- quien creó la arista, que era quien la escribía en el flujo retirado.
+insert into public.connection_notes (connection_id, author_id, note)
+select a.id, d.created_by, d.note
+from aristas a
+join datos d
+  on a.user_a = least(d.a, d.b) and a.user_b = greatest(d.a, d.b)
 on conflict do nothing;
 
 -- ============================================================
@@ -167,6 +180,7 @@ declare
     'b1111111-1111-4000-8000-000000000001'::uuid
   ]::uuid[];
   mate uuid;
+  arista uuid;
 begin
   select id into bogota_event from public.events where slug = 'bogota-2026-08';
 
@@ -178,15 +192,26 @@ begin
 
   -- Conecta con los tres mates
   foreach mate in array mates loop
-    insert into public.connections (event_id, user_a, user_b, note, created_by)
+    -- «on conflict do nothing» no devuelve fila: sin el reset, `arista`
+    -- arrastraría el id de la vuelta anterior del loop
+    arista := null;
+    insert into public.connections (event_id, user_a, user_b, created_by)
     values (
       new.event_id,
       least(new.user_id, mate),
       greatest(new.user_id, mate),
-      'Te damos la bienvenida a la constelación ✦',
       new.user_id
     )
-    on conflict do nothing;
+    on conflict do nothing
+    returning id into arista;
+
+    -- Nota privada del recién llegado (0014): así abre el mini-perfil de sus
+    -- mates con una nota ya escrita, sin haberla tecleado
+    if arista is not null then
+      insert into public.connection_notes (connection_id, author_id, note)
+      values (arista, new.user_id, 'nos presentaron en la entrada')
+      on conflict do nothing;
+    end if;
   end loop;
 
   return new;

@@ -3,6 +3,7 @@
 import { startTransition, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { spectrumOf } from "@/components/cosmos";
+import { NotaEncuentro } from "@/components/nota-encuentro";
 import { connectOnScan, type ConnectResult } from "./actions";
 
 export type ScanPeer = {
@@ -159,6 +160,18 @@ export function AutoConnect({
             </p>
           </div>
         </div>
+
+        {/* Tu nota del encuentro (CONTEXT): privada por lado, se anota aquí
+            si hay momento o después desde el mini-perfil — nunca obligatoria. */}
+        {result.connectionId && (
+          <NotaEncuentro
+            connectionId={result.connectionId}
+            initialNote={result.note}
+            label="[ NOTA DEL ENCUENTRO · OPCIONAL ]"
+            chips
+            className="w-full max-w-xs"
+          />
+        )}
 
         <div className="flex w-full max-w-xs flex-col items-center gap-2">
           {/* El escaneo ya te situó en este evento (join_event_via_profile

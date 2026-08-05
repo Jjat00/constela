@@ -26,8 +26,12 @@ Escanear el QR clavado de alguien que ya está en un evento te une a ESA galaxia
 _Avoid_: Invitación implícita, auto-registro
 
 **Conexión**:
-La arista entre dos asistentes, creada automáticamente cuando uno abre el QR clavado del otro — sin botón ni confirmación. Puede llevar una nota opcional (editable después). Es simétrica y única por par y por evento.
+La arista entre dos asistentes, creada automáticamente cuando uno abre el QR clavado del otro — sin botón ni confirmación. Es simétrica y única por par y por evento.
 _Avoid_: Amistad, follow, match, solicitud
+
+**Nota del encuentro**:
+Tu memoria privada sobre una conexión — dónde se conocieron, de qué hablaron. Cada extremo de la arista tiene la suya y **solo su autor la lee y la edita**: ni siquiera el otro extremo la ve. Opcional siempre: se escribe al conectar (chips de un tap o texto libre) o después desde el mini-perfil, y vaciarla la borra.
+_Avoid_: Nota compartida, mensaje, comentario
 
 **QR clavado** (o QR personal):
 El único QR que existe (ADR 0005): tu estrella clavada a una galaxia — `/u/{slug}?e={evento}`. Que te lo escaneen une al escaneador a ESA galaxia y crea la conexión entre ustedes, todo en el mismo gesto. No existe un QR que no lleve a ningún evento: `/u/{slug}` pelado es solo ficha pública y no une ni conecta.

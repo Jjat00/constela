@@ -166,13 +166,15 @@ export default async function TarjetaPage({
 
   // Nuestra arista, si existe. RLS solo deja ver las mías (`connections_
   // select_own`), así que basta con pedir aquellas donde la otra persona es
-  // extremo: lo que vuelva es necesariamente el encuentro entre los dos.
+  // extremo: lo que vuelva es necesariamente el encuentro entre los dos. El
+  // embed de connection_notes vuelve ya filtrado por la RLS de solo-autor:
+  // la nota que se muestra aquí es LA MÍA sobre ese encuentro (0014).
   let encuentro: string | null = null;
   let nota: string | null = null;
   if (!isMe) {
     const { data: link } = await supabase
       .from("connections")
-      .select("note, created_at, events(name)")
+      .select("created_at, events(name), connection_notes(note)")
       .or(`user_a.eq.${profile.id},user_b.eq.${profile.id}`)
       .order("created_at", { ascending: true })
       .limit(1)
@@ -180,7 +182,7 @@ export default async function TarjetaPage({
     if (link) {
       const evento = Array.isArray(link.events) ? link.events[0] : link.events;
       encuentro = `se cruzaron${evento?.name ? ` en ${evento.name}` : ""} · ${timeAgo(link.created_at)}`;
-      nota = link.note;
+      nota = link.connection_notes?.[0]?.note ?? null;
     }
   }
 

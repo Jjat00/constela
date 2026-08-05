@@ -169,6 +169,12 @@ export function ConstellationGraph({
   // conexión solo nace de escanear un QR en persona (ADR 0001).
   const [selected, setSelected] = useState<GraphNode | null>(null);
   const [selectedPos, setSelectedPos] = useState<{ x: number; y: number; placement: "top" | "bottom" | "left" | "right" } | null>(null);
+  // Notas del encuentro editadas en esta sesión: `edges` viene del servidor y
+  // no se refresca al guardar (recrearlo reiniciaría la simulación), así que
+  // lo editado se recuerda aparte y pisa lo que traiga la arista.
+  const [editedNotes, setEditedNotes] = useState<Map<string, string | null>>(
+    () => new Map(),
+  );
 
   // La ficha flota junto a la estrella SOLO en desktop: en un teléfono no hay
   // sitio a los lados de un nodo y la card acababa medio fuera de la pantalla.
@@ -965,7 +971,18 @@ export function ConstellationGraph({
             isCreator={creatorId != null && selected.id === creatorId}
             degree={degreeOf.get(selected.id) ?? 0}
             connected={Boolean(sharedEdge)}
-            note={sharedEdge?.note ?? null}
+            note={
+              sharedEdge
+                ? editedNotes.has(sharedEdge.id)
+                  ? (editedNotes.get(sharedEdge.id) ?? null)
+                  : sharedEdge.note
+                : null
+            }
+            connectionId={embedded ? null : (sharedEdge?.id ?? null)}
+            onNoteSaved={(nota) => {
+              if (!sharedEdge) return;
+              setEditedNotes((prev) => new Map(prev).set(sharedEdge.id, nota));
+            }}
             tagLabels={tagLabels}
             // Incrustado en la landing el universo es de ejemplo: sus
             // estrellas no tienen tarjeta que abrir.

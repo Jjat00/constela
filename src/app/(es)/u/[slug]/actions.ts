@@ -13,6 +13,10 @@ export type ConnectResult =
       triangles: number;
       /** Nombre del tercer vértice si este escaneo cerró un triángulo. */
       closedWith: string | null;
+      /** La arista entre ustedes, para colgarle tu nota del encuentro. */
+      connectionId: string | null;
+      /** TU nota privada ya escrita, si el encuentro no es nuevo. */
+      note: string | null;
     }
   | { status: "dueno-fuera" }
   | { status: "galaxia-no-existe" }
@@ -63,15 +67,34 @@ export async function connectOnScan(
   const [a, b] =
     user.id < target.id ? [user.id, target.id] : [target.id, user.id];
 
-  const { error } = await supabase.from("connections").insert({
-    event_id: joined.event_id,
-    user_a: a,
-    user_b: b,
-    created_by: user.id,
-  });
+  const { data: inserted, error } = await supabase
+    .from("connections")
+    .insert({
+      event_id: joined.event_id,
+      user_a: a,
+      user_b: b,
+      created_by: user.id,
+    })
+    .select("id")
+    .single();
 
-  // 23505 = ya estaban conectados en este evento: mismo estado feliz
-  if (error && error.code !== "23505") return { status: "error" };
+  // Una arista recién nacida no puede tener nota tuya; solo el camino 23505
+  // (ya estaban conectados) busca la existente. El embed de connection_notes
+  // vuelve ya filtrado a las tuyas por la RLS de solo-autor.
+  let connectionId: string | null = inserted?.id ?? null;
+  let note: string | null = null;
+  if (error) {
+    if (error.code !== "23505") return { status: "error" };
+    const { data: existing } = await supabase
+      .from("connections")
+      .select("id, connection_notes(note)")
+      .eq("event_id", joined.event_id)
+      .eq("user_a", a)
+      .eq("user_b", b)
+      .maybeSingle();
+    connectionId = existing?.id ?? null;
+    note = existing?.connection_notes?.[0]?.note ?? null;
+  }
 
   // Primera vez en Constela: la bienvenida va DESPUÉS de conectar, para no
   // perder el encuentro si alguien abandona el onboarding (ADR 0004). Por eso
@@ -128,5 +151,7 @@ export async function connectOnScan(
     connections,
     triangles,
     closedWith,
+    connectionId,
+    note,
   };
 }
