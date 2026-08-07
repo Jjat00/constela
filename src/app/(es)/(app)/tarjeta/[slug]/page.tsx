@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { TarjetaEstelar } from "@/components/tarjeta-estelar";
+import { conProtocolo, handleGithub, handleInstagram } from "@/lib/canales";
 import { timeAgo } from "@/lib/format";
 import { qrSvg, siteUrl } from "@/lib/qr";
 import { createClient } from "@/lib/supabase/server";
@@ -19,9 +20,6 @@ type Canal = {
   display: string;
   href: string;
 };
-
-const conProtocolo = (url: string) =>
-  /^https?:\/\//i.test(url) ? url : `https://${url}`;
 
 function dominio(url: string) {
   try {
@@ -83,7 +81,7 @@ function canalesDe(
   const li = p.linkedin?.trim() ? linkedin(p.linkedin) : null;
   if (li) canales.push(li);
   if (p.github?.trim()) {
-    const h = handle(p.github);
+    const h = handleGithub(p.github);
     canales.push({
       key: "github",
       label: "github",
@@ -92,7 +90,7 @@ function canalesDe(
     });
   }
   if (p.instagram?.trim()) {
-    const h = handle(p.instagram);
+    const h = handleInstagram(p.instagram);
     canales.push({
       key: "instagram",
       label: "instagram",

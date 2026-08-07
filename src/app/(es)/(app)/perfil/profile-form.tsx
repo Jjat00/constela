@@ -108,7 +108,7 @@ export function ProfileForm({
               id="instagram"
               name="instagram"
               defaultValue={defaultInstagram ?? ""}
-              placeholder="username"
+              placeholder="username o URL del perfil"
               className={INPUT}
             />
           </label>
@@ -129,7 +129,7 @@ export function ProfileForm({
               id="github"
               name="github"
               defaultValue={defaultGithub ?? ""}
-              placeholder="username"
+              placeholder="username o URL del perfil"
               className={INPUT}
             />
           </label>

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { handleGithub, handleInstagram } from "@/lib/canales";
 import { createClient } from "@/lib/supabase/server";
 import { parseChoices, resolveTagChoices } from "@/lib/tags";
 
@@ -14,9 +15,10 @@ export async function updateProfile(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const headline = String(formData.get("headline") ?? "").trim();
   const website = String(formData.get("website") ?? "").trim();
-  const instagram = String(formData.get("instagram") ?? "").trim();
+  // Se guarda el handle destilado: «@nadie» o la URL completa acaban igual.
+  const instagram = handleInstagram(String(formData.get("instagram") ?? ""));
   const linkedin = String(formData.get("linkedin") ?? "").trim();
-  const github = String(formData.get("github") ?? "").trim();
+  const github = handleGithub(String(formData.get("github") ?? ""));
   const whatsapp_number = String(formData.get("whatsapp_number") ?? "").trim();
 
   if (!name) redirect("/perfil?error=falta-nombre");
