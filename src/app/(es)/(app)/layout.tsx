@@ -30,15 +30,17 @@ import { fetchTagCatalog, labelFor } from "@/lib/tags";
 /**
  * Nada de lo que hay tras la sesión se indexa. Es la constelación de gente
  * real de un evento real: no es contenido del sitio, es contenido de ellos.
- * Lo hereda todo el grupo (`/home`, `/eventos`, `/qr`, `/perfil`, `/ajustes`,
- * `/tarjeta`), así que ninguna pantalla nueva del shell tendrá que acordarse.
+ * Lo hereda todo el grupo (`/home`, `/eventos`, `/qr`, `/perfil`, `/ajustes`),
+ * así que ninguna pantalla nueva del shell tendrá que acordarse.
  */
 export const metadata: Metadata = NO_INDEXAR;
 
 /**
  * Shell de la app con sesión (`/home`, `/eventos`, `/qr`, `/perfil`,
  * `/ajustes`). Fuera del grupo quedan la landing, el login, `/u/[slug]`
- * (se abre desde un QR: es una primera impresión, sin navegación) y
+ * (se abre desde un QR: es una primera impresión, sin navegación),
+ * `/tarjeta/[slug]` (el enlace que se comparte fuera del evento: pública,
+ * sin chrome que le rebote al login a quien no tiene cuenta) y
  * `/e/[slug]` (ficha gated con su propia vuelta a `/eventos`).
  */
 export default async function AppLayout({

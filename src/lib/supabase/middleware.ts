@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// `/tarjeta` no está: es el enlace que se comparte fuera del evento y se abre
+// sin sesión (la página decide qué enseña a quién).
 const PROTECTED_PREFIXES = [
   "/home",
   "/perfil",
@@ -8,7 +10,6 @@ const PROTECTED_PREFIXES = [
   "/eventos",
   "/qr",
   "/me",
-  "/tarjeta",
 ];
 
 export async function updateSession(request: NextRequest) {

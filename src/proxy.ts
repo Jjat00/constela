@@ -166,8 +166,10 @@ function conVary(respuesta: NextResponse) {
  * dice lo mismo pero en el sitio donde se puede leer por qué.
  *
  * Las rutas protegidas (`/home`, `/perfil`, `/ajustes`, `/eventos`, `/qr`,
- * `/me`, `/tarjeta`) siguen dentro, que es lo único que este archivo no puede
- * equivocarse en hacer.
+ * `/me`) siguen dentro, que es lo único que este archivo no puede
+ * equivocarse en hacer. `/tarjeta` ya no es protegida —se comparte sin
+ * sesión— pero sigue pasando por aquí: quien sí tiene sesión la necesita
+ * fresca para ver su WhatsApp y su encuentro.
  */
 export const config = {
   matcher: [
