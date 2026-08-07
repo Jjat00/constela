@@ -29,9 +29,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Clavado a 2.111.0: la 2.112.0 rompe `supabase link` validando el
+      # inserted_at de las api keys (supabase/cli#6115). Volver a `latest`
+      # cuando ese issue cierre.
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.111.0
 
       - run: supabase link --project-ref $SUPABASE_PROJECT_ID
       - run: supabase db push
