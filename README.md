@@ -23,6 +23,7 @@ src/app/
     app-de-networking-para-eventos/       /app-de-networking-para-eventos
     networking-en-eventos/                /networking-en-eventos
     (app)/ (legal)/ login/ bienvenida/ u/ e/
+    tarjeta/[slug]/                       /tarjeta/<slug> · pública, fuera del shell con sesión
   (en)/            ← layout raíz lang="en" · solo el sitio público
     en/page.tsx                           /en
     en/event-networking-app/              /en/event-networking-app
@@ -84,6 +85,13 @@ Proyecto Supabase: `constela` (ref `usaytsxnbqxyrmdpewbw`, us-east-1).
 pnpm exec supabase link --project-ref usaytsxnbqxyrmdpewbw
 pnpm exec supabase db push        # aplicar migraciones a prod
 ```
+
+### CI (GitHub Actions)
+
+| Workflow | Qué hace |
+|---|---|
+| `migraciones-prod.yml` | En cada push a `main` que toque `supabase/migrations/`, aplica las migraciones pendientes a producción (`supabase link` + `db push`). El CLI está clavado a la 2.111.0: la 2.112.0 rompe `supabase link` ([supabase/cli#6115](https://github.com/supabase/cli/issues/6115)) |
+| `revision-de-prs.yml` | Claude revisa cada PR al abrirse, o al comentar `@claude` en él, y publica los hallazgos como comentarios. Solo lectura: no puede commitear. Los criterios viven en `.github/REVIEW.md`. Requiere el secret `CLAUDE_CODE_OAUTH_TOKEN` |
 
 ### Verificar un build antes de subirlo
 
